@@ -1,0 +1,38 @@
+{
+  "name": "bonyan-docs",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Documentation site for BonyanOSS developer docs and the Etha3a API.",
+  "license": "MIT",
+  "author": "BonyanOSS",
+  "homepage": "https://docs.bonyanoss.org",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/BonyanOSS/docs.git"
+  },
+  "packageManager": "pnpm@11.0.8",
+  "scripts": {
+    "dev": "mintlify dev",
+    "dev:port": "mintlify dev --port 3333",
+    "build": "mintlify validate",
+    "broken-links": "mintlify broken-links",
+    "openapi:check": "mintlify openapi-check ./openapi.yaml",
+    "rename": "mintlify rename"
+  },
+  "devDependencies": {
+    "mintlify": "^4.2.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "keytar"
+    ],
+    "ignoredBuiltDependencies": [
+      "puppeteer",
+      "sharp"
+    ]
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=10.0.0"
+  }
+}

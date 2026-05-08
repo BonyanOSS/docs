@@ -1,0 +1,56 @@
+---
+title: "Hijri to Gregorian"
+description: "Today's Hijri date and conversion in both directions."
+---
+
+The `Hijri` module converts dates between Gregorian and Hijri calendars using
+Aladhan.
+
+| Endpoint | Description |
+| --- | --- |
+| `GET /hijri/today` | Today in both calendars. |
+| `GET /hijri/from-gregorian` | Convert Gregorian to Hijri. |
+| `GET /hijri/to-gregorian` | Convert Hijri to Gregorian. |
+
+## Date Format
+
+Both conversion endpoints use `DD-MM-YYYY`.
+
+- `/hijri/from-gregorian` defaults to today when `date` is omitted.
+- `/hijri/to-gregorian` requires `date`.
+
+## Source
+
+`api.aladhan.com`
+
+There is no second source in the current implementation. If Aladhan cannot
+serve the conversion, the endpoint returns `503`.
+
+## Cache TTL
+
+**7 days**, keyed by direction and date.
+
+## Canonical Type
+
+```ts
+type HijriDate = {
+  hijri: {
+    date: string;
+    day: string;
+    month: string;
+    monthAr: string;
+    year: string;
+    weekday: string;
+    weekdayAr: string;
+  };
+  gregorian: {
+    date: string;
+    day: string;
+    month: string;
+    year: string;
+  };
+  apiName: "aladhan.com";
+};
+```
+
+<include>/snippets/fallback-callout.mdx</include>

@@ -1,0 +1,63 @@
+---
+title: "Hadith"
+description: "Hadith books, ranges, single-number lookup, and random selection."
+---
+
+The `Hadith` module lists available books, fetches ranges from a book, fetches
+a single hadith by number, and returns a random hadith.
+
+| Endpoint | Description |
+| --- | --- |
+| `GET /hadith` | List available hadith books. |
+| `GET /hadith/random` | Random hadith, optionally scoped with `book`. |
+| `GET /hadith/:book` | Range from a book. |
+| `GET /hadith/:book/:number` | A single hadith. |
+
+## Range Query
+
+`GET /hadith/:book` accepts:
+
+| Query | Default | Notes |
+| --- | --- | --- |
+| `from` | `1` | Positive integer. |
+| `to` | `from + 29` | Must be greater than or equal to `from`; keep ranges around 300 items or fewer. |
+
+## Fallback Chain
+
+`api.hadith.gading.dev` -> jsDelivr mirror of `sutanlab/hadith-api`
+
+## Cache TTL
+
+| Data | TTL |
+| --- | --- |
+| Book list | 24 hours |
+| Book ranges and single hadith lookup | 12 hours |
+
+## Canonical Types
+
+```ts
+type HadithBook = {
+  id: string;
+  name: string;
+  available: number;
+  apiName: "hadith.gading.dev";
+};
+
+type HadithItem = {
+  number: number;
+  text: string;
+  book: string;
+  apiName: "hadith.gading.dev";
+};
+```
+
+`GET /hadith/random` returns:
+
+```ts
+type RandomHadithResponse = {
+  book: string;
+  hadith: HadithItem;
+};
+```
+
+<include>/snippets/fallback-callout.mdx</include>

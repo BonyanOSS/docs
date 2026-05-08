@@ -1,0 +1,64 @@
+---
+title: "Azkar"
+description: "Supplication categories, category items, random item selection, and Arabic search."
+---
+
+The `Azkar` module serves supplication categories and items from a pinned
+GitHub JSON source, with Hisn Muslim as fallback.
+
+| Endpoint | Description |
+| --- | --- |
+| `GET /azkar` | Category summaries. |
+| `GET /azkar/random` | Random zekr from the cached corpus. |
+| `GET /azkar/search` | Search across all azkar text. |
+| `GET /azkar/:category` | Items for a category. |
+
+## Fallback Chain
+
+Pinned `raw.githubusercontent.com/nawafalqari/azkar-api` -> `hisnmuslim.com`
+
+## Cache TTL
+
+**24 hours** for the source corpus. Random selection itself is performed on
+each request.
+
+## Response Shapes
+
+`GET /azkar` returns category summaries:
+
+```ts
+type AzkarCategorySummary = {
+  name: string;
+  count: number;
+  apiName: "github.com/nawafalqari" | "hisnmuslim.com";
+};
+```
+
+`GET /azkar/:category` returns the full category:
+
+```ts
+type AzkarCategory = {
+  category: string;
+  items: AzkarItem[];
+  apiName: "github.com/nawafalqari" | "hisnmuslim.com";
+};
+
+type AzkarItem = {
+  id: number;
+  text: string;
+  count?: number;
+  reference?: string;
+  description?: string;
+};
+```
+
+Search and random endpoints return `{ category, item }` objects. Search also
+adds a top-level `total` field.
+
+## Search
+
+`/azkar/search` uses [`normalizeArabic`](/concepts/arabic-search#normalizearabic)
+before matching, so diacritics and common Arabic letter variants do not block
+results.
+
+<include>/snippets/fallback-callout.mdx</include>

@@ -1,0 +1,23 @@
+---
+title: "Meta"
+description: "Service catalogue and liveness probe."
+---
+
+The `Meta` module exposes two endpoints used by clients (and uptime monitors)
+to introspect the service. Neither talks to an upstream — they are computed
+in-process and never fail.
+
+| Endpoint | Description |
+| --- | --- |
+| `GET /` | The full catalogue of registered routes plus project metadata. |
+| `GET /health` | Liveness probe. Returns `{ status: "ok", code: 200, timestamp }`. |
+
+## When to use which
+
+- **`/`** — for *humans* and *integrations* discovering what the service offers (e.g. an admin dashboard listing all available endpoints).
+- **`/health`** — for *machines* (Kubernetes liveness probes, status-page checkers, uptime monitors). Tiny payload, never cached.
+
+<Note>
+  Neither endpoint participates in the [rate limit](/concepts/rate-limit). You
+  can hit `/health` as often as you like.
+</Note>

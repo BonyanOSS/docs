@@ -1,0 +1,41 @@
+---
+title: "Surah"
+description: "Index of all 114 surahs with diacritic-insensitive Arabic search."
+---
+
+The `Surah` module is the lookup table for the 114 surahs of the Quran. Use it
+to populate dropdowns, render a table of contents, or resolve an Arabic name
+into a numeric ID for use elsewhere in the API.
+
+| Endpoint | Description |
+| --- | --- |
+| `GET /surah` | Full list of all 114 surahs. |
+| `GET /surah/:id` | A single surah by id (1–114). |
+| `GET /surah/search` | Search by Arabic name (diacritic-insensitive). |
+
+## Fallback chain
+
+`mp3quran.net` → `alquran.cloud` → `quran.com`
+
+If all three fail, the response is `503` with a `{ success: false, message }`
+body.
+
+## Cache TTL
+
+**12 hours.** The 114-surah list never changes — the cap exists only so we
+re-validate against upstreams twice a day.
+
+## Canonical type
+
+```ts
+type SurahItem = {
+  id: number;                                                      // 1..114
+  name: string;                                                    // الفاتحة
+  makkia?: boolean;                                                // true if Meccan, false if Medinan
+  apiName: "mp3quran.net" | "alquran.cloud" | "quran.com";         // which source served the response
+};
+```
+
+The `apiName` field is informational — see [Concepts → Fallback](/concepts/fallback#canonical-shapes).
+
+<include>/snippets/fallback-callout.mdx</include>

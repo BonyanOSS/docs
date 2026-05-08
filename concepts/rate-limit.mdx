@@ -1,0 +1,68 @@
+---
+title: "Rate limits"
+description: "The Fastify rate-limit model used by Etha3a API."
+---
+
+The hosted Etha3a API instance uses `@fastify/rate-limit`. The current defaults
+come directly from `server.ts`:
+
+| Variable | Default |
+| --- | --- |
+| `RATE_LIMIT_MAX` | `120` |
+| `RATE_LIMIT_WINDOW` | `1 minute` |
+
+That means the default deployment allows **120 requests per IP per minute**.
+
+## Headers
+
+Fastify's rate-limit plugin emits standard rate-limit headers, including the
+limit, remaining requests, reset timing, and `Retry-After` on 429 responses.
+Use those headers instead of guessing when the window resets.
+
+## What 429 Means
+
+```json
+{
+  "success": false,
+  "message": "rate limit exceeded"
+}
+```
+
+The exact wording can vary with the Fastify plugin version, but a 429 always
+means the client should wait for `Retry-After` before sending more requests.
+
+## Client Guidance
+
+<Steps>
+  <Step title="Cache stable data locally">
+    Surah lists, Quran text, tafsir, azkar, and hadith data are stable. Fetch
+    once, store client-side where appropriate, and avoid spending rate-limit
+    budget on repeated identical reads.
+  </Step>
+  <Step title="Deduplicate UI bursts">
+    If your interface can fire the same request multiple times while rendering,
+    coalesce those requests in your client.
+  </Step>
+  <Step title="Respect Retry-After">
+    Do not loop on 429. Wait for the window to reset, then continue.
+  </Step>
+</Steps>
+
+## Self-hosting
+
+Set positive values for the limiter when running your own deployment:
+
+```bash
+RATE_LIMIT_MAX=600 RATE_LIMIT_WINDOW="1 minute" pnpm start
+```
+
+Because the code uses `Number(process.env.RATE_LIMIT_MAX) || 120`, setting
+`RATE_LIMIT_MAX=0` does **not** disable the limiter; it falls back to `120`.
+If you truly need no limiter, change the Fastify registration in `server.ts`
+and put your own gateway or abuse protection in front of the service.
+
+## Fair-use Policy
+
+The hosted API exists to help builders prototype and ship beneficial Islamic
+software. For large production workloads, high-volume crawlers, or heavy audio
+traffic, self-host the API or coordinate a dedicated deployment.

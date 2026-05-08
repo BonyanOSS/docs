@@ -1,0 +1,60 @@
+---
+title: "Status and Reliability"
+description: "How BonyanOSS communicates uptime, incidents, rate limits, and service expectations."
+---
+
+Reliability is part of trust. A public Islamic software project should make it
+easy for users and developers to know whether a service is healthy, degraded,
+or undergoing maintenance.
+
+## Public Status
+
+Use `status.bonyanoss.org` for:
+
+- API availability.
+- Web app availability.
+- Scheduled maintenance.
+- Incidents and post-incident notes.
+- Uptime history for major public services.
+
+## Service Categories
+
+| Service | Example status component |
+| --- | --- |
+| Main site | `bonyanoss.org` |
+| Docs | `docs.bonyanoss.org` |
+| Unified API | `api.bonyanoss.org` |
+| Etha3a API | `api.bonyanoss.org/etha3a/v1` |
+
+## Incident Communication
+
+<Steps>
+  <Step title="Acknowledge quickly">
+    If a public service is down or degraded, mark it clearly as soon as the
+    issue is confirmed.
+  </Step>
+  <Step title="Explain impact">
+    Say which users, endpoints, or regions are affected. Avoid vague status
+    messages when the impact is known.
+  </Step>
+  <Step title="Update during recovery">
+    Keep the status page useful while work is ongoing, especially for API
+    consumers.
+  </Step>
+  <Step title="Close with notes">
+    After resolution, summarize the cause, fix, and any follow-up work.
+  </Step>
+</Steps>
+
+## Reliability Practices
+
+- Time out upstream calls.
+- Cache stable public content.
+- Use fallback sources where responsible.
+- Keep health checks small and dependency-light.
+- Publish rate limits and retry behavior.
+- Avoid silent breaking changes.
+
+<Card title="Read rate-limit behavior" icon="gauge" href="/concepts/rate-limit">
+  See the current Etha3a API rate-limit model and client guidance.
+</Card>

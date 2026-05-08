@@ -1,0 +1,61 @@
+---
+title: "Prayer times"
+description: "Daily prayer timings by coordinates or city/country."
+---
+
+The `Prayer` module returns prayer times for a given date and location.
+Location can be provided as coordinates or as city/country.
+
+| Endpoint | Description |
+| --- | --- |
+| `GET /prayer/times` | Prayer times for a date and location. |
+
+## Query Parameters
+
+| Parameter | Required | Notes |
+| --- | --- | --- |
+| `date` | No | Defaults to today. Format: `DD-MM-YYYY`. |
+| `latitude` | Conditional | Required with `longitude` when using coordinates. |
+| `longitude` | Conditional | Required with `latitude` when using coordinates. |
+| `city` | Conditional | Required with `country` when using city lookup. |
+| `country` | Conditional | Required with `city` when using city lookup. |
+| `method` | No | Integer Aladhan calculation method ID. If omitted, the upstream default is used. |
+
+The controller requires either `latitude + longitude` or `city + country`.
+
+## Fallback Chain
+
+| Request shape | Providers |
+| --- | --- |
+| Coordinates | Aladhan `/timings/{date}` -> pray.zone |
+| City and country | Aladhan `/timingsByCity/{date}` |
+| Both provided | Coordinates provider first, then city provider, then pray.zone |
+
+## Cache TTL
+
+**1 hour**, keyed by date, coordinates, city, country, and method.
+
+## Canonical Type
+
+```ts
+type PrayerTimings = {
+  date: string;
+  hijri?: string;
+  timings: {
+    Fajr: string;
+    Sunrise?: string;
+    Dhuhr: string;
+    Asr: string;
+    Sunset?: string;
+    Maghrib: string;
+    Isha: string;
+    Imsak?: string;
+    Midnight?: string;
+  };
+  method?: string;
+  coordinates?: { latitude: number; longitude: number };
+  apiName: "aladhan.com" | "pray.zone";
+};
+```
+
+<include>/snippets/fallback-callout.mdx</include>

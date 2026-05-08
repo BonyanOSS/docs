@@ -1,0 +1,59 @@
+---
+title: "Get aya by absolute number"
+description: "A single aya addressed by its 1..6236 absolute verse number."
+api: "GET /ayat/{id}"
+---
+
+Returns a single aya plus the surah it belongs to.
+
+## Endpoint
+
+```http
+GET /ayat/:id
+```
+
+<ParamField path="id" type="integer" required>
+  Absolute verse number, **1** through **6236**.
+</ParamField>
+
+## Response
+
+```json
+{
+  "success": true,
+  "data": {
+    "surahNumber": 1,
+    "surahName": "الفاتحة",
+    "aya": {
+      "number": 1,
+      "text": "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ",
+      "numberInSurah": 1
+    }
+  }
+}
+```
+
+## Errors
+
+| Code | When |
+| --- | --- |
+| `400` | `id` is not numeric or is outside `1..6236`. |
+| `404` | The aya was not found in the cached corpus. |
+| `503` | The full Quran corpus could not be loaded. |
+
+## Code Samples
+
+<Tabs>
+  <Tab title="cURL">
+    ```bash
+    curl https://api.bonyanoss.org/etha3a/v1/ayat/1
+    ```
+  </Tab>
+  <Tab title="JavaScript">
+    ```js
+    const res = await fetch("https://api.bonyanoss.org/etha3a/v1/ayat/1");
+    const body = await res.json();
+    console.log(body.data.aya.text);
+    ```
+  </Tab>
+</Tabs>

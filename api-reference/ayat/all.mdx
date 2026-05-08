@@ -1,0 +1,81 @@
+---
+title: "Get the full Quran text"
+description: "All surahs with their ayat in one cached response."
+api: "GET /ayat"
+---
+
+Returns the full Quran corpus grouped by surah.
+
+## Endpoint
+
+```http
+GET /ayat
+```
+
+## Response
+
+```json
+{
+  "success": true,
+  "data": {
+    "surahs": [
+      {
+        "number": 1,
+        "name": "الفاتحة",
+        "apiName": "alquran.cloud",
+        "ayat": [
+          { "number": 1, "text": "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ", "numberInSurah": 1 }
+        ]
+      }
+    ]
+  }
+}
+```
+
+## Canonical Types
+
+```ts
+type SurahWithAyaItem = {
+  number: number;
+  name: string;
+  ayat: AyaItem[];
+  apiName: "alquran.cloud" | "quran.gading.dev";
+};
+
+type AyaItem = {
+  number: number;
+  text: string;
+  numberInSurah: number;
+};
+```
+
+## Code Samples
+
+<Tabs>
+  <Tab title="cURL">
+    ```bash
+    curl https://api.bonyanoss.org/etha3a/v1/ayat
+    ```
+  </Tab>
+  <Tab title="JavaScript">
+    ```js
+    const res = await fetch("https://api.bonyanoss.org/etha3a/v1/ayat");
+    const body = await res.json();
+    console.log(body.data.surahs.length);
+    ```
+  </Tab>
+  <Tab title="Python">
+    ```python
+    import requests
+
+    body = requests.get("https://api.bonyanoss.org/etha3a/v1/ayat").json()
+    print(body["data"]["surahs"][0]["ayat"][0]["text"])
+    ```
+  </Tab>
+</Tabs>
+
+## Notes
+
+- Cached for **24 hours** under `ayat:full`.
+- Provider order: `alquran.cloud` -> jsDelivr mirror of `fawazahmed0/quran-api`.
+- The response is large; client-side caching is strongly recommended.

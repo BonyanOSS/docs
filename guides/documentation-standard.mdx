@@ -1,0 +1,55 @@
+---
+title: "Documentation Standard"
+description: "How BonyanOSS documentation should be written so newcomers, developers, and organizations can trust it."
+---
+
+Documentation is part of the product. For BonyanOSS, good docs are not just a
+nice addition; they are how contributors continue the work and how developers
+decide whether they can trust the project.
+
+## Page Types
+
+| Page type | Purpose |
+| --- | --- |
+| Introduction | Explain what the project is, who it helps, and where to start. |
+| Quickstart | Let someone succeed quickly with minimal context. |
+| Concept | Explain how an important model works, such as caching or fallback. |
+| Guide | Walk through a task from start to finish. |
+| Reference | Document exact endpoints, parameters, responses, and errors. |
+| Operations | Explain status, limits, deployment, and maintenance expectations. |
+
+## Writing Style
+
+<Steps>
+  <Step title="Start with the user's goal">
+    Tell people what they can build, fix, learn, or verify before diving into
+    internals.
+  </Step>
+  <Step title="Use concrete examples">
+    Prefer real URLs, payloads, commands, and diagrams over abstract wording.
+  </Step>
+  <Step title="Name limitations clearly">
+    If a feature is early, partial, experimental, or depends on an upstream
+    source, say so.
+  </Step>
+  <Step title="Keep source-sensitive content careful">
+    Islamic text, translations, and citations should be explicit about source,
+    scope, and confidence.
+  </Step>
+</Steps>
+
+## Minimum Docs for a Stable Project
+
+- Overview page.
+- Quickstart.
+- Installation or usage guide.
+- API or module reference.
+- Error and troubleshooting page.
+- Contribution path.
+- Changelog or release notes.
+- Status and support information.
+
+<Tip>
+  If a page would help a future maintainer avoid asking the original author a
+  private question, it probably belongs in the docs.
+</Tip>

@@ -1,0 +1,12 @@
+# MDX files contain nested fenced code blocks inside JSX components
+# (Tabs, CodeGroup, RequestExample, ResponseExample, ...) and Prettier's
+# Markdown parser silently mangles them: it strips indentation, escapes
+# *, and miscounts backticks. Skip MDX entirely.
+*.mdx
+
+# Generated
+.mintlify/
+node_modules/
+
+# Lockfiles
+pnpm-lock.yaml

@@ -1,0 +1,51 @@
+---
+title: "Tafsir"
+description: "Supported tafsir editions by full surah or single aya."
+---
+
+The `Tafsir` module exposes supported Arabic tafsir editions. You can request a
+whole surah or one aya.
+
+| Endpoint | Description |
+| --- | --- |
+| `GET /tafsir` | List supported editions. |
+| `GET /tafsir/:edition/:surah` | Tafsir for a whole surah. |
+| `GET /tafsir/:edition/:surah/:aya` | Tafsir for a single aya. |
+| `GET /tafsir/:edition/:surah?aya=N` | Single aya using query parameter form. |
+
+## Editions
+
+| Public slug | Provider edition |
+| --- | --- |
+| `muyassar` | `ar.muyassar`, fallback `arabic_moyassar` |
+| `jalalayn` | `ar.jalalayn` |
+| `saadi` | `arabic_saadi` |
+| `waseet` | `ar.waseet` |
+| `qurtubi` | `ar.qurtubi` |
+
+## Fallback Behavior
+
+For editions that exist on both providers, Etha3a tries `alquran.cloud` first
+and falls back to `quranenc.com`. Editions that exist on only one provider use
+that provider directly.
+
+## Cache TTL
+
+**24 hours**, keyed by edition, surah, and optional aya.
+
+## Canonical Type
+
+```ts
+type TafsirItem = {
+  surah: number;
+  aya: number;
+  text: string;
+  edition: string;
+  apiName: "alquran.cloud" | "quranenc.com";
+};
+```
+
+When you fetch a whole surah, `data` is an array. When you fetch a single aya
+through the path-param endpoint, `data` is one `TafsirItem`.
+
+<include>/snippets/fallback-callout.mdx</include>

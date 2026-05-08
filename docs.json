@@ -1,0 +1,335 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "palm",
+  "name": "BonyanOSS Docs",
+  "description": "Developer documentation for BonyanOSS, an open-source initiative building Islamic and beneficial software.",
+  "colors": {
+    "primary": "#10B981",
+    "light": "#34D399",
+    "dark": "#059669"
+  },
+  "favicon": "/favicon.svg",
+  "appearance": {
+    "default": "dark",
+    "strict": false
+  },
+  "background": {
+    "color": {
+      "light": "#FFFFFF",
+      "dark": "#071C1A"
+    },
+    "decoration": "gradient"
+  },
+  "fonts": {
+    "heading": {
+      "family": "Geist",
+      "weight": 650
+    },
+    "body": {
+      "family": "Inter",
+      "weight": 400
+    }
+  },
+  "styling": {
+    "codeblocks": "system",
+    "eyebrows": "breadcrumbs"
+  },
+  "interaction": {
+    "drilldown": false
+  },
+  "contextual": {
+    "options": [
+      "copy",
+      "view",
+      "chatgpt",
+      "claude",
+      "perplexity"
+    ]
+  },
+  "logo": {
+    "light": "/logo/light.svg",
+    "dark": "/logo/dark.svg",
+    "href": "/"
+  },
+  "navbar": {
+    "links": [
+      {
+        "label": "Main Site",
+        "href": "https://bonyanoss.org"
+      },
+      {
+        "label": "Status",
+        "href": "https://status.bonyanoss.org"
+      },
+      {
+        "label": "GitHub",
+        "href": "https://github.com/BonyanOSS"
+      }
+    ],
+    "primary": {
+      "type": "button",
+      "label": "Start Building",
+      "href": "/quickstart"
+    }
+  },
+  "navigation": {
+    "global": {
+      "anchors": [
+        {
+          "anchor": "bonyanoss.org",
+          "icon": "house",
+          "href": "https://bonyanoss.org"
+        },
+        {
+          "anchor": "api.bonyanoss.org",
+          "icon": "code",
+          "href": "https://api.bonyanoss.org"
+        },
+        {
+          "anchor": "status.bonyanoss.org",
+          "icon": "signal",
+          "href": "https://status.bonyanoss.org"
+        }
+      ]
+    },
+    "tabs": [
+      {
+        "tab": "Home",
+        "pages": [
+          {
+            "group": "Welcome",
+            "pages": [
+              "introduction"
+            ]
+          },
+          {
+            "group": "BonyanOSS",
+            "pages": [
+              "ecosystem",
+              "projects",
+              "domains",
+              "contributing",
+              "code-of-conduct"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Etha3a API",
+        "pages": [
+          {
+            "group": "Etha3a API",
+            "pages": [
+              "etha3a",
+              "quickstart"
+            ]
+          },
+          {
+            "group": "Core Concepts",
+            "pages": [
+              "concepts/fallback",
+              "concepts/caching",
+              "concepts/rate-limit",
+              "concepts/errors",
+              "concepts/arabic-search"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Guides",
+        "icon": "book",
+        "pages": [
+          {
+            "group": "Build Well",
+            "pages": [
+              "guides/design-principles",
+              "guides/api-design",
+              "guides/documentation-standard"
+            ]
+          },
+          {
+            "group": "Operate",
+            "pages": [
+              "guides/status-and-reliability",
+              "guides/project-lifecycle"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Reference",
+        "icon": "code",
+        "pages": [
+          {
+            "group": "Overview",
+            "pages": [
+              "reference"
+            ]
+          },
+          {
+            "group": "Meta",
+            "pages": [
+              "api-reference/meta/overview",
+              "api-reference/meta/catalogue",
+              "api-reference/meta/health"
+            ]
+          },
+          {
+            "group": "Surah",
+            "pages": [
+              "api-reference/surah/overview",
+              "api-reference/surah/list",
+              "api-reference/surah/get",
+              "api-reference/surah/search"
+            ]
+          },
+          {
+            "group": "Ayat",
+            "pages": [
+              "api-reference/ayat/overview",
+              "api-reference/ayat/all",
+              "api-reference/ayat/get-by-number",
+              "api-reference/ayat/get-by-surah-aya",
+              "api-reference/ayat/search"
+            ]
+          },
+          {
+            "group": "Reciters",
+            "pages": [
+              "api-reference/reciters/overview"
+            ]
+          },
+          {
+            "group": "Tafsir",
+            "pages": [
+              "api-reference/tafsir/overview"
+            ]
+          },
+          {
+            "group": "Azkar",
+            "pages": [
+              "api-reference/azkar/overview"
+            ]
+          },
+          {
+            "group": "Hadith",
+            "pages": [
+              "api-reference/hadith/overview"
+            ]
+          },
+          {
+            "group": "Prayer",
+            "pages": [
+              "api-reference/prayer/overview"
+            ]
+          },
+          {
+            "group": "Hijri",
+            "pages": [
+              "api-reference/hijri/overview"
+            ]
+          },
+          {
+            "group": "Qibla",
+            "pages": [
+              "api-reference/qibla/overview"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "footer": {
+    "socials": {
+      "github": "https://github.com/BonyanOSS",
+      "x": "https://x.com/BonyanOSS"
+    },
+    "links": [
+      {
+        "header": "BonyanOSS",
+        "items": [
+          {
+            "label": "Main site",
+            "href": "https://bonyanoss.org"
+          },
+          {
+            "label": "Projects",
+            "href": "/projects"
+          },
+          {
+            "label": "Contributing",
+            "href": "/contributing"
+          },
+          {
+            "label": "Code of Conduct",
+            "href": "/code-of-conduct"
+          }
+        ]
+      },
+      {
+        "header": "Platform",
+        "items": [
+          {
+            "label": "Docs",
+            "href": "https://docs.bonyanoss.org"
+          },
+          {
+            "label": "Unified API",
+            "href": "https://api.bonyanoss.org"
+          },
+          {
+            "label": "Status",
+            "href": "https://status.bonyanoss.org"
+          }
+        ]
+      },
+      {
+        "header": "Etha3a",
+        "items": [
+          {
+            "label": "Overview",
+            "href": "/etha3a"
+          },
+          {
+            "label": "Etha3a API",
+            "href": "/reference"
+          },
+          {
+            "label": "Quickstart",
+            "href": "/quickstart"
+          }
+        ]
+      }
+    ]
+  },
+  "seo": {
+    "metatags": {
+      "og:site_name": "BonyanOSS Docs",
+      "twitter:card": "summary_large_image",
+      "canonical": "https://docs.bonyanoss.org"
+    },
+    "indexing": "navigable"
+  },
+  "search": {
+    "prompt": "Search BonyanOSS docs..."
+  },
+  "api": {
+    "openapi": [
+      "openapi.yaml"
+    ],
+    "playground": {
+      "display": "simple"
+    },
+    "examples": {
+      "languages": [
+        "curl",
+        "javascript",
+        "node",
+        "python",
+        "php",
+        "go"
+      ]
+    }
+  }
+}

@@ -1,0 +1,80 @@
+---
+title: "Projects"
+description: "How BonyanOSS groups and grows Islamic open-source projects."
+mode: "wide"
+---
+
+BonyanOSS projects are treated as building blocks. Some are user-facing apps,
+some are APIs, some are datasets, and some are internal tools that make the
+rest of the ecosystem easier to maintain.
+
+## Project Families
+
+<CardGroup cols={3}>
+  <Card title="Etha3a API" icon="book-quran" href="/etha3a">
+    Quran text, tafsir, recitations, azkar, hadith, prayer times, Hijri dates,
+    and Qibla direction behind one API.
+  </Card>
+  <Card title="Hadith" icon="book-open">
+    Hadith collections, search tools, metadata, study views, and future APIs.
+  </Card>
+  <Card title="Learning" icon="graduation-cap">
+    Islamic learning platforms, lessons, study plans, and classroom-friendly
+    tools.
+  </Card>
+  <Card title="APIs and datasets" icon="database">
+    Public endpoints, normalized data, versioned schemas, and content
+    contracts.
+  </Card>
+  <Card title="Developer tools" icon="screwdriver-wrench">
+    SDKs, validation helpers, Arabic text utilities, deployment templates, and
+    reusable components.
+  </Card>
+  <Card title="Community infrastructure" icon="people-group">
+    Contribution workflows, dashboards, project boards, volunteer operations,
+    and status tooling.
+  </Card>
+</CardGroup>
+
+## Project Status
+
+| Status | Meaning | Expected docs |
+| --- | --- | --- |
+| Idea | A useful direction that still needs scope and validation. | Problem statement, intended users, proposed maintainers. |
+| Draft | Early implementation or design work has started. | Architecture notes, setup steps, open questions. |
+| Preview | Usable by contributors and early testers. | Quickstart, known limits, feedback path, breaking-change notes. |
+| Stable | Public contract is reliable enough for wider use. | Full reference, changelog, status coverage, contribution guide. |
+| Maintained | Active ownership and periodic review. | Roadmap, release process, issue triage expectations. |
+
+## How Projects Should Feel
+
+<Steps>
+  <Step title="Focused">
+    A project should have a small, understandable center. Related ideas can
+    become extensions, integrations, or separate projects.
+  </Step>
+  <Step title="Documented before depended on">
+    If other people will build on an API, package, or dataset, its contract
+    belongs in the docs.
+  </Step>
+  <Step title="Welcoming to new contributors">
+    Setup, issue labels, contribution scope, and review expectations should be
+    clear before asking people for help.
+  </Step>
+  <Step title="Sustainable">
+    A project should avoid hidden manual steps, one-person knowledge, and
+    avoidable infrastructure burden.
+  </Step>
+</Steps>
+
+## First Project Surface
+
+The first major docs surface is the [Etha3a API](/etha3a), which includes:
+
+- `api.bonyanoss.org/etha3a/v1` for API consumers.
+- `docs.bonyanoss.org/etha3a` for Etha3a-specific guides and reference.
+- `github.com/BonyanOSS/Etha3a-API` for source code and contributions.
+
+<Card title="Open Etha3a API" icon="arrow-right" href="/etha3a">
+  See how the first API project is shaped inside the larger BonyanOSS platform.
+</Card>

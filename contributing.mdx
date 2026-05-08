@@ -1,0 +1,80 @@
+---
+title: "Contributing"
+description: "How to contribute to BonyanOSS projects with clarity, respect, and long-term maintainability."
+---
+
+BonyanOSS is open because useful Islamic software should be easier to inspect,
+improve, translate, maintain, and continue. Contributions can be code, docs,
+design, content review, testing, ideas, issue triage, or operational help.
+
+## Good Contributions
+
+<CardGroup cols={2}>
+  <Card title="Fix a real problem" icon="wrench">
+    Improve something users or contributors actually hit: unclear docs, broken
+    examples, missing validation, unstable behavior, or rough setup steps.
+  </Card>
+  <Card title="Keep the scope readable" icon="compress">
+    Small, focused pull requests are easier to review and much safer to merge.
+  </Card>
+  <Card title="Explain the benefit" icon="comment-dots">
+    A good issue or PR explains who benefits, what changed, and what tradeoffs
+    were considered.
+  </Card>
+  <Card title="Respect the subject matter" icon="shield-heart">
+    Islamic content work deserves care: cite sources, avoid casual assumptions,
+    and ask for review when accuracy matters.
+  </Card>
+</CardGroup>
+
+## Contribution Flow
+
+<Steps>
+  <Step title="Choose a project or issue">
+    Start with a specific project area: Quran, Hadith, docs, API, data,
+    infrastructure, or developer tooling.
+  </Step>
+  <Step title="Understand the local contract">
+    Read the project's README, docs page, API contract, and existing patterns
+    before changing behavior.
+  </Step>
+  <Step title="Make a focused change">
+    Keep unrelated refactors out of the same pull request. Include tests or
+    docs when the change affects users.
+  </Step>
+  <Step title="Describe what changed">
+    Explain the problem, the solution, screenshots if relevant, and any
+    remaining limitations.
+  </Step>
+  <Step title="Respond to review">
+    Reviews are part of stewardship. Adjust the work, clarify tradeoffs, and
+    keep the conversation respectful.
+  </Step>
+</Steps>
+
+## What Needs Extra Care
+
+| Area | Extra expectation |
+| --- | --- |
+| Quran text | Use trusted sources, preserve Arabic correctly, and avoid silent normalization that changes displayed text. |
+| Hadith content | Cite source collections and metadata clearly; do not imply grading certainty without data. |
+| Prayer times | Document calculation methods, coordinates, timezones, and edge cases. |
+| Public APIs | Keep response envelopes stable and version breaking changes. |
+| Accessibility | Ensure text, navigation, contrast, and keyboard workflows are usable. |
+| Translations | Prefer reviewed translation over machine-only output for public content. |
+
+## Contributor Standards
+
+- Be precise. Avoid vague changes that are hard to review.
+- Be kind. The work matters, and so does the way it is done.
+- Be transparent. Explain sources, assumptions, and limitations.
+- Be sustainable. Leave the project easier to maintain than you found it.
+
+<Card title="Read the project lifecycle" icon="route" href="/guides/project-lifecycle">
+  See how ideas become maintained BonyanOSS projects.
+</Card>
+
+<Card title="Read the Code of Conduct" icon="shield-heart" href="/code-of-conduct">
+  Review the community expectations for contributors, maintainers, users, and
+  public BonyanOSS spaces.
+</Card>

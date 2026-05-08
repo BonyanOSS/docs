@@ -1,0 +1,53 @@
+name: Deploy docs
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate (build + broken links)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Validate OpenAPI spec
+        run: pnpm openapi:check
+
+      - name: Build site
+        run: pnpm build
+
+      - name: Check for broken links
+        run: pnpm broken-links
+
+  deploy:
+    name: Deploy to Mintlify
+    needs: validate
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Trigger Mintlify deploy
+        run: |
+          curl -X POST \
+            -H "Authorization: Bearer ${{ secrets.MINTLIFY_DEPLOY_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            "https://api.mintlify.com/v1/projects/etha3a/deploy"

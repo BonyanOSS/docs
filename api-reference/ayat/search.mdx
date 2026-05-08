@@ -1,0 +1,68 @@
+---
+title: "Search ayat by text"
+description: "Find ayat containing a normalized Arabic substring."
+api: "GET /ayat/search"
+---
+
+Searches the cached Quran corpus with
+[`normalizeArabicForQuranSearch`](/concepts/arabic-search#normalizearabicforquransearch).
+
+## Endpoint
+
+```http
+GET /ayat/search?text={query}&limit={n}
+```
+
+<ParamField query="text" type="string" required>
+  Arabic text to search for.
+</ParamField>
+
+<ParamField query="limit" type="integer" default="50">
+  Maximum number of results. The controller clamps this value to `1..500`.
+</ParamField>
+
+## Response
+
+```json
+{
+  "success": true,
+  "total": 1,
+  "data": [
+    {
+      "surahNumber": 1,
+      "surahName": "الفاتحة",
+      "aya": {
+        "number": 1,
+        "text": "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ",
+        "numberInSurah": 1
+      }
+    }
+  ]
+}
+```
+
+## Errors
+
+| Code | When |
+| --- | --- |
+| `400` | `text` is missing or empty. |
+| `404` | No ayat matched the query. |
+| `503` | The Quran corpus could not be loaded. |
+
+## Code Samples
+
+<Tabs>
+  <Tab title="cURL">
+    ```bash
+    curl "https://api.bonyanoss.org/etha3a/v1/ayat/search?text=الرحمن&limit=20"
+    ```
+  </Tab>
+  <Tab title="JavaScript">
+    ```js
+    const params = new URLSearchParams({ text: "الرحمن", limit: "20" });
+    const res = await fetch(`https://api.bonyanoss.org/etha3a/v1/ayat/search?${params}`);
+    const body = await res.json();
+    console.log(body.total);
+    ```
+  </Tab>
+</Tabs>

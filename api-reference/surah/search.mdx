@@ -1,0 +1,114 @@
+---
+title: "Search surahs by name"
+description: "Diacritic-insensitive Arabic search across the surah names."
+api: "GET /surah/search"
+---
+
+Searches the 114-surah index by Arabic name. The query is normalized through
+[`normalizeArabic`](/concepts/arabic-search) before the substring match, so
+typing the name with or without tashkeel finds the same surah.
+
+## Endpoint
+
+```
+GET /surah/search?name={query}
+```
+
+### Query parameters
+
+<ParamField query="name" type="string" required>
+  The Arabic name to search for. Substring match. URL-encode if hand-rolling.
+</ParamField>
+
+## Response — `200 OK`
+
+```json
+{
+  "success": true,
+  "data": [
+    { "id": 1, "name": "الفاتحة", "makkia": true, "apiName": "mp3quran.net" }
+  ]
+}
+```
+
+If no surah matches, the endpoint returns `404`.
+
+## Errors
+
+| Code | When |
+| --- | --- |
+| `400` | `name` query parameter is missing or empty. |
+| `429` | Rate limit exceeded. |
+| `404` | No matching surah was found. |
+| `503` | The surah index could not be loaded from any upstream. |
+
+## Fallback chain
+
+The search runs against the **already-loaded surah index**, so its fallback
+chain is the same as `GET /surah`:
+`mp3quran.net` → `alquran.cloud` → `quran.com`.
+
+## Code samples
+
+<Tabs>
+  <Tab title="cURL">
+    ```bash
+    curl "https://api.bonyanoss.org/etha3a/v1/surah/search?name=الفاتحة"
+    ```
+  </Tab>
+  <Tab title="JavaScript">
+    ```js
+    const q = encodeURIComponent("الفاتحة");
+    const r = await fetch(`https://api.bonyanoss.org/etha3a/v1/surah/search?name=${q}`);
+    const { data } = await r.json();
+    console.log(data); // [{ id: 1, name: "الفاتحة", ... }]
+    ```
+  </Tab>
+  <Tab title="Node.js (axios)">
+    ```ts
+    import axios from "axios";
+    const { data } = await axios.get("https://api.bonyanoss.org/etha3a/v1/surah/search", {
+      params: { name: "الفاتحة" },
+    });
+    console.log(data.data);
+    ```
+  </Tab>
+  <Tab title="Python">
+    ```python
+    import requests
+    r = requests.get("https://api.bonyanoss.org/etha3a/v1/surah/search", params={"name": "الفاتحة"})
+    print(r.json()["data"])
+    ```
+  </Tab>
+  <Tab title="PHP">
+    ```php
+    <?php
+    $url = "https://api.bonyanoss.org/etha3a/v1/surah/search?name=" . urlencode("الفاتحة");
+    print_r(json_decode(file_get_contents($url), true)["data"]);
+    ```
+  </Tab>
+  <Tab title="Go">
+    ```go
+    q := url.QueryEscape("الفاتحة")
+    r, _ := http.Get("https://api.bonyanoss.org/etha3a/v1/surah/search?name=" + q)
+    defer r.Body.Close()
+    io.Copy(os.Stdout, r.Body)
+    ```
+  </Tab>
+</Tabs>
+
+## Examples
+
+| Query | Matches |
+| --- | --- |
+| `الفاتحة` | Al-Fatiha (1) |
+| `الفَاتِحَة` | Al-Fatiha (1) — tashkeel ignored |
+| `بقر` | Al-Baqara (2) |
+| `إبراهيم` | Ibrahim (14) |
+| `يس` | Ya-Sin (36) |
+| `يَـــس` | Ya-Sin (36) — tatweel stripped |
+
+## Notes
+
+- All client search-as-you-type bars should debounce (200–300ms) to avoid burning the rate limit.
+- For a 114-item dataset, you may also want to fetch `/surah` once and search client-side.

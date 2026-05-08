@@ -1,0 +1,63 @@
+---
+title: "Get aya by surah and verse"
+description: "A single aya addressed by surah number and verse-in-surah."
+api: "GET /ayat/{surah}/aya/{id}"
+---
+
+Returns a single aya by `(surah, verse-in-surah)` plus the surah metadata.
+
+## Endpoint
+
+```http
+GET /ayat/:surah/aya/:id
+```
+
+<ParamField path="surah" type="integer" required>
+  Surah number, **1** through **114**.
+</ParamField>
+
+<ParamField path="id" type="integer" required>
+  Verse number inside the surah.
+</ParamField>
+
+## Response
+
+```json
+{
+  "success": true,
+  "data": {
+    "surahNumber": 2,
+    "surahName": "البقرة",
+    "aya": {
+      "number": 262,
+      "text": "اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ",
+      "numberInSurah": 255
+    }
+  }
+}
+```
+
+## Errors
+
+| Code | When |
+| --- | --- |
+| `400` | `surah` or `id` is not numeric, or surah is outside `1..114`. |
+| `404` | The requested aya does not exist in that surah. |
+| `503` | The full Quran corpus could not be loaded. |
+
+## Code Samples
+
+<Tabs>
+  <Tab title="cURL">
+    ```bash
+    curl https://api.bonyanoss.org/etha3a/v1/ayat/2/aya/255
+    ```
+  </Tab>
+  <Tab title="JavaScript">
+    ```js
+    const res = await fetch("https://api.bonyanoss.org/etha3a/v1/ayat/2/aya/255");
+    const body = await res.json();
+    console.log(body.data.aya.text);
+    ```
+  </Tab>
+</Tabs>

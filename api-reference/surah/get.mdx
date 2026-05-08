@@ -1,0 +1,98 @@
+---
+title: "Get a single surah"
+description: "Returns a single surah by its 1..114 numeric ID."
+api: "GET /surah/{id}"
+---
+
+Returns a single surah by its numeric ID. The ID is the conventional surah
+number (1 = Al-Fatiha, 2 = Al-Baqara, …, 114 = An-Nas).
+
+## Endpoint
+
+```
+GET /surah/:id
+```
+
+### Path parameters
+
+<ParamField path="id" type="integer" required>
+  Surah number, between **1** and **114** inclusive.
+</ParamField>
+
+## Response — `200 OK`
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": 1,
+    "name": "الفاتحة",
+    "makkia": true,
+    "apiName": "mp3quran.net"
+  }
+}
+```
+
+## Errors
+
+| Code | Body | When |
+| --- | --- | --- |
+| `400` | `Surah id must be between 1 and 114` | `id` is not a number, or is outside the range. |
+| `404` | `Surah not found` | The cached surah list did not contain that ID. |
+| `503` | Provider error message | All three upstreams failed. |
+
+## Fallback chain
+
+`mp3quran.net` → `alquran.cloud` → `quran.com`
+
+## Code samples
+
+<Tabs>
+  <Tab title="cURL">
+    ```bash
+    curl https://api.bonyanoss.org/etha3a/v1/surah/1
+    ```
+  </Tab>
+  <Tab title="JavaScript">
+    ```js
+    const r = await fetch("https://api.bonyanoss.org/etha3a/v1/surah/1");
+    const { data } = await r.json();
+    console.log(data.name); // "الفاتحة"
+    ```
+  </Tab>
+  <Tab title="Node.js (axios)">
+    ```ts
+    import axios from "axios";
+    const surahId = 1;
+    const { data } = await axios.get(`https://api.bonyanoss.org/etha3a/v1/surah/${surahId}`);
+    console.log(data.data.name);
+    ```
+  </Tab>
+  <Tab title="Python">
+    ```python
+    import requests
+    s = requests.get("https://api.bonyanoss.org/etha3a/v1/surah/1").json()["data"]
+    print(s["name"])  # الفاتحة
+    ```
+  </Tab>
+  <Tab title="PHP">
+    ```php
+    <?php
+    $s = json_decode(file_get_contents("https://api.bonyanoss.org/etha3a/v1/surah/1"), true)["data"];
+    echo $s["name"];
+    ```
+  </Tab>
+  <Tab title="Go">
+    ```go
+    r, _ := http.Get("https://api.bonyanoss.org/etha3a/v1/surah/1")
+    defer r.Body.Close()
+    body, _ := io.ReadAll(r.Body)
+    fmt.Println(string(body))
+    ```
+  </Tab>
+</Tabs>
+
+## Notes
+
+- Cached for **12 hours**.
+- If you need many surahs at once, prefer `GET /surah` over a loop — one cached call beats 114.

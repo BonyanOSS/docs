@@ -1,0 +1,58 @@
+---
+title: "List all surahs"
+description: "Returns the full index of all 114 surahs."
+api: "GET /surah"
+---
+
+Returns every surah with its number, Arabic name, Meccan/Medinan flag when
+available, and the provider label that supplied the cached list.
+
+## Endpoint
+
+```http
+GET /surah
+```
+
+## Response
+
+```json
+{
+  "success": true,
+  "data": {
+    "surah": [
+      { "id": 1, "name": "الفاتحة", "makkia": true, "apiName": "mp3quran.net" },
+      { "id": 2, "name": "البقرة", "makkia": false, "apiName": "mp3quran.net" }
+    ]
+  }
+}
+```
+
+## Code Samples
+
+<Tabs>
+  <Tab title="cURL">
+    ```bash
+    curl https://api.bonyanoss.org/etha3a/v1/surah
+    ```
+  </Tab>
+  <Tab title="JavaScript">
+    ```js
+    const res = await fetch("https://api.bonyanoss.org/etha3a/v1/surah");
+    const body = await res.json();
+    console.log(body.data.surah.length);
+    ```
+  </Tab>
+  <Tab title="Python">
+    ```python
+    import requests
+
+    body = requests.get("https://api.bonyanoss.org/etha3a/v1/surah").json()
+    print(len(body["data"]["surah"]))
+    ```
+  </Tab>
+</Tabs>
+
+## Notes
+
+- Cached for **12 hours** under `surah:all`.
+- Provider order: `mp3quran.net` -> `alquran.cloud` -> `quran.com`.
