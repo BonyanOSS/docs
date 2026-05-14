@@ -1,10 +1,10 @@
 # BonyanOSS Docs
 
-Documentation site for **BonyanOSS** and the **Etha3a API**.
+Documentation site for **BonyanOSS** and the **Bonyan-API**.
 
 Built with [Mintlify](https://mintlify.com). The docs are organized as a
 developer platform: ecosystem overview, project model, domain map, contribution
-guide, Etha3a API docs, engineering guides, and API reference.
+guide, Bonyan-API docs, engineering guides, and API reference.
 
 ## Run locally
 
@@ -36,7 +36,7 @@ bonyan-docs/
 ├── projects.mdx
 ├── domains.mdx
 ├── code-of-conduct.mdx
-├── etha3a.mdx
+├── bonyan-api.mdx
 ├── quickstart.mdx
 ├── concepts/
 ├── guides/
@@ -49,8 +49,8 @@ bonyan-docs/
 - Docs: `docs.bonyanoss.org`
 - Status: `status.bonyanoss.org`
 - Unified API: `api.bonyanoss.org`
-- Etha3a API: `api.bonyanoss.org/etha3a/v1`
-- Etha3a docs: `docs.bonyanoss.org/etha3a`
+- Bonyan API: `api.bonyanoss.org/bonyan-api/v1`
+- Bonyan docs: `docs.bonyanoss.org/bonyan-api`
 
 ## License
 

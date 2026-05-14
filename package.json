@@ -2,7 +2,7 @@
   "name": "bonyan-docs",
   "version": "1.0.0",
   "private": true,
-  "description": "Documentation site for BonyanOSS developer docs and the Etha3a API.",
+  "description": "Documentation site for BonyanOSS developer docs and the Bonyan-API.",
   "license": "MIT",
   "author": "BonyanOSS",
   "homepage": "https://docs.bonyanoss.org",

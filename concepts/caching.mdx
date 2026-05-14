@@ -1,9 +1,9 @@
 ---
 title: "Caching"
-description: "The in-process memoization model used by Etha3a API."
+description: "The in-process memoization model used by Bonyan-API."
 ---
 
-Etha3a API uses a small in-process cache in `utils/cache.ts`. It is a `Map`
+Bonyan-API uses a small in-process cache in `utils/cache.ts`. It is a `Map`
 with per-key expiry plus an `inflight` map that coalesces concurrent identical
 loads.
 
@@ -32,7 +32,7 @@ cached is the source corpus it selects from.
 
 ## Concurrent-call Coalescing
 
-If three clients trigger the same cold key at the same time, Etha3a API runs
+If three clients trigger the same cold key at the same time, Bonyan-API runs
 the loader once and lets every caller await the same promise.
 
 ```mermaid
@@ -40,7 +40,7 @@ sequenceDiagram
     participant A as Client A
     participant B as Client B
     participant C as Client C
-    participant API as Etha3a API
+    participant API as Bonyan-API
     participant U as Upstream
 
     par

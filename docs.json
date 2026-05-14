@@ -115,12 +115,12 @@
         ]
       },
       {
-        "tab": "Etha3a API",
+        "tab": "Bonyan API",
         "pages": [
           {
-            "group": "Etha3a API",
+            "group": "Bonyan API",
             "pages": [
-              "etha3a",
+              "bonyan-api",
               "quickstart"
             ]
           },
@@ -285,14 +285,14 @@
         ]
       },
       {
-        "header": "Etha3a",
+        "header": "Bonyan API",
         "items": [
           {
             "label": "Overview",
-            "href": "/etha3a"
+            "href": "/bonyan-api"
           },
           {
-            "label": "Etha3a API",
+            "label": "Bonyan API",
             "href": "/reference"
           },
           {

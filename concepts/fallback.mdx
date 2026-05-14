@@ -1,14 +1,14 @@
 ---
 title: "Multi-source fallback"
-description: "How Etha3a API keeps one client contract while upstream providers fail, time out, or return empty data."
+description: "How Bonyan-API keeps one client contract while upstream providers fail, time out, or return empty data."
 ---
 
-Etha3a API depends on public upstream providers, and public upstream providers
+Bonyan-API depends on public upstream providers, and public upstream providers
 sometimes fail. The API handles that by trying an ordered source chain inside
 the service layer, then returning the same canonical BonyanOSS shape to the
 client no matter which provider answered.
 
-The important idea is simple: **clients integrate with Etha3a, not with every
+The important idea is simple: **clients integrate with Bonyan-API, not with every
 upstream provider.**
 
 ## Request Lifecycle
@@ -17,7 +17,7 @@ upstream provider.**
 sequenceDiagram
     autonumber
     participant C as Client
-    participant E as Etha3a API
+    participant E as Bonyan-API
     participant Cache as In-process cache
     participant U1 as Primary provider
     participant U2 as Fallback provider
@@ -101,7 +101,7 @@ logic in client code.
 
 ## Self-hosting Notes
 
-If you fork or self-host Etha3a API, provider priority lives in each module's
+If you fork or self-host Bonyan API, provider priority lives in each module's
 service file. For example, the surah chain is defined in `surah.service.ts`,
 and the ayat chain is defined in `ayat.service.ts`. Reorder providers only when
 you are intentionally changing the service's reliability behavior.
@@ -109,7 +109,7 @@ you are intentionally changing the service's reliability behavior.
 <AccordionGroup>
   <Accordion title="Does fallback retry upstream 429 responses?">
     Yes. A non-2xx upstream response is treated as a failed provider attempt,
-    so the next source is tried. A 429 returned to your client is Etha3a API's
+    so the next source is tried. A 429 returned to your client is Bonyan API's
     own rate limit.
   </Accordion>
   <Accordion title="Can I force one provider from the public API?">
