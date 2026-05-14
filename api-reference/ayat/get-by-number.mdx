@@ -46,12 +46,12 @@ GET /ayat/:id
 <Tabs>
   <Tab title="cURL">
     ```bash
-    curl https://api.bonyanoss.org/etha3a/v1/ayat/1
+    curl https://api.bonyanoss.org/bonyan-api/v1/ayat/1
     ```
   </Tab>
   <Tab title="JavaScript">
     ```js
-    const res = await fetch("https://api.bonyanoss.org/etha3a/v1/ayat/1");
+    const res = await fetch("https://api.bonyanoss.org/bonyan-api/v1/ayat/1");
     const body = await res.json();
     console.log(body.data.aya.text);
     ```

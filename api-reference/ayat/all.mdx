@@ -54,12 +54,12 @@ type AyaItem = {
 <Tabs>
   <Tab title="cURL">
     ```bash
-    curl https://api.bonyanoss.org/etha3a/v1/ayat
+    curl https://api.bonyanoss.org/bonyan-api/v1/ayat
     ```
   </Tab>
   <Tab title="JavaScript">
     ```js
-    const res = await fetch("https://api.bonyanoss.org/etha3a/v1/ayat");
+    const res = await fetch("https://api.bonyanoss.org/bonyan-api/v1/ayat");
     const body = await res.json();
     console.log(body.data.surahs.length);
     ```
@@ -68,7 +68,7 @@ type AyaItem = {
     ```python
     import requests
 
-    body = requests.get("https://api.bonyanoss.org/etha3a/v1/ayat").json()
+    body = requests.get("https://api.bonyanoss.org/bonyan-api/v1/ayat").json()
     print(body["data"]["surahs"][0]["ayat"][0]["text"])
     ```
   </Tab>

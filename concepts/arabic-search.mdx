@@ -1,11 +1,11 @@
 ---
 title: "Arabic search & normalization"
-description: "How Etha3a API normalizes Arabic names and Quran text before search."
+description: "How Bonyan-API normalizes Arabic names and Quran text before search."
 ---
 
 Arabic search needs normalization. Users may type without tashkeel, copy Quran
 text with waqf marks, use different alif forms, or type `ة` where a source
-stores `ه`. Etha3a API solves this before comparing strings.
+stores `ه`. Bonyan-API solves this before comparing strings.
 
 There are two normalization functions in `utils/arabic.ts`.
 
@@ -63,9 +63,9 @@ Clients do not need to normalize before calling the API. Send the user's raw
 input:
 
 ```bash
-curl "https://api.bonyanoss.org/etha3a/v1/surah/search?name=الفاتحة"
-curl "https://api.bonyanoss.org/etha3a/v1/surah/search?name=الفاتحه"
-curl "https://api.bonyanoss.org/etha3a/v1/surah/search?name=ٱلْفَاتِحَةُ"
+curl "https://api.bonyanoss.org/bonyan-api/v1/surah/search?name=الفاتحة"
+curl "https://api.bonyanoss.org/bonyan-api/v1/surah/search?name=الفاتحه"
+curl "https://api.bonyanoss.org/bonyan-api/v1/surah/search?name=ٱلْفَاتِحَةُ"
 ```
 
 ## Limits
@@ -76,6 +76,6 @@ curl "https://api.bonyanoss.org/etha3a/v1/surah/search?name=ٱلْفَاتِحَ
 
 <Note>
   If you find a real Arabic search edge case, open an issue in
-  [BonyanOSS/Etha3a-API](https://github.com/BonyanOSS/Etha3a-API) with the input
+  [BonyanOSS/Bonyan-API](https://github.com/BonyanOSS/Bonyan-API) with the input
   and expected result.
 </Note>

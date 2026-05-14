@@ -19,7 +19,7 @@ manual. Start from the thing you want to build, then move into the project,
 guide, or API reference that matches your work.
 
 <CardGroup cols={3}>
-  <Card title="Etha3a API" icon="book-quran" href="/etha3a">
+  <Card title="Bonyan API" icon="book-quran" href="/bonyan-api">
     Build Quran, tafsir, recitation, azkar, hadith, prayer-time, Hijri, and
     Qibla workflows on one stable API.
   </Card>
@@ -41,7 +41,7 @@ guide, or API reference that matches your work.
     together under BonyanOSS.
   </Card>
   <Card title="Make your first API request" icon="rocket" href="/quickstart">
-    Call Etha3a in under a minute using cURL, JavaScript, Python, PHP,
+    Call Bonyan API in under a minute using cURL, JavaScript, Python, PHP,
     or Go.
   </Card>
   <Card title="Review the domain map" icon="network-wired" href="/domains">
@@ -59,9 +59,9 @@ guide, or API reference that matches your work.
 ```mermaid
 flowchart LR
     Home["bonyanoss.org<br/>Main site"] --> Docs["docs.bonyanoss.org<br/>All documentation"]
-    Docs --> Etha3aDocs["docs.bonyanoss.org/etha3a<br/>Etha3a API docs"]
+    Docs --> BonyanApiDocs["docs.bonyanoss.org/bonyan-api<br/>Bonyan API docs"]
     Home --> Projects["Project apps<br/>Current and future public products"]
-    Api["api.bonyanoss.org<br/>Unified API gateway"] --> Etha3aApi["/etha3a/v1<br/>Etha3a API"]
+    Api["api.bonyanoss.org<br/>Unified API gateway"] --> BonyanApi["/bonyan-api/v1<br/>Bonyan API"]
     Status["status.bonyanoss.org<br/>Public uptime"] --> Api
     Status --> Projects
 ```
@@ -93,9 +93,9 @@ flowchart LR
 | --- | --- |
 | [Home](/) | Orientation, ecosystem map, and high-level routes. |
 | [Projects](/projects) | How BonyanOSS groups Quran, Hadith, learning, API, data, and utility projects. |
-| [Etha3a API](/etha3a) | The first major API surface: Quran, tafsir, reciters, azkar, hadith, prayer, Hijri, and Qibla. |
+| [Bonyan API](/bonyan-api) | The first major API surface: Quran, tafsir, reciters, azkar, hadith, prayer, Hijri, and Qibla. |
 | [Guides](/guides/design-principles) | Standards for building, documenting, operating, and graduating projects. |
-| [Reference](/reference) | Endpoint-level details for the Etha3a API modules. |
+| [Reference](/reference) | Endpoint-level details for the Bonyan API modules. |
 
 <Note>
   BonyanOSS is built around a simple idea: build what benefits people, keep it

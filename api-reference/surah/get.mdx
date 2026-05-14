@@ -50,12 +50,12 @@ GET /surah/:id
 <Tabs>
   <Tab title="cURL">
     ```bash
-    curl https://api.bonyanoss.org/etha3a/v1/surah/1
+    curl https://api.bonyanoss.org/bonyan-api/v1/surah/1
     ```
   </Tab>
   <Tab title="JavaScript">
     ```js
-    const r = await fetch("https://api.bonyanoss.org/etha3a/v1/surah/1");
+    const r = await fetch("https://api.bonyanoss.org/bonyan-api/v1/surah/1");
     const { data } = await r.json();
     console.log(data.name); // "الفاتحة"
     ```
@@ -64,27 +64,27 @@ GET /surah/:id
     ```ts
     import axios from "axios";
     const surahId = 1;
-    const { data } = await axios.get(`https://api.bonyanoss.org/etha3a/v1/surah/${surahId}`);
+    const { data } = await axios.get(`https://api.bonyanoss.org/bonyan-api/v1/surah/${surahId}`);
     console.log(data.data.name);
     ```
   </Tab>
   <Tab title="Python">
     ```python
     import requests
-    s = requests.get("https://api.bonyanoss.org/etha3a/v1/surah/1").json()["data"]
+    s = requests.get("https://api.bonyanoss.org/bonyan-api/v1/surah/1").json()["data"]
     print(s["name"])  # الفاتحة
     ```
   </Tab>
   <Tab title="PHP">
     ```php
     <?php
-    $s = json_decode(file_get_contents("https://api.bonyanoss.org/etha3a/v1/surah/1"), true)["data"];
+    $s = json_decode(file_get_contents("https://api.bonyanoss.org/bonyan-api/v1/surah/1"), true)["data"];
     echo $s["name"];
     ```
   </Tab>
   <Tab title="Go">
     ```go
-    r, _ := http.Get("https://api.bonyanoss.org/etha3a/v1/surah/1")
+    r, _ := http.Get("https://api.bonyanoss.org/bonyan-api/v1/surah/1")
     defer r.Body.Close()
     body, _ := io.ReadAll(r.Body)
     fmt.Println(string(body))

@@ -1,9 +1,9 @@
 ---
 title: "Errors"
-description: "The status-code matrix, response envelopes, and retry guidance for Etha3a API."
+description: "The status-code matrix, response envelopes, and retry guidance for Bonyan-API."
 ---
 
-Etha3a API keeps controller errors intentionally boring. Client-side mistakes
+Bonyan-API keeps controller errors intentionally boring. Client-side mistakes
 return `400` or `404`, exhausted upstream chains return `503`, and unexpected
 server bugs return `500`.
 
@@ -44,7 +44,7 @@ There is no auth layer in the current API, so normal requests do not return
 ### 400 Bad Request
 
 ```bash
-curl https://api.bonyanoss.org/etha3a/v1/surah/999
+curl https://api.bonyanoss.org/bonyan-api/v1/surah/999
 ```
 
 ```json
@@ -57,7 +57,7 @@ curl https://api.bonyanoss.org/etha3a/v1/surah/999
 ### 404 Not Found
 
 ```bash
-curl https://api.bonyanoss.org/etha3a/v1/hadith/bukhari/999999
+curl https://api.bonyanoss.org/bonyan-api/v1/hadith/bukhari/999999
 ```
 
 ```json
@@ -87,18 +87,18 @@ wrong or the resource is not available.
 <Tabs>
   <Tab title="TypeScript">
     ```ts
-    async function fetchEtha3a(url: string, attempt = 0): Promise<unknown> {
+    async function fetchBonyan(url: string, attempt = 0): Promise<unknown> {
       const res = await fetch(url);
 
       if (res.status === 429) {
         const wait = Number(res.headers.get("retry-after") ?? 1);
         await new Promise((resolve) => setTimeout(resolve, wait * 1000));
-        return fetchEtha3a(url, attempt + 1);
+        return fetchBonyan(url, attempt + 1);
       }
 
       if (res.status === 503 && attempt < 2) {
         await new Promise((resolve) => setTimeout(resolve, 500 * 2 ** attempt));
-        return fetchEtha3a(url, attempt + 1);
+        return fetchBonyan(url, attempt + 1);
       }
 
       const json = await res.json();
@@ -112,16 +112,16 @@ wrong or the resource is not available.
     import time
     import requests
 
-    def fetch_etha3a(url, attempt=0):
+    def fetch_bonyan(url, attempt=0):
         res = requests.get(url)
 
         if res.status_code == 429:
             time.sleep(int(res.headers.get("retry-after", "1")))
-            return fetch_etha3a(url, attempt + 1)
+            return fetch_bonyan(url, attempt + 1)
 
         if res.status_code == 503 and attempt < 2:
             time.sleep(0.5 * 2 ** attempt)
-            return fetch_etha3a(url, attempt + 1)
+            return fetch_bonyan(url, attempt + 1)
 
         body = res.json()
         if body.get("success") is False:

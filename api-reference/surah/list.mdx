@@ -32,12 +32,12 @@ GET /surah
 <Tabs>
   <Tab title="cURL">
     ```bash
-    curl https://api.bonyanoss.org/etha3a/v1/surah
+    curl https://api.bonyanoss.org/bonyan-api/v1/surah
     ```
   </Tab>
   <Tab title="JavaScript">
     ```js
-    const res = await fetch("https://api.bonyanoss.org/etha3a/v1/surah");
+    const res = await fetch("https://api.bonyanoss.org/bonyan-api/v1/surah");
     const body = await res.json();
     console.log(body.data.surah.length);
     ```
@@ -46,7 +46,7 @@ GET /surah
     ```python
     import requests
 
-    body = requests.get("https://api.bonyanoss.org/etha3a/v1/surah").json()
+    body = requests.get("https://api.bonyanoss.org/bonyan-api/v1/surah").json()
     print(len(body["data"]["surah"]))
     ```
   </Tab>

@@ -1,10 +1,10 @@
 ---
-title: "Etha3a API"
+title: "Bonyan API"
 description: "The BonyanOSS REST API for Quran, tafsir, recitations, azkar, hadith, prayer times, Hijri dates, and Qibla."
 mode: "wide"
 ---
 
-**Etha3a API** is the first major API surface under BonyanOSS. It is a
+**Bonyan API** is the first major API surface under BonyanOSS. It is a
 Fastify + TypeScript service that gives developers one clean interface for
 Islamic content and utilities: Quran text, surah metadata, reciters, tafsir,
 azkar, hadith, prayer times, Hijri conversion, and Qibla direction.
@@ -17,9 +17,9 @@ for clients.
 
 | Surface | URL | Role |
 | --- | --- | --- |
-| Hosted API | `api.bonyanoss.org/etha3a/v1` | Public versioned API gateway path. |
-| Docs | `docs.bonyanoss.org/etha3a` | Guides, concepts, examples, and reference. |
-| Source code | `github.com/BonyanOSS/Etha3a-API` | MIT-licensed Fastify + TypeScript implementation. |
+| Hosted API | `api.bonyanoss.org/bpnyan-api/v1` | Public versioned API gateway path. |
+| Docs | `docs.bonyanoss.org/bonyan-api` | Guides, concepts, examples, and reference. |
+| Source code | `github.com/BonyanOSS/Bonyan-API` | MIT-licensed Fastify + TypeScript implementation. |
 | Status | `status.bonyanoss.org` | Availability for public BonyanOSS services. |
 
 ## What It Provides
@@ -65,7 +65,7 @@ for clients.
 sequenceDiagram
     autonumber
     participant App as Client app
-    participant API as Etha3a API
+    participant API as Bonyan API
     participant Cache as In-process cache
     participant Primary as Primary provider
     participant Backup as Backup provider

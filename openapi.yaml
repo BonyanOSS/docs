@@ -1,10 +1,10 @@
 openapi: 3.1.0
 info:
-  title: Etha3a API
+  title: Bonyan-API
   version: "1.1.0"
   summary: Multi-source-fallback REST API for Islamic digital content.
   description: |
-    **Etha3a API** is an enterprise-grade, type-safe, open-source REST
+    **Bonyan-API** is an enterprise-grade, type-safe, open-source REST
     API for Islamic content. Content modules normalize upstream providers into
     stable response shapes, and most modules use ordered fallback chains when a
     provider fails or returns unusable data.
@@ -17,10 +17,10 @@ info:
     identifier: MIT
   contact:
     name: BonyanOSS
-    url: https://github.com/BonyanOSS/Etha3a-API
+    url: https://github.com/BonyanOSS/Bonyan-API
 
 servers:
-  - url: https://api.bonyanoss.org/etha3a/v1
+  - url: https://api.bonyanoss.org/bonyan-api/v1
     description: Public hosted instance
   - url: http://localhost:3000
     description: Local development
@@ -62,7 +62,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/Catalogue"
               example:
-                name: Etha3a-API
+                name: Bonyan-API
                 description: Quran & Azkar API with multi-source fallback
                 routes:
                   - method: GET
@@ -679,7 +679,7 @@ components:
       type: object
       required: [name, description, routes]
       properties:
-        name: { type: string, example: Etha3a-API }
+        name: { type: string, example: Bonyan-API }
         description: { type: string }
         routes:
           type: array

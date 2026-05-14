@@ -53,13 +53,13 @@ chain is the same as `GET /surah`:
 <Tabs>
   <Tab title="cURL">
     ```bash
-    curl "https://api.bonyanoss.org/etha3a/v1/surah/search?name=الفاتحة"
+    curl "https://api.bonyanoss.org/bonyan-api/v1/surah/search?name=الفاتحة"
     ```
   </Tab>
   <Tab title="JavaScript">
     ```js
     const q = encodeURIComponent("الفاتحة");
-    const r = await fetch(`https://api.bonyanoss.org/etha3a/v1/surah/search?name=${q}`);
+    const r = await fetch(`https://api.bonyanoss.org/bonyan-api/v1/surah/search?name=${q}`);
     const { data } = await r.json();
     console.log(data); // [{ id: 1, name: "الفاتحة", ... }]
     ```
@@ -67,7 +67,7 @@ chain is the same as `GET /surah`:
   <Tab title="Node.js (axios)">
     ```ts
     import axios from "axios";
-    const { data } = await axios.get("https://api.bonyanoss.org/etha3a/v1/surah/search", {
+    const { data } = await axios.get("https://api.bonyanoss.org/bonyan-api/v1/surah/search", {
       params: { name: "الفاتحة" },
     });
     console.log(data.data);
@@ -76,21 +76,21 @@ chain is the same as `GET /surah`:
   <Tab title="Python">
     ```python
     import requests
-    r = requests.get("https://api.bonyanoss.org/etha3a/v1/surah/search", params={"name": "الفاتحة"})
+    r = requests.get("https://api.bonyanoss.org/bonyan-api/v1/surah/search", params={"name": "الفاتحة"})
     print(r.json()["data"])
     ```
   </Tab>
   <Tab title="PHP">
     ```php
     <?php
-    $url = "https://api.bonyanoss.org/etha3a/v1/surah/search?name=" . urlencode("الفاتحة");
+    $url = "https://api.bonyanoss.org/bonyan-api/v1/surah/search?name=" . urlencode("الفاتحة");
     print_r(json_decode(file_get_contents($url), true)["data"]);
     ```
   </Tab>
   <Tab title="Go">
     ```go
     q := url.QueryEscape("الفاتحة")
-    r, _ := http.Get("https://api.bonyanoss.org/etha3a/v1/surah/search?name=" + q)
+    r, _ := http.Get("https://api.bonyanoss.org/bonyan-api/v1/surah/search?name=" + q)
     defer r.Body.Close()
     io.Copy(os.Stdout, r.Body)
     ```

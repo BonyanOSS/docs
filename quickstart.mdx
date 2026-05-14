@@ -1,28 +1,28 @@
 ---
 title: "Quickstart"
-description: "Make your first Etha3a API request in under a minute."
+description: "Make your first Bonyan-API request in under a minute."
 ---
 
-Etha3a API is public, open-source, and designed for straightforward
+Bonyan-API is public, open-source, and designed for straightforward
 integration. You do not need an account or API key to try it.
 
 <Info>
-  Base URL: `https://api.bonyanoss.org/etha3a/v1`
+  Base URL: `https://api.bonyanoss.org/bonyan-api/v1`
 </Info>
 
 <Steps>
   <Step title="Pick a base URL">
-    - **Hosted:** `https://api.bonyanoss.org/etha3a/v1`
+    - **Hosted:** `https://api.bonyanoss.org/bonyan-api/v1`
     - **Self-hosted:** `http://localhost:3000` when running your own API instance.
   </Step>
   <Step title="Make a request">
     <CodeGroup>
     ```bash cURL
-    curl https://api.bonyanoss.org/etha3a/v1/ayat/1
+    curl https://api.bonyanoss.org/bonyan-api/v1/ayat/1
     ```
 
     ```js JavaScript (fetch)
-    const res = await fetch("https://api.bonyanoss.org/etha3a/v1/ayat/1");
+    const res = await fetch("https://api.bonyanoss.org/bonyan-api/v1/ayat/1");
     const json = await res.json();
     console.log(json.data.aya.text);
     ```
@@ -30,20 +30,20 @@ integration. You do not need an account or API key to try it.
     ```ts Node.js (axios)
     import axios from "axios";
 
-    const { data } = await axios.get("https://api.bonyanoss.org/etha3a/v1/ayat/1");
+    const { data } = await axios.get("https://api.bonyanoss.org/bonyan-api/v1/ayat/1");
     console.log(data.data.aya.text);
     ```
 
     ```py Python (requests)
     import requests
 
-    r = requests.get("https://api.bonyanoss.org/etha3a/v1/ayat/1")
+    r = requests.get("https://api.bonyanoss.org/bonyan-api/v1/ayat/1")
     print(r.json()["data"]["aya"]["text"])
     ```
 
     ```php PHP
     <?php
-    $json = file_get_contents("https://api.bonyanoss.org/etha3a/v1/ayat/1");
+    $json = file_get_contents("https://api.bonyanoss.org/bonyan-api/v1/ayat/1");
     $data = json_decode($json, true);
     echo $data["data"]["aya"]["text"];
     ```
@@ -71,7 +71,7 @@ integration. You do not need an account or API key to try it.
     }
 
     func main() {
-        r, _ := http.Get("https://api.bonyanoss.org/etha3a/v1/ayat/1")
+        r, _ := http.Get("https://api.bonyanoss.org/bonyan-api/v1/ayat/1")
         defer r.Body.Close()
         var out Resp
         json.NewDecoder(r.Body).Decode(&out)
@@ -101,22 +101,22 @@ integration. You do not need an account or API key to try it.
 <CardGroup cols={2}>
   <Card title="List all 114 surahs" icon="book-quran">
     ```bash
-    curl https://api.bonyanoss.org/etha3a/v1/surah
+    curl https://api.bonyanoss.org/bonyan-api/v1/surah
     ```
   </Card>
   <Card title="Search Quran text" icon="magnifying-glass">
     ```bash
-    curl "https://api.bonyanoss.org/etha3a/v1/ayat/search?text=الرحمن&limit=20"
+    curl "https://api.bonyanoss.org/bonyan-api/v1/ayat/search?text=الرحمن&limit=20"
     ```
   </Card>
   <Card title="Today's prayer times in Mecca" icon="clock">
     ```bash
-    curl "https://api.bonyanoss.org/etha3a/v1/prayer/times?latitude=21.4225&longitude=39.8262"
+    curl "https://api.bonyanoss.org/bonyan-api/v1/prayer/times?latitude=21.4225&longitude=39.8262"
     ```
   </Card>
   <Card title="Qibla bearing from Riyadh" icon="compass">
     ```bash
-    curl "https://api.bonyanoss.org/etha3a/v1/qibla?latitude=24.7136&longitude=46.6753"
+    curl "https://api.bonyanoss.org/bonyan-api/v1/qibla?latitude=24.7136&longitude=46.6753"
     ```
   </Card>
 </CardGroup>
@@ -124,7 +124,7 @@ integration. You do not need an account or API key to try it.
 ## Where To Go Next
 
 <CardGroup cols={3}>
-  <Card title="Etha3a API" icon="book-quran" href="/etha3a">
+  <Card title="Bonyan-API" icon="book-quran" href="/bonyan-api">
     Understand the project surface, modules, algorithms, and API contract.
   </Card>
   <Card title="Fallback model" icon="shield-halved" href="/concepts/fallback">

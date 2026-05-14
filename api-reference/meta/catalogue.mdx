@@ -18,7 +18,7 @@ GET /
 
 ```json
 {
-  "name": "Etha3a-API",
+  "name": "Bonyan-API",
   "description": "Quran & Azkar API with multi-source fallback",
   "routes": [
     { "method": "GET", "url": "/surah" },
@@ -35,12 +35,12 @@ This endpoint does not use the standard `{ success, data }` envelope.
 <Tabs>
   <Tab title="cURL">
     ```bash
-    curl https://api.bonyanoss.org/etha3a/v1/
+    curl https://api.bonyanoss.org/bonyan-api/v1/
     ```
   </Tab>
   <Tab title="JavaScript">
     ```js
-    const res = await fetch("https://api.bonyanoss.org/etha3a/v1/");
+    const res = await fetch("https://api.bonyanoss.org/bonyan-api/v1/");
     const catalogue = await res.json();
     console.log(catalogue.routes.map((route) => route.url));
     ```
@@ -49,7 +49,7 @@ This endpoint does not use the standard `{ success, data }` envelope.
     ```python
     import requests
 
-    catalogue = requests.get("https://api.bonyanoss.org/etha3a/v1/").json()
+    catalogue = requests.get("https://api.bonyanoss.org/bonyan-api/v1/").json()
     print(catalogue["name"], len(catalogue["routes"]))
     ```
   </Tab>

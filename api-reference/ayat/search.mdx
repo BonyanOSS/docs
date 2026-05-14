@@ -54,13 +54,13 @@ GET /ayat/search?text={query}&limit={n}
 <Tabs>
   <Tab title="cURL">
     ```bash
-    curl "https://api.bonyanoss.org/etha3a/v1/ayat/search?text=الرحمن&limit=20"
+    curl "https://api.bonyanoss.org/bonyan-api/v1/ayat/search?text=الرحمن&limit=20"
     ```
   </Tab>
   <Tab title="JavaScript">
     ```js
     const params = new URLSearchParams({ text: "الرحمن", limit: "20" });
-    const res = await fetch(`https://api.bonyanoss.org/etha3a/v1/ayat/search?${params}`);
+    const res = await fetch(`https://api.bonyanoss.org/bonyan-api/v1/ayat/search?${params}`);
     const body = await res.json();
     console.log(body.total);
     ```
