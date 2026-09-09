@@ -1,0 +1,36 @@
+---
+title: "Maintain these docs"
+description: "Keep source contracts, translations and generated pages in sync."
+---
+
+## Edit the right source
+
+| Change | File |
+| --- | --- |
+| Endpoint behavior, parameters and bilingual descriptions | `scripts/api-catalog.mjs` |
+| Response fields and translated field descriptions | `scripts/api-schemas.mjs` |
+| Endpoint-page rendering | `scripts/generate-api.mjs` |
+| Guides | Matching MDX files inside `en/` and `ar/` |
+| API indexes and SDK method tables | `scripts/generate-index.mjs` |
+| Arabic layout and code direction | `styles.css` |
+| Navigation and redirects | `docs.json` |
+| Reviewed API / SDK revisions | `sources.lock.json` |
+
+Run `pnpm generate` after editing API metadata. Commit the generated OpenAPI files and endpoint pages with their sources. Do not hand-edit generated endpoint pages; the check command rejects drift.
+
+## Before a pull request
+
+```bash
+pnpm install --frozen-lockfile
+pnpm check
+pnpm build
+pnpm broken-links
+```
+
+The check command validates both OpenAPI documents, compiles MDX, checks internal links and language parity, type-checks SDK code blocks and exercises the search helper with representative responses. It does not prove that external content providers are always available.
+
+For source changes, run `node scripts/check-source.mjs /path/to/Bonyan-API /path/to/bonyan-sdk-js` against the checked-out revisions. Review changed controllers, services and types before updating the lock. Keep English and Arabic route structures identical, translate explanatory text, and preserve JSON keys and method names.
+
+Preview with `pnpm dev`. Check Arabic RTL layout, code direction, tables, mobile navigation, diagrams and a generated API page. Publishing uses the existing Mintlify project connection after the repository change is reviewed and merged.
+
+Local search requires a Mintlify login: run `pnpm exec mintlify login`. Verify search indexing again on the hosted site after publication.

@@ -1,0 +1,35 @@
+---
+title: "من الهجري إلى الميلادي"
+description: "يحوّل تاريخًا هجريًا مطلوبًا. تأتي أسماء الأشهر وأيام الأسبوع من المصدر."
+openapi: "locales/ar/openapi.yaml GET /hijri/to-gregorian"
+---
+
+## مثال الطلب
+
+<CodeGroup>
+
+```bash cURL
+curl --fail-with-body --get 'https://api.bonyanoss.org/hijri/to-gregorian' \
+  --data-urlencode 'date=01-09-1447'
+```
+
+```js JavaScript
+const url = new URL("https://api.bonyanoss.org/hijri/to-gregorian");
+url.searchParams.set("date", "01-09-1447");
+const response = await fetch(url, { signal: AbortSignal.timeout(45000) });
+if (!response.ok) throw new Error(`HTTP ${response.status}: ${await response.text()}`);
+const body = await response.json();
+console.log(body);
+```
+
+```ts SDK
+import { BonyanClient } from '@bonyanoss/bonyan-api';
+
+const client = new BonyanClient({ timeoutMs: 45000, retry: 1 });
+const result = await client.hijri.toGregorian('01-09-1447');
+console.log(result);
+```
+
+</CodeGroup>
+
+[الاستجابات والأخطاء](/locales/ar/concepts/errors) · [دليل SDK](/locales/ar/sdk/overview) · [كود المسار](https://github.com/BonyanOSS/Bonyan-API/blob/e76bc4e114f2f174bc93d0c7f90b163f0721a9f4/src/modules/hijri/hijri.controller.ts)

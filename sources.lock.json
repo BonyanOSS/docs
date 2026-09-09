@@ -1,0 +1,15 @@
+{
+    "reviewedAt": "2026-09-07",
+    "api": {
+        "repository": "https://github.com/BonyanOSS/Bonyan-API",
+        "commit": "e76bc4e114f2f174bc93d0c7f90b163f0721a9f4",
+        "version": "2.0.0"
+    },
+    "sdk": {
+        "repository": "https://github.com/BonyanOSS/bonyan-sdk-js",
+        "commit": "068e23cdbaeed8095a99c753b75412897905dd8a",
+        "package": "@bonyanoss/bonyan-api",
+        "version": "1.0.2"
+    },
+    "hostedBaseUrl": "https://api.bonyanoss.org"
+}

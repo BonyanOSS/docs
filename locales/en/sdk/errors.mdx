@@ -1,0 +1,38 @@
+---
+title: "SDK errors"
+description: "Distinguish input, HTTP and transport failures."
+---
+
+```ts
+import {
+  BonyanClient, BonyanApiError, BonyanRequestError, ValidationError,
+} from '@bonyanoss/bonyan-api';
+
+const client = new BonyanClient({ retry: 1, timeoutMs: 45000 });
+try {
+  console.log(await client.surah.getById(1));
+} catch (error) {
+  if (error instanceof ValidationError) {
+    console.error(error.field, error.message);
+  } else if (error instanceof BonyanApiError) {
+    console.error(error.status, error.code, error.requestId, error.retryAfterMs);
+  } else if (error instanceof BonyanRequestError) {
+    console.error(error.message, error.cause);
+  } else {
+    throw error;
+  }
+}
+```
+
+
+| Error class | Meaning | Fields |
+| --- | --- | --- |
+| `ValidationError` | Rejected argument before HTTP is sent. | `field`, `message` |
+| `BonyanApiError` | A non-2xx HTTP response, after configured retries. | `status`, `statusText`, `code`, `requestId`, `retryAfterMs`, `body` |
+| `BonyanRequestError` | Network/timeout failure or an unexpected response envelope. | `message`, `cause` |
+
+The package also exports `isValidationError`, `isBonyanApiError` and `isBonyanRequestError` type guards. Error metadata such as code and request ID can be absent when a proxy supplies the error.
+
+Input validation is stricter than some API controllers: SDK verse numbers within a surah are limited to 1..286, coordinates are bounded, and explicit hadith ranges are capped at 300 items. A valid SDK input can still return 404 or 503 from the server.
+
+See [retry behavior](/locales/en/concepts/rate-limit). Avoid another automatic retry loop around SDK calls unless you account for its existing attempts.

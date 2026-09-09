@@ -1,0 +1,95 @@
+---
+title: "مرجع دوال SDK"
+description: "دوال الموارد والتواقيع والأنواع المعادة."
+---
+
+جميع الدوال أدناه تُستدعى على `client` وتعيد Promise بالنوع المذكور. يشير `?` إلى معامل أو خيار اختياري؛ التواقيع في الجدول مختصرة وليست كودًا للنسخ.
+
+الأرقام أعداد JavaScript؛ الأسماء والنصوص ومعرّفات الكتب والنسخ نصوص. التاريخ بصيغة `DD-MM-YYYY`. تقبل prayer.getTimes زوج إحداثيات أو مدينة ودولة، مع date وmethod اختياريين.
+
+<Warning>
+بحث ayat وazkar في الإصدار 1.0.2 لا يطابق غلاف API الحالي. لا تعتمد على النوع المعلن دون استخدام الدالة البديلة. [بديل البحث](/locales/ar/sdk/search).
+</Warning>
+
+## تشغيل الخدمة
+
+| الدالة | نوع النتيجة | HTTP |
+| --- | --- | --- |
+| `routes()` | `BonyanRouteCatalogue` | [`GET /`](/locales/ar/api-reference/meta/catalogue) |
+| `health()` | `HealthStatus` | [`GET /health`](/locales/ar/api-reference/meta/health) |
+| `ready()` | `ReadyStatus` | [`GET /ready`](/locales/ar/api-reference/meta/ready) |
+| `metrics()` | `string` | [`GET /metrics`](/locales/ar/api-reference/meta/metrics) |
+
+## بيانات السور
+
+| الدالة | نوع النتيجة | HTTP |
+| --- | --- | --- |
+| `surah.list()` | `Surah[]` | [`GET /surah`](/locales/ar/api-reference/surah/list) |
+| `surah.getById(id)` | `Surah` | [`GET /surah/{id}`](/locales/ar/api-reference/surah/get) |
+| `surah.search(name)` | `Surah[]` | [`GET /surah/search`](/locales/ar/api-reference/surah/search) |
+
+## نص القرآن
+
+| الدالة | نوع النتيجة | HTTP |
+| --- | --- | --- |
+| `ayat.list()` | `SurahWithAyat[]` | [`GET /ayat`](/locales/ar/api-reference/ayat/all) |
+| `ayat.getById(id)` | `AyaWithSurah` | [`GET /ayat/{id}`](/locales/ar/api-reference/ayat/get-by-number) |
+| `ayat.getBySurah(surah, aya)` | `AyaWithSurah` | [`GET /ayat/{surah}/aya/{id}`](/locales/ar/api-reference/ayat/get-by-surah-aya) |
+| `ayat.search(text, { limit? }?)` | `AyatSearchResult` | [`GET /ayat/search`](/locales/ar/api-reference/ayat/search) |
+
+## القراء والصوت
+
+| الدالة | نوع النتيجة | HTTP |
+| --- | --- | --- |
+| `reciters.list()` | `Reciter[]` | [`GET /reciters`](/locales/ar/api-reference/reciters/list) |
+| `reciters.getById(id)` | `Reciter` | [`GET /reciters/{id}`](/locales/ar/api-reference/reciters/get) |
+| `reciters.search(name)` | `Reciter[]` | [`GET /reciters/search`](/locales/ar/api-reference/reciters/search) |
+| `reciters.getSurah(reciterId, surah)` | `ReciterAudio` | [`GET /reciters/{id}/surah/{surah}`](/locales/ar/api-reference/reciters/audio) |
+
+## التفسير
+
+| الدالة | نوع النتيجة | HTTP |
+| --- | --- | --- |
+| `tafsir.listEditions()` | `TafsirEdition[]` | [`GET /tafsir`](/locales/ar/api-reference/tafsir/editions) |
+| `tafsir.forSurah(edition, surah, { aya? }?)` | `TafsirItem[] \| TafsirItem` | [`GET /tafsir/{edition}/{surah}`](/locales/ar/api-reference/tafsir/surah) |
+| `tafsir.forAya(edition, surah, aya)` | `TafsirItem` | [`GET /tafsir/{edition}/{surah}/{aya}`](/locales/ar/api-reference/tafsir/aya) |
+
+## الأذكار
+
+| الدالة | نوع النتيجة | HTTP |
+| --- | --- | --- |
+| `azkar.listCategories()` | `AzkarCategorySummary[]` | [`GET /azkar`](/locales/ar/api-reference/azkar/categories) |
+| `azkar.getByCategory(category)` | `AzkarCategory` | [`GET /azkar/{category}`](/locales/ar/api-reference/azkar/category) |
+| `azkar.search(text, { limit? }?)` | `AzkarSearchResult` | [`GET /azkar/search`](/locales/ar/api-reference/azkar/search) |
+| `azkar.random()` | `{ category: string; item: AzkarItem }` | [`GET /azkar/random`](/locales/ar/api-reference/azkar/random) |
+
+## الحديث
+
+| الدالة | نوع النتيجة | HTTP |
+| --- | --- | --- |
+| `hadith.listBooks()` | `HadithBook[]` | [`GET /hadith`](/locales/ar/api-reference/hadith/books) |
+| `hadith.getBook(bookId, { from?, to? }?)` | `HadithBookContent` | [`GET /hadith/{book}`](/locales/ar/api-reference/hadith/book) |
+| `hadith.getByNumber(bookId, number)` | `HadithItem` | [`GET /hadith/{book}/{number}`](/locales/ar/api-reference/hadith/get) |
+| `hadith.random({ book? }?)` | `HadithRandomResult` | [`GET /hadith/random`](/locales/ar/api-reference/hadith/random) |
+
+## مواقيت الصلاة
+
+| الدالة | نوع النتيجة | HTTP |
+| --- | --- | --- |
+| `prayer.getTimes(options)` | `PrayerTimings` | [`GET /prayer/times`](/locales/ar/api-reference/prayer/times) |
+
+## التقويم الهجري
+
+| الدالة | نوع النتيجة | HTTP |
+| --- | --- | --- |
+| `hijri.today()` | `HijriDate` | [`GET /hijri/today`](/locales/ar/api-reference/hijri/today) |
+| `hijri.fromGregorian(date?)` | `HijriDate` | [`GET /hijri/from-gregorian`](/locales/ar/api-reference/hijri/from-gregorian) |
+| `hijri.toGregorian(date)` | `HijriDate` | [`GET /hijri/to-gregorian`](/locales/ar/api-reference/hijri/to-gregorian) |
+
+## القبلة
+
+| الدالة | نوع النتيجة | HTTP |
+| --- | --- | --- |
+| `qibla.getDirection(latitude, longitude)` | `QiblaInfo` | [`GET /qibla`](/locales/ar/api-reference/qibla/direction) |
+
+تعيد forSurah في هذا API مصفوفة دائمًا؛ تعريف SDK أوسع. تعيد دوال القوائم المصفوفة المستخرجة من الغلاف، وتعاد بيانات التشغيل مباشرة. استخدم [مرجع المسار](/locales/ar/api-reference/overview) لمعرفة الحدود وحالات الفشل.

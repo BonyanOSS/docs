@@ -1,0 +1,25 @@
+---
+title: "Operations and metrics"
+description: "Interpret probes, counters and provider failures."
+---
+
+## Probes
+
+`/health` confirms that the process responds. `/ready` reports status ready and cache counts. Neither checks upstream providers, so a green readiness response does not imply that every content endpoint works.
+
+Use a low-frequency content request in addition to probes when you need to monitor provider-backed behavior. Cached content can hide a current upstream outage until it expires. Random endpoints are not deterministic probes.
+
+## Metrics
+
+| Metric | Meaning |
+| --- | --- |
+| bonyan_api_uptime_seconds | Process uptime in seconds. |
+| bonyan_api_cache_entries | Stored entries. |
+| bonyan_api_cache_inflight | Active cache loaders. |
+| bonyan_api_upstream_requests_total | HTTP provider attempts, labeled by host and result. |
+| bonyan_api_upstream_failures_total | Failed provider attempts with the same labels. |
+| bonyan_api_upstream_duration_ms_sum | Sum of measured request durations in milliseconds. |
+
+Result labels are `ok`, `http_error` and `error`. Duration is measured by the HTTP helper around fetch, not full JSON parsing or end-to-end client latency. The duration sum is not a histogram and cannot provide latency percentiles. Counters reset with the process; provider series appear after requests occur.
+
+For a 503, log the HTTP route, status and request ID, then inspect server warnings and upstream counters. Keep monitoring requests inside the configured rate budget. There is no published availability guarantee in this reference.

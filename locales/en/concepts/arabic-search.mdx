@@ -1,0 +1,34 @@
+---
+title: "Arabic search"
+description: "Substring matching, normalization and query encoding."
+---
+
+Search matches normalized Arabic substrings. It does not rank relevance, correct spelling, translate input or provide an English search index.
+
+## Two normalization paths
+
+| Routes | Behavior |
+| --- | --- |
+| `/surah/search`, `/reciters/search`, azkar category and text search | Remove marks and non-Arabic characters; normalize common letter variants; preserve internal spaces. |
+| `/ayat/search` | Normalize Quran-specific marks and letter variants, remove tatweel, and remove spaces before matching. |
+
+Quran search converts the dagger alif to an alif and removes tatweel and spaces. The general matcher preserves internal spaces. Both normalize waw-with-hamza to waw after Unicode decomposition and mark removal. The different handling of Quran marks and spaces can still change matches across modules.
+
+<Warning>
+Latin-only or punctuation-only input can normalize to an empty string and match unrelated entries. Submit a meaningful Arabic phrase; do not treat a 200 response as proof that English search is supported.
+</Warning>
+
+## Encode Arabic queries
+
+```js
+const url = new URL('https://api.bonyanoss.org/ayat/search');
+url.searchParams.set('text', 'الرحمن');
+url.searchParams.set('limit', '10');
+const response = await fetch(url);
+if (!response.ok) throw new Error(('HTTP ' + response.status));
+const body = await response.json();
+console.log(body.total, body.data);
+```
+
+
+The server clamps verse search to 1..500 and azkar search to 1..200, with a default of 50. Zero or an unparsable limit also uses 50. The SDK validates limits more strictly. A search with no match returns 404 rather than an empty success array.

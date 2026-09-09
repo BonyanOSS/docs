@@ -1,0 +1,41 @@
+---
+title: "Qibla direction"
+description: "Returns degrees clockwise from true north. Tries Aladhan, then calculates the great-circle bearing locally."
+openapi: "locales/en/openapi.yaml GET /qibla"
+---
+
+<Warning>
+This is a geographic bearing, not a device compass reading. Magnetic declination and device orientation are outside this endpoint.
+</Warning>
+
+## Request example
+
+<CodeGroup>
+
+```bash cURL
+curl --fail-with-body --get 'https://api.bonyanoss.org/qibla' \
+  --data-urlencode 'latitude=21.4225' \
+  --data-urlencode 'longitude=39.8262'
+```
+
+```js JavaScript
+const url = new URL("https://api.bonyanoss.org/qibla");
+url.searchParams.set("latitude", "21.4225");
+url.searchParams.set("longitude", "39.8262");
+const response = await fetch(url, { signal: AbortSignal.timeout(45000) });
+if (!response.ok) throw new Error(`HTTP ${response.status}: ${await response.text()}`);
+const body = await response.json();
+console.log(body);
+```
+
+```ts SDK
+import { BonyanClient } from '@bonyanoss/bonyan-api';
+
+const client = new BonyanClient({ timeoutMs: 45000, retry: 1 });
+const result = await client.qibla.getDirection(21.4225, 39.8262);
+console.log(result);
+```
+
+</CodeGroup>
+
+[Responses and errors](/locales/en/concepts/errors) · [SDK guide](/locales/en/sdk/overview) · [Route implementation](https://github.com/BonyanOSS/Bonyan-API/blob/e76bc4e114f2f174bc93d0c7f90b163f0721a9f4/src/modules/qibla/qibla.controller.ts)

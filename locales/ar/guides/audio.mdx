@@ -1,0 +1,23 @@
+---
+title: "تشغيل تلاوة"
+description: "اختر قارئًا لديه بيانات صوت قبل طلب الرابط."
+---
+
+اجلب فهرس القراء واختر عنصرًا يحتوي خادمًا لأول مصحف. لا تفترض أن معرّف قارئ ثابت يعني الشخص نفسه عبر المصادر.
+
+```ts
+import { BonyanClient } from '@bonyanoss/bonyan-api';
+
+const client = new BonyanClient({ timeoutMs: 45000, retry: 1 });
+const reciters = await client.reciters.list();
+const reciter = reciters.find(item => item.moshaf?.[0]?.server);
+if (!reciter) throw new Error('No audio-enabled reciter is available');
+const result = await client.reciters.getSurah(reciter.id, 1);
+console.log(result.reciter, result.audio);
+```
+
+اضبط `src` لعنصر صوت HTML على الرابط المعاد في `audio` واعرض أدوات التشغيل. يعيد API نفسه JSON، بينما ينزّل المتصفح MP3 من المصدر. تعامل مع حدث الخطأ لعنصر الصوت وأتح للمستخدم اختيار قارئ آخر.
+
+يستخدم المسار أول مصحف فقط. لا يوجد معامل عام لاختيار المصحف. ينشئ `server + paddedSurah + '.mp3'` دون التحقق من الملف أو السور المتاحة في المصحف. لذلك قد ينجح طلب API ويفشل طلب MP3.
+
+قد تغيب خوادم الصوت عندما يوفر بديل quran.com الفهرس. اعرض حالة عدم توفر بدل اختراع رابط صوت. راجع [مسار الصوت](/locales/ar/api-reference/reciters/audio).

@@ -74,7 +74,7 @@ If you experience or witness behavior that violates this Code of Conduct, please
 
 Reporting contact:
 
-> TODO: Add a private reporting email, contact form, or GitHub maintainer contact before the public launch.
+> A private reporting channel has not yet been published. Do not post sensitive reports in public issues. Maintainers need to provide a private contact before accepting confidential reports through the project.
 
 When reporting, include as much relevant information as you can:
 

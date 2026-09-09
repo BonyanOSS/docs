@@ -1,0 +1,37 @@
+---
+title: "Surah audio URL"
+description: "Builds a URL from the first moshaf server and a three-digit surah number. Returns JSON, not an audio stream."
+openapi: "locales/en/openapi.yaml GET /reciters/{id}/surah/{surah}"
+---
+
+<Warning>
+The API does not verify that the MP3 exists. A reciter from quran.com may have no moshaf, causing 404. Discover a reciter with moshaf before requesting audio.
+</Warning>
+
+## Request example
+
+<CodeGroup>
+
+```bash cURL
+curl --fail-with-body 'https://api.bonyanoss.org/reciters/1/surah/1'
+```
+
+```js JavaScript
+const url = new URL("https://api.bonyanoss.org/reciters/1/surah/1");
+const response = await fetch(url, { signal: AbortSignal.timeout(45000) });
+if (!response.ok) throw new Error(`HTTP ${response.status}: ${await response.text()}`);
+const body = await response.json();
+console.log(body);
+```
+
+```ts SDK
+import { BonyanClient } from '@bonyanoss/bonyan-api';
+
+const client = new BonyanClient({ timeoutMs: 45000, retry: 1 });
+const result = await client.reciters.getSurah(1, 1);
+console.log(result);
+```
+
+</CodeGroup>
+
+[Responses and errors](/locales/en/concepts/errors) · [SDK guide](/locales/en/sdk/overview) · [Route implementation](https://github.com/BonyanOSS/Bonyan-API/blob/e76bc4e114f2f174bc93d0c7f90b163f0721a9f4/src/modules/reciters/reciters.controller.ts)

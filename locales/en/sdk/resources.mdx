@@ -1,0 +1,95 @@
+---
+title: "SDK method reference"
+description: "Resource methods, signatures and return types."
+---
+
+Every method below is called on `client` and returns a Promise of the listed type. `?` denotes an optional argument or option; table signatures are shorthand, not copyable code.
+
+Numeric arguments are JavaScript numbers; names, queries, book IDs and edition IDs are strings. Dates use `DD-MM-YYYY`. prayer.getTimes accepts coordinates or city/country, plus optional date and method.
+
+<Warning>
+The ayat and azkar search methods in 1.0.2 do not match the current API envelope. Their declared types do not make their runtime result valid. [Search adapter](/locales/en/sdk/search).
+</Warning>
+
+## Service operations
+
+| Method | Result type | HTTP |
+| --- | --- | --- |
+| `routes()` | `BonyanRouteCatalogue` | [`GET /`](/locales/en/api-reference/meta/catalogue) |
+| `health()` | `HealthStatus` | [`GET /health`](/locales/en/api-reference/meta/health) |
+| `ready()` | `ReadyStatus` | [`GET /ready`](/locales/en/api-reference/meta/ready) |
+| `metrics()` | `string` | [`GET /metrics`](/locales/en/api-reference/meta/metrics) |
+
+## Surah metadata
+
+| Method | Result type | HTTP |
+| --- | --- | --- |
+| `surah.list()` | `Surah[]` | [`GET /surah`](/locales/en/api-reference/surah/list) |
+| `surah.getById(id)` | `Surah` | [`GET /surah/{id}`](/locales/en/api-reference/surah/get) |
+| `surah.search(name)` | `Surah[]` | [`GET /surah/search`](/locales/en/api-reference/surah/search) |
+
+## Quran text
+
+| Method | Result type | HTTP |
+| --- | --- | --- |
+| `ayat.list()` | `SurahWithAyat[]` | [`GET /ayat`](/locales/en/api-reference/ayat/all) |
+| `ayat.getById(id)` | `AyaWithSurah` | [`GET /ayat/{id}`](/locales/en/api-reference/ayat/get-by-number) |
+| `ayat.getBySurah(surah, aya)` | `AyaWithSurah` | [`GET /ayat/{surah}/aya/{id}`](/locales/en/api-reference/ayat/get-by-surah-aya) |
+| `ayat.search(text, { limit? }?)` | `AyatSearchResult` | [`GET /ayat/search`](/locales/en/api-reference/ayat/search) |
+
+## Reciters and audio
+
+| Method | Result type | HTTP |
+| --- | --- | --- |
+| `reciters.list()` | `Reciter[]` | [`GET /reciters`](/locales/en/api-reference/reciters/list) |
+| `reciters.getById(id)` | `Reciter` | [`GET /reciters/{id}`](/locales/en/api-reference/reciters/get) |
+| `reciters.search(name)` | `Reciter[]` | [`GET /reciters/search`](/locales/en/api-reference/reciters/search) |
+| `reciters.getSurah(reciterId, surah)` | `ReciterAudio` | [`GET /reciters/{id}/surah/{surah}`](/locales/en/api-reference/reciters/audio) |
+
+## Tafsir
+
+| Method | Result type | HTTP |
+| --- | --- | --- |
+| `tafsir.listEditions()` | `TafsirEdition[]` | [`GET /tafsir`](/locales/en/api-reference/tafsir/editions) |
+| `tafsir.forSurah(edition, surah, { aya? }?)` | `TafsirItem[] \| TafsirItem` | [`GET /tafsir/{edition}/{surah}`](/locales/en/api-reference/tafsir/surah) |
+| `tafsir.forAya(edition, surah, aya)` | `TafsirItem` | [`GET /tafsir/{edition}/{surah}/{aya}`](/locales/en/api-reference/tafsir/aya) |
+
+## Azkar
+
+| Method | Result type | HTTP |
+| --- | --- | --- |
+| `azkar.listCategories()` | `AzkarCategorySummary[]` | [`GET /azkar`](/locales/en/api-reference/azkar/categories) |
+| `azkar.getByCategory(category)` | `AzkarCategory` | [`GET /azkar/{category}`](/locales/en/api-reference/azkar/category) |
+| `azkar.search(text, { limit? }?)` | `AzkarSearchResult` | [`GET /azkar/search`](/locales/en/api-reference/azkar/search) |
+| `azkar.random()` | `{ category: string; item: AzkarItem }` | [`GET /azkar/random`](/locales/en/api-reference/azkar/random) |
+
+## Hadith
+
+| Method | Result type | HTTP |
+| --- | --- | --- |
+| `hadith.listBooks()` | `HadithBook[]` | [`GET /hadith`](/locales/en/api-reference/hadith/books) |
+| `hadith.getBook(bookId, { from?, to? }?)` | `HadithBookContent` | [`GET /hadith/{book}`](/locales/en/api-reference/hadith/book) |
+| `hadith.getByNumber(bookId, number)` | `HadithItem` | [`GET /hadith/{book}/{number}`](/locales/en/api-reference/hadith/get) |
+| `hadith.random({ book? }?)` | `HadithRandomResult` | [`GET /hadith/random`](/locales/en/api-reference/hadith/random) |
+
+## Prayer times
+
+| Method | Result type | HTTP |
+| --- | --- | --- |
+| `prayer.getTimes(options)` | `PrayerTimings` | [`GET /prayer/times`](/locales/en/api-reference/prayer/times) |
+
+## Hijri calendar
+
+| Method | Result type | HTTP |
+| --- | --- | --- |
+| `hijri.today()` | `HijriDate` | [`GET /hijri/today`](/locales/en/api-reference/hijri/today) |
+| `hijri.fromGregorian(date?)` | `HijriDate` | [`GET /hijri/from-gregorian`](/locales/en/api-reference/hijri/from-gregorian) |
+| `hijri.toGregorian(date)` | `HijriDate` | [`GET /hijri/to-gregorian`](/locales/en/api-reference/hijri/to-gregorian) |
+
+## Qibla
+
+| Method | Result type | HTTP |
+| --- | --- | --- |
+| `qibla.getDirection(latitude, longitude)` | `QiblaInfo` | [`GET /qibla`](/locales/en/api-reference/qibla/direction) |
+
+This API always returns an array for forSurah; the SDK declaration is broader. List methods return extracted arrays, and operational methods return raw data. Consult the [HTTP reference](/locales/en/api-reference/overview) for limits and failure cases.

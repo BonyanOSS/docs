@@ -1,0 +1,13 @@
+diff --git a/dist/graph.js b/dist/graph.js
+index ba0894a10d4544b50fe054dbb2ff77204794dd15..d580cf292d527097672aface80c7dc9ddbb36d19 100644
+--- a/dist/graph.js
++++ b/dist/graph.js
+@@ -81,7 +81,7 @@ export class MdxPath {
+                 normalizedPath = join(this.relativeDir, this.filename);
+                 urlPath.pathname = normalizedPath;
+             }
+-            path = parse(normalizedPath);
++            path = parse(join(normalizedPath));
+         }
+         else {
+             try {

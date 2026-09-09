@@ -1,0 +1,19 @@
+---
+title: "Troubleshooting"
+description: "Diagnose failed requests without guessing at response shapes."
+---
+
+| Symptom | Check and action |
+| --- | --- |
+| Every hosted request returns 404 | Use `https://api.bonyanoss.org`; remove the old `/bonyan-api/v1` prefix. |
+| Tafsir returns 400 | Get edition IDs from `/tafsir`. Use `muyassar`, not `ar.muyassar`, in the path. |
+| SDK search gives undefined fields | Apply the [search helper](/locales/en/sdk/search) for SDK 1.0.2. |
+| English search returns unrelated data | Submit Arabic text. Latin-only strings can normalize to an empty match. |
+| Audio returns 404 | Choose a reciter with a first moshaf server. The fallback catalogue may omit it. |
+| Audio URL exists but playback fails | Inspect the MP3 request itself; the API only constructs the URL. |
+| Content request times out | Increase the per-attempt timeout for cold cache loads; avoid multiplying retry loops. |
+| Prayer method is absent | Inspect apiName; pray.zone fallback does not forward the Aladhan method. |
+| Health is green but content fails | Probe a content route and inspect provider errors. Health does not contact providers. |
+| Hadith book returns 503 | Check the book ID against the current catalogue before assuming an outage. |
+
+When reporting an issue, include the route and query, status, request ID, SDK version and a minimal example. State whether you used the hosted service or your own server. Report API issues in [Bonyan-API](https://github.com/BonyanOSS/Bonyan-API/issues), SDK issues in [bonyan-sdk-js](https://github.com/BonyanOSS/bonyan-sdk-js/issues), and documentation corrections in [docs](https://github.com/BonyanOSS/docs/issues).

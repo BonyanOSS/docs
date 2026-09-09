@@ -1,0 +1,25 @@
+---
+title: "Caching"
+description: "Per-process cache lifetimes and what happens on a miss."
+---
+
+The API stores successful service results in an in-memory Map. Concurrent requests for the same uncached key share one loader. Failed loads are not stored as successful entries.
+
+| Data | TTL | Cache key includes |
+| --- | --- | --- |
+| Surah catalogue | 12 hours | One shared key |
+| Full Quran | 24 hours | One shared key |
+| Reciters | 1 hour | One shared key |
+| Azkar | 24 hours | One shared key |
+| Tafsir | 24 hours | Edition, surah, optional aya |
+| Hadith book catalogue | 24 hours | One shared key |
+| Hadith range | 12 hours | Book, from, to |
+| Prayer times | 1 hour | Date, coordinates, city, country, method |
+| Hijri conversion | 7 days | Direction and date |
+| Qibla | 30 days | Coordinates |
+
+The default capacity is 1,000 entries, configurable with `CACHE_MAX_ENTRIES`. Eviction removes the oldest Map key; this is not an LRU cache. Expired entries can remain counted until replaced or evicted.
+
+The helper supports `staleWhileRevalidateMs`, but the current modules do not enable it. Normal requests wait for a refresh after expiry. Do not assume stale data will be served during an outage.
+
+Restarting clears cache state. Each replica has separate entries, limits and counters. `GET /ready` reports `cache.entries` and `cache.inflight`; it does not measure cache-hit ratio. The SDK has no response cache.

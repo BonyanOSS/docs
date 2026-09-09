@@ -1,0 +1,49 @@
+---
+title: "JavaScript and TypeScript SDK"
+description: "Install SDK 1.0.2 and understand its return values."
+---
+
+The official package is `@bonyanoss/bonyan-api`. It supports ESM and CommonJS, includes TypeScript types, and declares Node.js 22 or later. Browser applications need fetch, AbortController and URL APIs; use your application's bundler.
+
+```bash
+npm install @bonyanoss/bonyan-api@1.0.2
+```
+
+
+```ts
+import { BonyanClient, createBonyanClient } from '@bonyanoss/bonyan-api';
+
+const client = new BonyanClient({ timeoutMs: 45000, retry: 1 });
+const surahs = await client.surah.list();
+console.log(surahs[0]?.name);
+
+const local = createBonyanClient({ baseUrl: 'http://localhost:3000' });
+console.log(await local.health());
+```
+
+`createBonyanClient(options)` is equivalent to `new BonyanClient(options)`. Reuse one client for a given configuration.
+
+## Return values
+
+Most resource methods remove `{ success, data }`. List methods also extract their list: `surah.list()` returns the array at `data.surah`, and `reciters.list()` returns `data.reciters`. Do not add another `.data` access.
+
+Operational methods return their raw JSON object; `metrics()` returns text. No method sends a write request.
+
+<Warning>
+In version 1.0.2, `ayat.search()` and `azkar.search()` expect a different envelope from the current API. Their typed result can contain undefined fields at runtime. Use the [search helper](/locales/en/sdk/search) until the package fixes that mismatch.
+</Warning>
+
+## CommonJS
+
+```js
+const { BonyanClient } = require('@bonyanoss/bonyan-api');
+
+async function main() {
+  const client = new BonyanClient();
+  console.log(await client.health());
+}
+main().catch(console.error);
+```
+
+
+Continue with [configuration](/locales/en/sdk/configuration), [method reference](/locales/en/sdk/resources) or [error handling](/locales/en/sdk/errors).

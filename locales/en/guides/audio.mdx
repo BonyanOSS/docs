@@ -1,0 +1,23 @@
+---
+title: "Play a recitation"
+description: "Discover a reciter with audio metadata before requesting a URL."
+---
+
+Fetch the reciter catalogue and choose an entry with a first moshaf server. Do not assume that a hard-coded reciter ID means the same person across providers.
+
+```ts
+import { BonyanClient } from '@bonyanoss/bonyan-api';
+
+const client = new BonyanClient({ timeoutMs: 45000, retry: 1 });
+const reciters = await client.reciters.list();
+const reciter = reciters.find(item => item.moshaf?.[0]?.server);
+if (!reciter) throw new Error('No audio-enabled reciter is available');
+const result = await client.reciters.getSurah(reciter.id, 1);
+console.log(result.reciter, result.audio);
+```
+
+Set an HTML audio element's `src` to the returned `audio` URL and show playback controls. The API itself returns JSON; the browser downloads the MP3 from the provider. Handle the audio element's error event and allow the user to choose another reciter.
+
+The endpoint uses the first moshaf only. There is no public moshaf selector parameter. It constructs `server + paddedSurah + '.mp3'` and does not check the file or the moshaf's surah coverage. A successful API call can still lead to a failed MP3 request.
+
+When the quran.com fallback supplies the catalogue, audio servers may be absent. Show an unavailable state instead of inventing an audio URL. See [audio endpoint](/locales/en/api-reference/reciters/audio).

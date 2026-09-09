@@ -1,0 +1,35 @@
+---
+title: "البحث في أسماء السور"
+description: "يطابق جزءًا من الاسم بعد تطبيع العربية ويعيد مصفوفة. تعاد 404 عند غياب النتائج."
+openapi: "locales/ar/openapi.yaml GET /surah/search"
+---
+
+## مثال الطلب
+
+<CodeGroup>
+
+```bash cURL
+curl --fail-with-body --get 'https://api.bonyanoss.org/surah/search' \
+  --data-urlencode 'name=الفاتحة'
+```
+
+```js JavaScript
+const url = new URL("https://api.bonyanoss.org/surah/search");
+url.searchParams.set("name", "الفاتحة");
+const response = await fetch(url, { signal: AbortSignal.timeout(45000) });
+if (!response.ok) throw new Error(`HTTP ${response.status}: ${await response.text()}`);
+const body = await response.json();
+console.log(body);
+```
+
+```ts SDK
+import { BonyanClient } from '@bonyanoss/bonyan-api';
+
+const client = new BonyanClient({ timeoutMs: 45000, retry: 1 });
+const result = await client.surah.search('الفاتحة');
+console.log(result);
+```
+
+</CodeGroup>
+
+[الاستجابات والأخطاء](/locales/ar/concepts/errors) · [دليل SDK](/locales/ar/sdk/overview) · [كود المسار](https://github.com/BonyanOSS/Bonyan-API/blob/e76bc4e114f2f174bc93d0c7f90b163f0721a9f4/src/modules/surah/surah.controller.ts)

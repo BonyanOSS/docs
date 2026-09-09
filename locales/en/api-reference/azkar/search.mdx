@@ -1,0 +1,33 @@
+---
+title: "Search azkar text"
+description: "Returns {success, total, data: [...]}, with category and item for each hit. total is the number returned, capped by limit."
+openapi: "locales/en/openapi.yaml GET /azkar/search"
+---
+
+<Warning>
+SDK 1.0.2 has an envelope mismatch in client.azkar.search(). Use fetch or the compatibility helper in the SDK guide.
+</Warning>
+
+## Request example
+
+<CodeGroup>
+
+```bash cURL
+curl --fail-with-body --get 'https://api.bonyanoss.org/azkar/search' \
+  --data-urlencode 'text=الله' \
+  --data-urlencode 'limit=10'
+```
+
+```js JavaScript
+const url = new URL("https://api.bonyanoss.org/azkar/search");
+url.searchParams.set("text", "الله");
+url.searchParams.set("limit", "10");
+const response = await fetch(url, { signal: AbortSignal.timeout(45000) });
+if (!response.ok) throw new Error(`HTTP ${response.status}: ${await response.text()}`);
+const body = await response.json();
+console.log(body);
+```
+
+</CodeGroup>
+
+[Responses and errors](/locales/en/concepts/errors) · [SDK guide](/locales/en/sdk/overview) · [Route implementation](https://github.com/BonyanOSS/Bonyan-API/blob/e76bc4e114f2f174bc93d0c7f90b163f0721a9f4/src/modules/azkar/azkar.controller.ts)

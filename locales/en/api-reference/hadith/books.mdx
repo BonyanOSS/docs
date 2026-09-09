@@ -1,0 +1,33 @@
+---
+title: "Hadith books"
+description: "Returns book IDs, names and available counts from the active provider. Discover IDs here instead of assuming a fixed list."
+openapi: "locales/en/openapi.yaml GET /hadith"
+---
+
+## Request example
+
+<CodeGroup>
+
+```bash cURL
+curl --fail-with-body 'https://api.bonyanoss.org/hadith'
+```
+
+```js JavaScript
+const url = new URL("https://api.bonyanoss.org/hadith");
+const response = await fetch(url, { signal: AbortSignal.timeout(45000) });
+if (!response.ok) throw new Error(`HTTP ${response.status}: ${await response.text()}`);
+const body = await response.json();
+console.log(body);
+```
+
+```ts SDK
+import { BonyanClient } from '@bonyanoss/bonyan-api';
+
+const client = new BonyanClient({ timeoutMs: 45000, retry: 1 });
+const result = await client.hadith.listBooks();
+console.log(result);
+```
+
+</CodeGroup>
+
+[Responses and errors](/locales/en/concepts/errors) · [SDK guide](/locales/en/sdk/overview) · [Route implementation](https://github.com/BonyanOSS/Bonyan-API/blob/e76bc4e114f2f174bc93d0c7f90b163f0721a9f4/src/modules/hadith/hadith.controller.ts)

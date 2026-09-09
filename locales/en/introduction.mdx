@@ -1,0 +1,29 @@
+---
+title: "Build with Bonyan"
+description: "Quran and Islamic content through an HTTP API and a JavaScript SDK."
+---
+
+Bonyan API gives your application access to Quran text, tafsir, reciters, azkar, hadith, prayer times, Hijri dates and Qibla direction. The JavaScript and TypeScript SDK wraps the same HTTP endpoints.
+
+<CardGroup cols={2}>
+  <Card title="Make a first request" icon="terminal" href="/locales/en/quickstart">Fetch a verse, read the response and handle errors.</Card>
+  <Card title="Use the JavaScript SDK" icon="js" href="/locales/en/sdk/overview">Install the package and choose the methods you need.</Card>
+  <Card title="API reference" icon="code" href="/locales/en/api-reference/overview">Parameters, response fields and examples for every route.</Card>
+  <Card title="Run your own API" icon="server" href="/locales/en/guides/self-hosting">Configure the server, build it and check its health.</Card>
+</CardGroup>
+
+## Choose an interface
+
+| Interface | Use it when |
+| --- | --- |
+| HTTP API | Your application uses any language with an HTTP client. |
+| JavaScript SDK | You want typed methods, validation, timeouts and retries in Node.js or a browser application. |
+| Self-hosted API | You need to control deployment, limits and provider configuration. |
+
+The public base URL is `https://api.bonyanoss.org`. These routes require no API key in the reviewed implementation. The default server limit is 120 requests per minute per IP; a deployment can change it.
+
+## English and Arabic
+
+Use the language selector to switch the documentation and navigation. API paths, SDK method names and JSON keys stay the same. Choosing English documentation does **not** translate Quran text, tafsir or hadith. The API has no general `lang` query parameter.
+
+These docs cover API source version 2.0.0 and SDK 1.0.2. See [source revisions and known differences](/locales/en/guides/source-status).
