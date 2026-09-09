@@ -1,6 +1,6 @@
 allowBuilds:
     keytar: false
     puppeteer: false
-    sharp: false
+    sharp: true
 patchedDependencies:
     "@mintlify/link-rot@3.0.1334": patches/@mintlify__link-rot@3.0.1334.patch
