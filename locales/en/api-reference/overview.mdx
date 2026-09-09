@@ -1,0 +1,89 @@
+---
+title: "API reference"
+description: "Every HTTP route with parameters and response schemas."
+---
+
+Base URL: `https://api.bonyanoss.org`. Every route below uses GET. No API key is required by the current implementation. Open an endpoint to try a request and inspect parameters and response fields.
+
+[Download English OpenAPI](/locales/en/openapi.yaml) · [Error guide](/locales/en/concepts/errors)
+
+## Service operations
+
+| Route | Reference |
+| --- | --- |
+| `GET /` | [Route catalogue](/locales/en/api-reference/meta/catalogue) |
+| `GET /health` | [Liveness](/locales/en/api-reference/meta/health) |
+| `GET /ready` | [Readiness and cache](/locales/en/api-reference/meta/ready) |
+| `GET /metrics` | [Prometheus metrics](/locales/en/api-reference/meta/metrics) |
+
+## Surah metadata
+
+| Route | Reference |
+| --- | --- |
+| `GET /surah` | [List surahs](/locales/en/api-reference/surah/list) |
+| `GET /surah/{id}` | [Get a surah](/locales/en/api-reference/surah/get) |
+| `GET /surah/search` | [Search surah names](/locales/en/api-reference/surah/search) |
+
+## Quran text
+
+| Route | Reference |
+| --- | --- |
+| `GET /ayat` | [Full Quran text](/locales/en/api-reference/ayat/all) |
+| `GET /ayat/{id}` | [Aya by global number](/locales/en/api-reference/ayat/get-by-number) |
+| `GET /ayat/{surah}/aya/{id}` | [Aya within a surah](/locales/en/api-reference/ayat/get-by-surah-aya) |
+| `GET /ayat/search` | [Search Quran text](/locales/en/api-reference/ayat/search) |
+
+## Reciters and audio
+
+| Route | Reference |
+| --- | --- |
+| `GET /reciters` | [List reciters](/locales/en/api-reference/reciters/list) |
+| `GET /reciters/{id}` | [Get a reciter](/locales/en/api-reference/reciters/get) |
+| `GET /reciters/search` | [Search reciter names](/locales/en/api-reference/reciters/search) |
+| `GET /reciters/{id}/surah/{surah}` | [Surah audio URL](/locales/en/api-reference/reciters/audio) |
+
+## Tafsir
+
+| Route | Reference |
+| --- | --- |
+| `GET /tafsir` | [Tafsir editions](/locales/en/api-reference/tafsir/editions) |
+| `GET /tafsir/{edition}/{surah}` | [Tafsir for a surah](/locales/en/api-reference/tafsir/surah) |
+| `GET /tafsir/{edition}/{surah}/{aya}` | [Tafsir for an aya](/locales/en/api-reference/tafsir/aya) |
+
+## Azkar
+
+| Route | Reference |
+| --- | --- |
+| `GET /azkar` | [Azkar categories](/locales/en/api-reference/azkar/categories) |
+| `GET /azkar/{category}` | [Azkar in a category](/locales/en/api-reference/azkar/category) |
+| `GET /azkar/search` | [Search azkar text](/locales/en/api-reference/azkar/search) |
+| `GET /azkar/random` | [Random zekr](/locales/en/api-reference/azkar/random) |
+
+## Hadith
+
+| Route | Reference |
+| --- | --- |
+| `GET /hadith` | [Hadith books](/locales/en/api-reference/hadith/books) |
+| `GET /hadith/{book}` | [Hadith range](/locales/en/api-reference/hadith/book) |
+| `GET /hadith/{book}/{number}` | [Get a hadith](/locales/en/api-reference/hadith/get) |
+| `GET /hadith/random` | [Random hadith](/locales/en/api-reference/hadith/random) |
+
+## Prayer times
+
+| Route | Reference |
+| --- | --- |
+| `GET /prayer/times` | [Prayer times](/locales/en/api-reference/prayer/times) |
+
+## Hijri calendar
+
+| Route | Reference |
+| --- | --- |
+| `GET /hijri/today` | [Today in both calendars](/locales/en/api-reference/hijri/today) |
+| `GET /hijri/from-gregorian` | [Gregorian to Hijri](/locales/en/api-reference/hijri/from-gregorian) |
+| `GET /hijri/to-gregorian` | [Hijri to Gregorian](/locales/en/api-reference/hijri/to-gregorian) |
+
+## Qibla
+
+| Route | Reference |
+| --- | --- |
+| `GET /qibla` | [Qibla direction](/locales/en/api-reference/qibla/direction) |

@@ -1,0 +1,45 @@
+---
+title: "Prayer times"
+description: "Provide latitude + longitude or city + country. With both pairs, Aladhan coordinates are tried before Aladhan city lookup."
+openapi: "locales/en/openapi.yaml GET /prayer/times"
+---
+
+<Warning>
+pray.zone fallback is available only for coordinate requests dated today on the API server. It does not receive method, and may omit method and coordinates. Inspect apiName before assuming identical calculation settings. This controller validates numeric coordinates but does not enforce geographic bounds; SDK validation does.
+</Warning>
+
+## Request example
+
+<CodeGroup>
+
+```bash cURL
+curl --fail-with-body --get 'https://api.bonyanoss.org/prayer/times' \
+  --data-urlencode 'date=01-01-2026' \
+  --data-urlencode 'latitude=21.4225' \
+  --data-urlencode 'longitude=39.8262' \
+  --data-urlencode 'method=4'
+```
+
+```js JavaScript
+const url = new URL("https://api.bonyanoss.org/prayer/times");
+url.searchParams.set("date", "01-01-2026");
+url.searchParams.set("latitude", "21.4225");
+url.searchParams.set("longitude", "39.8262");
+url.searchParams.set("method", "4");
+const response = await fetch(url, { signal: AbortSignal.timeout(45000) });
+if (!response.ok) throw new Error(`HTTP ${response.status}: ${await response.text()}`);
+const body = await response.json();
+console.log(body);
+```
+
+```ts SDK
+import { BonyanClient } from '@bonyanoss/bonyan-api';
+
+const client = new BonyanClient({ timeoutMs: 45000, retry: 1 });
+const result = await client.prayer.getTimes({ latitude: 21.4225, longitude: 39.8262, method: 4 });
+console.log(result);
+```
+
+</CodeGroup>
+
+[Responses and errors](/locales/en/concepts/errors) · [SDK guide](/locales/en/sdk/overview) · [Route implementation](https://github.com/BonyanOSS/Bonyan-API/blob/e76bc4e114f2f174bc93d0c7f90b163f0721a9f4/src/modules/prayer/prayer.controller.ts)

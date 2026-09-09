@@ -1,0 +1,27 @@
+---
+title: "Sources and compatibility"
+description: "Reviewed revisions, hosted behavior and known implementation differences."
+---
+
+This documentation was reviewed on 7 September 2026 against:
+
+| Source | Version | Immutable revision |
+| --- | --- | --- |
+| Bonyan API | 2.0.0 | [e76bc4e](https://github.com/BonyanOSS/Bonyan-API/tree/e76bc4e114f2f174bc93d0c7f90b163f0721a9f4) |
+| JavaScript SDK | 1.0.2 | [068e23c](https://github.com/BonyanOSS/bonyan-sdk-js/tree/068e23cdbaeed8095a99c753b75412897905dd8a) |
+
+The hosted `/health` and `/ready` routes responded at the root origin during the review. They do not expose a source revision, so these docs do not claim that the deployment matches the repository commit exactly. The package version 2.0.0 is not a `/v2` URL prefix.
+
+## Known differences
+
+| Area | Current behavior |
+| --- | --- |
+| SDK search | The SDK expects a nested search envelope; the server returns a flat one. Use [the adapter](/locales/en/sdk/search). |
+| Tafsir IDs | Public IDs are `muyassar`, `jalalayn`, `saadi`, `waseet` and `qurtubi`. Response edition values are provider IDs. |
+| Tafsir types | SDK forSurah declares an object-or-array union; this API controller returns an array, even with the aya query. |
+| Hadith range | API accepts a difference of 300, meaning 301 inclusive items. SDK checks a 300-item maximum when both bounds are present. |
+| Search language | Latin-only queries can normalize to empty. English/fuzzy search claims are not supported by the controller. |
+| Prayer fallback | pray.zone is used only for today's coordinate requests and does not receive method. |
+| Readiness | Reports process and cache state, not upstream readiness. |
+
+These are documentation findings, not fixes to the API or SDK repositories. The OpenAPI files describe the reviewed controllers and types; they are maintained here because the API repository's current specification omits detailed response schemas.

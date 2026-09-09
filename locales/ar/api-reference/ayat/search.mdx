@@ -1,0 +1,33 @@
+---
+title: "البحث في نص القرآن"
+description: "يعيد {success, total, data: [...]}. يحسب total النتائج المعادة بعد تطبيق الحد، وليس جميع التطابقات في القرآن."
+openapi: "locales/ar/openapi.yaml GET /ayat/search"
+---
+
+<Warning>
+توجد مشكلة في فك الاستجابة داخل client.ayat.search() في SDK 1.0.2. استخدم مثال fetch هنا أو الدالة البديلة في دليل SDK.
+</Warning>
+
+## مثال الطلب
+
+<CodeGroup>
+
+```bash cURL
+curl --fail-with-body --get 'https://api.bonyanoss.org/ayat/search' \
+  --data-urlencode 'text=الرحمن' \
+  --data-urlencode 'limit=10'
+```
+
+```js JavaScript
+const url = new URL("https://api.bonyanoss.org/ayat/search");
+url.searchParams.set("text", "الرحمن");
+url.searchParams.set("limit", "10");
+const response = await fetch(url, { signal: AbortSignal.timeout(45000) });
+if (!response.ok) throw new Error(`HTTP ${response.status}: ${await response.text()}`);
+const body = await response.json();
+console.log(body);
+```
+
+</CodeGroup>
+
+[الاستجابات والأخطاء](/locales/ar/concepts/errors) · [دليل SDK](/locales/ar/sdk/overview) · [كود المسار](https://github.com/BonyanOSS/Bonyan-API/blob/e76bc4e114f2f174bc93d0c7f90b163f0721a9f4/src/modules/ayat/ayat.controller.ts)

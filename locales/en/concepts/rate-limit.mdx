@@ -1,0 +1,23 @@
+---
+title: "Rate limits and retries"
+description: "Budget requests and configure retry behavior."
+---
+
+The server defaults to 120 requests per IP in a one-minute window. `RATE_LIMIT_MAX` and `RATE_LIMIT_WINDOW` can change this in a self-hosted deployment. The limit applies globally, including operational routes.
+
+Treat an HTTP 429 as a request to wait. Respect `Retry-After` when present. Do not retry 400 or 404 unchanged. A cache hit still consumes an incoming API request.
+
+SDK 1.0.2 retries HTTP 429, HTTP 5xx and network/timeout errors. Its default `retry: 3` allows four total attempts. Without `Retry-After`, retry delays are 100, 200 and 400 milliseconds plus 0..99 milliseconds of jitter. A provided retry header overrides this backoff.
+
+Use one retry policy in your application. Wrapping SDK calls in another retry loop multiplies attempts. The timeout is per attempt and is not a total operation deadline.
+
+```ts
+import { BonyanClient } from '@bonyanoss/bonyan-api';
+
+const client = new BonyanClient({ timeoutMs: 45000, retry: 1 });
+const health = await client.health();
+console.log(health.status);
+```
+
+
+For your own server behind a trusted reverse proxy, review `TRUST_PROXY` before relying on per-user IP limits. See [self-hosting](/locales/en/guides/self-hosting).

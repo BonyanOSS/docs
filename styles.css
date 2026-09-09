@@ -1,0 +1,32 @@
+/* Mintlify sets lang but the local renderer does not consistently set dir. */
+html[lang="ar"] {
+    font-family: Tahoma, Arial, sans-serif;
+}
+html[lang="ar"]
+    :is(#header, #content, .mdx-content, #mobile-nav, #sidebar-content, #table-of-contents-content, #footer, #pagination, .nav-tabs-item) {
+    direction: rtl;
+    text-align: right;
+}
+html[lang="ar"] :is(#content, .mdx-content) :is(ul, ol) {
+    padding-left: 0;
+    padding-right: 1.5em;
+}
+html[lang="ar"] :is(#content, .mdx-content) :is(th, td) {
+    text-align: right;
+}
+/* HTTP paths, source examples and diagram geometry stay left to right. */
+html[lang="ar"] :is(pre, .code-block, .code-group, .mermaid, [data-language], #request-example, #response-example) {
+    direction: ltr;
+    text-align: left;
+}
+html[lang="ar"] :not(pre) > code {
+    direction: ltr;
+    unicode-bidi: isolate;
+}
+html[lang="ar"] .mermaid .nodeLabel {
+    direction: rtl;
+    unicode-bidi: plaintext;
+}
+.mermaid {
+    overflow-x: auto;
+}

@@ -1,0 +1,44 @@
+---
+title: "الاستجابات والأخطاء"
+description: "غلاف النجاح وأعداد نتائج البحث والأخطاء المنظمة."
+---
+
+## أشكال النجاح
+
+| مجموعة المسارات | استجابة HTTP الخام |
+| --- | --- |
+| معظم مسارات المحتوى | `{ success: true, data: ... }` |
+| `/ayat/search` و`/azkar/search` | `{ success: true, total: number, data: [...] }` |
+| `/` و`/health` و`/ready` | كائن JSON مباشر دون غلاف نجاح. |
+| `/metrics` | نص Prometheus وليس JSON. |
+
+يحسب `total` عدد العناصر المعادة بعد تطبيق `limit`. لا يمثل عدد التطابقات في المحتوى كاملًا، ولا يوجد معامل offset أو cursor.
+
+## شكل الفشل
+
+هذا مثال توضيحي لاستجابة 400؛ يتغير معرّف الطلب لكل طلب.
+
+```json
+{
+  "success": false,
+  "message": "Surah id must be between 1 and 114",
+  "error": {
+    "code": "BAD_REQUEST",
+    "message": "Surah id must be between 1 and 114",
+    "requestId": "req-example"
+  }
+}
+```
+
+
+| حالة HTTP | الرمز المعتاد | الإجراء |
+| --- | --- | --- |
+| 400 | `BAD_REQUEST` | صحح الإدخال قبل إعادة المحاولة. |
+| 404 | `NOT_FOUND` | تحقق من المعرّف أو اعرض حالة بحث بلا نتائج. |
+| 429 | `RATE_LIMITED` | انتظر وفق `Retry-After` عند وجودها. |
+| 503 | `ALL_SOURCES_FAILED` | أعد المحاولة بعد انتظار محدود أو اعرض عدم التوفر المؤقت. |
+| 500 | `INTERNAL_SERVER_ERROR` | سجّل معرّف الطلب وأبلغ عن خطوات تكرار المشكلة. |
+
+تستخدم بعض حالات 503 المباشرة، مثل تعذر جلب حديث عشوائي، الرمز `INTERNAL_SERVER_ERROR` حاليًا. تعامل مع حالة HTTP إلى جانب الرمز. قد يتحول معرّف كتاب مجهول إلى 503 بعد فشل المصادر بدل 404. وقد يعيد البروكسي أخطاء بصيغة غير JSON.
+
+يوفر SDK الحقول `status` و`code` و`requestId` و`retryAfterMs` ضمن `BonyanApiError`. راجع [أخطاء SDK](/locales/ar/sdk/errors).

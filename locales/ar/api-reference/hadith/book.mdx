@@ -1,0 +1,41 @@
+---
+title: "نطاق أحاديث"
+description: "يعيد book وavailable وhadiths داخل data. طرفا النطاق مشمولان؛ from الافتراضي 1 وto الافتراضي from + 29."
+openapi: "locales/ar/openapi.yaml GET /hadith/{book}"
+---
+
+<Warning>
+يرفض API حاليًا to - from > 300، فيقبل 301 عنصرًا عند شمول الطرفين. يرفض SDK 1.0.2 أكثر من 300 عند إرسال الطرفين. استخدم 300 أو أقل للتوافق. قد يعيد النطاق الفارغ 200 مع hadiths: [].
+</Warning>
+
+## مثال الطلب
+
+<CodeGroup>
+
+```bash cURL
+curl --fail-with-body --get 'https://api.bonyanoss.org/hadith/bukhari' \
+  --data-urlencode 'from=1' \
+  --data-urlencode 'to=30'
+```
+
+```js JavaScript
+const url = new URL("https://api.bonyanoss.org/hadith/bukhari");
+url.searchParams.set("from", "1");
+url.searchParams.set("to", "30");
+const response = await fetch(url, { signal: AbortSignal.timeout(45000) });
+if (!response.ok) throw new Error(`HTTP ${response.status}: ${await response.text()}`);
+const body = await response.json();
+console.log(body);
+```
+
+```ts SDK
+import { BonyanClient } from '@bonyanoss/bonyan-api';
+
+const client = new BonyanClient({ timeoutMs: 45000, retry: 1 });
+const result = await client.hadith.getBook('bukhari', { from: 1, to: 30 });
+console.log(result);
+```
+
+</CodeGroup>
+
+[الاستجابات والأخطاء](/locales/ar/concepts/errors) · [دليل SDK](/locales/ar/sdk/overview) · [كود المسار](https://github.com/BonyanOSS/Bonyan-API/blob/e76bc4e114f2f174bc93d0c7f90b163f0721a9f4/src/modules/hadith/hadith.controller.ts)

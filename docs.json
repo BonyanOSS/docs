@@ -1,340 +1,597 @@
 {
-  "$schema": "https://mintlify.com/docs.json",
-  "theme": "palm",
-  "name": "BonyanOSS Docs",
-  "description": "Developer documentation for BonyanOSS, an open-source initiative building Islamic and beneficial software.",
-  "colors": {
-    "primary": "#10B981",
-    "light": "#34D399",
-    "dark": "#059669"
-  },
-  "favicon": "/favicon.svg",
-  "appearance": {
-    "default": "dark",
-    "strict": false
-  },
-  "background": {
-    "color": {
-      "light": "#FFFFFF",
-      "dark": "#071C1A"
+    "$schema": "https://mintlify.com/docs.json",
+    "theme": "mint",
+    "name": "Bonyan",
+    "description": "Bonyan API and JavaScript SDK documentation in English and Arabic.",
+    "colors": {
+        "primary": "#087F67",
+        "light": "#10B981",
+        "dark": "#0F766E"
     },
-    "decoration": "gradient"
-  },
-  "fonts": {
-    "heading": {
-      "family": "Geist",
-      "weight": 650
+    "favicon": "/assets/favicon.svg",
+    "appearance": {
+        "default": "system",
+        "strict": false
     },
-    "body": {
-      "family": "Inter",
-      "weight": 400
-    }
-  },
-  "styling": {
-    "codeblocks": "system",
-    "eyebrows": "breadcrumbs"
-  },
-  "interaction": {
-    "drilldown": false
-  },
-  "contextual": {
-    "options": [
-      "copy",
-      "view",
-      "chatgpt",
-      "claude",
-      "perplexity"
-    ]
-  },
-  "logo": {
-    "light": "/favicon.svg",
-    "dark": "/favicon.svg",
-    "href": "/"
-  },
-  "frame": {
-    "light": "/frame/light.svg",
-    "dark": "/frame/dark.svg",
-    "href": "/"
-  },
-  "navbar": {
-    "links": [
-      {
-        "label": "Main Site",
-        "href": "https://bonyanoss.org"
-      },
-      {
-        "label": "Status",
-        "href": "https://status.bonyanoss.org"
-      },
-      {
-        "label": "GitHub",
-        "href": "https://github.com/BonyanOSS"
-      }
-    ],
-    "primary": {
-      "type": "button",
-      "label": "Start Building",
-      "href": "/quickstart"
-    }
-  },
-  "navigation": {
-    "global": {
-      "anchors": [
+    "logo": {
+        "light": "/assets/favicon.svg",
+        "dark": "/assets/favicon.svg",
+        "href": "/"
+    },
+    "styling": {
+        "codeblocks": "system"
+    },
+    "navigation": {
+        "languages": [
+            {
+                "language": "en",
+                "navbar": {
+                    "links": [
+                        {
+                            "label": "Project",
+                            "href": "https://github.com/BonyanOSS"
+                        }
+                    ]
+                },
+                "footer": {
+                    "socials": {
+                        "github": "https://github.com/BonyanOSS"
+                    },
+                    "links": [
+                        {
+                            "header": "Contribute",
+                            "items": [
+                                {
+                                    "label": "Contributing",
+                                    "href": "/locales/en/contributing"
+                                },
+                                {
+                                    "label": "Community conduct",
+                                    "href": "/locales/en/code-of-conduct"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "tabs": [
+                    {
+                        "tab": "Guides",
+                        "icon": "book-open",
+                        "groups": [
+                            {
+                                "group": "Start here",
+                                "pages": ["locales/en/introduction", "locales/en/quickstart", "locales/en/concepts/architecture"]
+                            },
+                            {
+                                "group": "API behavior",
+                                "pages": [
+                                    "locales/en/concepts/errors",
+                                    "locales/en/concepts/arabic-search",
+                                    "locales/en/concepts/fallback",
+                                    "locales/en/concepts/caching",
+                                    "locales/en/concepts/rate-limit"
+                                ]
+                            },
+                            {
+                                "group": "Build and operate",
+                                "pages": [
+                                    "locales/en/guides/audio",
+                                    "locales/en/guides/self-hosting",
+                                    "locales/en/guides/operations",
+                                    "locales/en/guides/troubleshooting"
+                                ]
+                            },
+                            {
+                                "group": "Project and maintenance",
+                                "pages": [
+                                    "locales/en/guides/source-status",
+                                    "locales/en/contributing",
+                                    "locales/en/code-of-conduct",
+                                    "locales/en/guides/maintenance"
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "tab": "JavaScript SDK",
+                        "icon": "js",
+                        "groups": [
+                            {
+                                "group": "SDK",
+                                "pages": [
+                                    "locales/en/sdk/overview",
+                                    "locales/en/sdk/configuration",
+                                    "locales/en/sdk/resources",
+                                    "locales/en/sdk/errors",
+                                    "locales/en/sdk/search"
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "tab": "API reference",
+                        "icon": "code",
+                        "groups": [
+                            {
+                                "group": "Reference",
+                                "pages": ["locales/en/api-reference/overview"]
+                            },
+                            {
+                                "group": "Service operations",
+                                "pages": [
+                                    "locales/en/api-reference/meta/overview",
+                                    "locales/en/api-reference/meta/catalogue",
+                                    "locales/en/api-reference/meta/health",
+                                    "locales/en/api-reference/meta/ready",
+                                    "locales/en/api-reference/meta/metrics"
+                                ]
+                            },
+                            {
+                                "group": "Surahs",
+                                "pages": [
+                                    "locales/en/api-reference/surah/overview",
+                                    "locales/en/api-reference/surah/list",
+                                    "locales/en/api-reference/surah/get",
+                                    "locales/en/api-reference/surah/search"
+                                ]
+                            },
+                            {
+                                "group": "Ayat",
+                                "pages": [
+                                    "locales/en/api-reference/ayat/overview",
+                                    "locales/en/api-reference/ayat/all",
+                                    "locales/en/api-reference/ayat/get-by-number",
+                                    "locales/en/api-reference/ayat/get-by-surah-aya",
+                                    "locales/en/api-reference/ayat/search"
+                                ]
+                            },
+                            {
+                                "group": "Reciters",
+                                "pages": [
+                                    "locales/en/api-reference/reciters/overview",
+                                    "locales/en/api-reference/reciters/list",
+                                    "locales/en/api-reference/reciters/get",
+                                    "locales/en/api-reference/reciters/search",
+                                    "locales/en/api-reference/reciters/audio"
+                                ]
+                            },
+                            {
+                                "group": "Tafsir",
+                                "pages": [
+                                    "locales/en/api-reference/tafsir/overview",
+                                    "locales/en/api-reference/tafsir/editions",
+                                    "locales/en/api-reference/tafsir/surah",
+                                    "locales/en/api-reference/tafsir/aya"
+                                ]
+                            },
+                            {
+                                "group": "Azkar",
+                                "pages": [
+                                    "locales/en/api-reference/azkar/overview",
+                                    "locales/en/api-reference/azkar/categories",
+                                    "locales/en/api-reference/azkar/category",
+                                    "locales/en/api-reference/azkar/search",
+                                    "locales/en/api-reference/azkar/random"
+                                ]
+                            },
+                            {
+                                "group": "Hadith",
+                                "pages": [
+                                    "locales/en/api-reference/hadith/overview",
+                                    "locales/en/api-reference/hadith/books",
+                                    "locales/en/api-reference/hadith/book",
+                                    "locales/en/api-reference/hadith/get",
+                                    "locales/en/api-reference/hadith/random"
+                                ]
+                            },
+                            {
+                                "group": "Prayer",
+                                "pages": ["locales/en/api-reference/prayer/overview", "locales/en/api-reference/prayer/times"]
+                            },
+                            {
+                                "group": "Hijri",
+                                "pages": [
+                                    "locales/en/api-reference/hijri/overview",
+                                    "locales/en/api-reference/hijri/today",
+                                    "locales/en/api-reference/hijri/from-gregorian",
+                                    "locales/en/api-reference/hijri/to-gregorian"
+                                ]
+                            },
+                            {
+                                "group": "Qibla",
+                                "pages": ["locales/en/api-reference/qibla/overview", "locales/en/api-reference/qibla/direction"]
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "language": "ar",
+                "navbar": {
+                    "links": [
+                        {
+                            "label": "المشروع",
+                            "href": "https://github.com/BonyanOSS"
+                        }
+                    ]
+                },
+                "footer": {
+                    "socials": {
+                        "github": "https://github.com/BonyanOSS"
+                    },
+                    "links": [
+                        {
+                            "header": "المساهمة",
+                            "items": [
+                                {
+                                    "label": "المساهمة",
+                                    "href": "/locales/ar/contributing"
+                                },
+                                {
+                                    "label": "سلوك المجتمع",
+                                    "href": "/locales/ar/code-of-conduct"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "tabs": [
+                    {
+                        "tab": "الأدلة",
+                        "icon": "book-open",
+                        "groups": [
+                            {
+                                "group": "ابدأ هنا",
+                                "pages": ["locales/ar/introduction", "locales/ar/quickstart", "locales/ar/concepts/architecture"]
+                            },
+                            {
+                                "group": "سلوك API",
+                                "pages": [
+                                    "locales/ar/concepts/errors",
+                                    "locales/ar/concepts/arabic-search",
+                                    "locales/ar/concepts/fallback",
+                                    "locales/ar/concepts/caching",
+                                    "locales/ar/concepts/rate-limit"
+                                ]
+                            },
+                            {
+                                "group": "التطوير والتشغيل",
+                                "pages": [
+                                    "locales/ar/guides/audio",
+                                    "locales/ar/guides/self-hosting",
+                                    "locales/ar/guides/operations",
+                                    "locales/ar/guides/troubleshooting"
+                                ]
+                            },
+                            {
+                                "group": "المشروع والصيانة",
+                                "pages": [
+                                    "locales/ar/guides/source-status",
+                                    "locales/ar/contributing",
+                                    "locales/ar/code-of-conduct",
+                                    "locales/ar/guides/maintenance"
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "tab": "مكتبة JavaScript",
+                        "icon": "js",
+                        "groups": [
+                            {
+                                "group": "المكتبة",
+                                "pages": [
+                                    "locales/ar/sdk/overview",
+                                    "locales/ar/sdk/configuration",
+                                    "locales/ar/sdk/resources",
+                                    "locales/ar/sdk/errors",
+                                    "locales/ar/sdk/search"
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "tab": "مرجع API",
+                        "icon": "code",
+                        "groups": [
+                            {
+                                "group": "المرجع",
+                                "pages": ["locales/ar/api-reference/overview"]
+                            },
+                            {
+                                "group": "تشغيل الخدمة",
+                                "pages": [
+                                    "locales/ar/api-reference/meta/overview",
+                                    "locales/ar/api-reference/meta/catalogue",
+                                    "locales/ar/api-reference/meta/health",
+                                    "locales/ar/api-reference/meta/ready",
+                                    "locales/ar/api-reference/meta/metrics"
+                                ]
+                            },
+                            {
+                                "group": "السور",
+                                "pages": [
+                                    "locales/ar/api-reference/surah/overview",
+                                    "locales/ar/api-reference/surah/list",
+                                    "locales/ar/api-reference/surah/get",
+                                    "locales/ar/api-reference/surah/search"
+                                ]
+                            },
+                            {
+                                "group": "الآيات",
+                                "pages": [
+                                    "locales/ar/api-reference/ayat/overview",
+                                    "locales/ar/api-reference/ayat/all",
+                                    "locales/ar/api-reference/ayat/get-by-number",
+                                    "locales/ar/api-reference/ayat/get-by-surah-aya",
+                                    "locales/ar/api-reference/ayat/search"
+                                ]
+                            },
+                            {
+                                "group": "القراء",
+                                "pages": [
+                                    "locales/ar/api-reference/reciters/overview",
+                                    "locales/ar/api-reference/reciters/list",
+                                    "locales/ar/api-reference/reciters/get",
+                                    "locales/ar/api-reference/reciters/search",
+                                    "locales/ar/api-reference/reciters/audio"
+                                ]
+                            },
+                            {
+                                "group": "التفسير",
+                                "pages": [
+                                    "locales/ar/api-reference/tafsir/overview",
+                                    "locales/ar/api-reference/tafsir/editions",
+                                    "locales/ar/api-reference/tafsir/surah",
+                                    "locales/ar/api-reference/tafsir/aya"
+                                ]
+                            },
+                            {
+                                "group": "الأذكار",
+                                "pages": [
+                                    "locales/ar/api-reference/azkar/overview",
+                                    "locales/ar/api-reference/azkar/categories",
+                                    "locales/ar/api-reference/azkar/category",
+                                    "locales/ar/api-reference/azkar/search",
+                                    "locales/ar/api-reference/azkar/random"
+                                ]
+                            },
+                            {
+                                "group": "الحديث",
+                                "pages": [
+                                    "locales/ar/api-reference/hadith/overview",
+                                    "locales/ar/api-reference/hadith/books",
+                                    "locales/ar/api-reference/hadith/book",
+                                    "locales/ar/api-reference/hadith/get",
+                                    "locales/ar/api-reference/hadith/random"
+                                ]
+                            },
+                            {
+                                "group": "الصلاة",
+                                "pages": ["locales/ar/api-reference/prayer/overview", "locales/ar/api-reference/prayer/times"]
+                            },
+                            {
+                                "group": "الهجري",
+                                "pages": [
+                                    "locales/ar/api-reference/hijri/overview",
+                                    "locales/ar/api-reference/hijri/today",
+                                    "locales/ar/api-reference/hijri/from-gregorian",
+                                    "locales/ar/api-reference/hijri/to-gregorian"
+                                ]
+                            },
+                            {
+                                "group": "القبلة",
+                                "pages": ["locales/ar/api-reference/qibla/overview", "locales/ar/api-reference/qibla/direction"]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "redirects": [
         {
-          "anchor": "bonyanoss.org",
-          "icon": "house",
-          "href": "https://bonyanoss.org"
+            "source": "/",
+            "destination": "/locales/en/introduction"
         },
         {
-          "anchor": "api.bonyanoss.org",
-          "icon": "code",
-          "href": "https://api.bonyanoss.org"
+            "source": "/api-reference/ayat/all",
+            "destination": "/locales/en/api-reference/ayat/all"
         },
         {
-          "anchor": "status.bonyanoss.org",
-          "icon": "signal",
-          "href": "https://status.bonyanoss.org"
+            "source": "/api-reference/ayat/get-by-number",
+            "destination": "/locales/en/api-reference/ayat/get-by-number"
+        },
+        {
+            "source": "/api-reference/ayat/get-by-surah-aya",
+            "destination": "/locales/en/api-reference/ayat/get-by-surah-aya"
+        },
+        {
+            "source": "/api-reference/ayat/overview",
+            "destination": "/locales/en/api-reference/ayat/overview"
+        },
+        {
+            "source": "/api-reference/ayat/search",
+            "destination": "/locales/en/api-reference/ayat/search"
+        },
+        {
+            "source": "/api-reference/azkar/overview",
+            "destination": "/locales/en/api-reference/azkar/overview"
+        },
+        {
+            "source": "/api-reference/hadith/overview",
+            "destination": "/locales/en/api-reference/hadith/overview"
+        },
+        {
+            "source": "/api-reference/hijri/overview",
+            "destination": "/locales/en/api-reference/hijri/overview"
+        },
+        {
+            "source": "/api-reference/meta/catalogue",
+            "destination": "/locales/en/api-reference/meta/catalogue"
+        },
+        {
+            "source": "/api-reference/meta/health",
+            "destination": "/locales/en/api-reference/meta/health"
+        },
+        {
+            "source": "/api-reference/meta/overview",
+            "destination": "/locales/en/api-reference/meta/overview"
+        },
+        {
+            "source": "/api-reference/prayer/overview",
+            "destination": "/locales/en/api-reference/prayer/overview"
+        },
+        {
+            "source": "/api-reference/qibla/overview",
+            "destination": "/locales/en/api-reference/qibla/overview"
+        },
+        {
+            "source": "/api-reference/reciters/overview",
+            "destination": "/locales/en/api-reference/reciters/overview"
+        },
+        {
+            "source": "/api-reference/surah/get",
+            "destination": "/locales/en/api-reference/surah/get"
+        },
+        {
+            "source": "/api-reference/surah/list",
+            "destination": "/locales/en/api-reference/surah/list"
+        },
+        {
+            "source": "/api-reference/surah/overview",
+            "destination": "/locales/en/api-reference/surah/overview"
+        },
+        {
+            "source": "/api-reference/surah/search",
+            "destination": "/locales/en/api-reference/surah/search"
+        },
+        {
+            "source": "/api-reference/tafsir/overview",
+            "destination": "/locales/en/api-reference/tafsir/overview"
+        },
+        {
+            "source": "/bonyan-api",
+            "destination": "/locales/en/concepts/architecture"
+        },
+        {
+            "source": "/code-of-conduct",
+            "destination": "/locales/en/code-of-conduct"
+        },
+        {
+            "source": "/concepts/arabic-search",
+            "destination": "/locales/en/concepts/arabic-search"
+        },
+        {
+            "source": "/concepts/caching",
+            "destination": "/locales/en/concepts/caching"
+        },
+        {
+            "source": "/concepts/errors",
+            "destination": "/locales/en/concepts/errors"
+        },
+        {
+            "source": "/concepts/fallback",
+            "destination": "/locales/en/concepts/fallback"
+        },
+        {
+            "source": "/concepts/rate-limit",
+            "destination": "/locales/en/concepts/rate-limit"
+        },
+        {
+            "source": "/contributing",
+            "destination": "/locales/en/contributing"
+        },
+        {
+            "source": "/domains",
+            "destination": "/locales/en/guides/self-hosting"
+        },
+        {
+            "source": "/ecosystem",
+            "destination": "/locales/en/introduction"
+        },
+        {
+            "source": "/guides/api-design",
+            "destination": "/locales/en/api-reference/overview"
+        },
+        {
+            "source": "/guides/design-principles",
+            "destination": "/locales/en/concepts/architecture"
+        },
+        {
+            "source": "/guides/documentation-standard",
+            "destination": "/locales/en/guides/maintenance"
+        },
+        {
+            "source": "/guides/project-lifecycle",
+            "destination": "/locales/en/contributing"
+        },
+        {
+            "source": "/guides/status-and-reliability",
+            "destination": "/locales/en/guides/operations"
+        },
+        {
+            "source": "/introduction",
+            "destination": "/locales/en/introduction"
+        },
+        {
+            "source": "/projects",
+            "destination": "/locales/en/introduction"
+        },
+        {
+            "source": "/quickstart",
+            "destination": "/locales/en/quickstart"
+        },
+        {
+            "source": "/reference",
+            "destination": "/locales/en/api-reference/overview"
+        },
+        {
+            "source": "/locales/en/bonyan-api",
+            "destination": "/locales/en/concepts/architecture"
+        },
+        {
+            "source": "/locales/en/reference",
+            "destination": "/locales/en/api-reference/overview"
+        },
+        {
+            "source": "/locales/ar/bonyan-api",
+            "destination": "/locales/ar/concepts/architecture"
+        },
+        {
+            "source": "/locales/ar/reference",
+            "destination": "/locales/ar/api-reference/overview"
+        },
+        {
+            "source": "/en",
+            "destination": "/locales/en/introduction"
+        },
+        {
+            "source": "/en/:slug*",
+            "destination": "/locales/en/:slug*"
+        },
+        {
+            "source": "/ar",
+            "destination": "/locales/ar/introduction"
+        },
+        {
+            "source": "/ar/:slug*",
+            "destination": "/locales/ar/:slug*"
         }
-      ]
-    },
-    "tabs": [
-      {
-        "tab": "Home",
-        "pages": [
-          {
-            "group": "Welcome",
-            "pages": [
-              "introduction"
-            ]
-          },
-          {
-            "group": "BonyanOSS",
-            "pages": [
-              "ecosystem",
-              "projects",
-              "domains",
-              "contributing",
-              "code-of-conduct"
-            ]
-          }
-        ]
-      },
-      {
-        "tab": "Bonyan API",
-        "pages": [
-          {
-            "group": "Bonyan API",
-            "pages": [
-              "bonyan-api",
-              "quickstart"
-            ]
-          },
-          {
-            "group": "Core Concepts",
-            "pages": [
-              "concepts/fallback",
-              "concepts/caching",
-              "concepts/rate-limit",
-              "concepts/errors",
-              "concepts/arabic-search"
-            ]
-          }
-        ]
-      },
-      {
-        "tab": "Guides",
-        "icon": "book",
-        "pages": [
-          {
-            "group": "Build Well",
-            "pages": [
-              "guides/design-principles",
-              "guides/api-design",
-              "guides/documentation-standard"
-            ]
-          },
-          {
-            "group": "Operate",
-            "pages": [
-              "guides/status-and-reliability",
-              "guides/project-lifecycle"
-            ]
-          }
-        ]
-      },
-      {
-        "tab": "Reference",
-        "icon": "code",
-        "pages": [
-          {
-            "group": "Overview",
-            "pages": [
-              "reference"
-            ]
-          },
-          {
-            "group": "Meta",
-            "pages": [
-              "api-reference/meta/overview",
-              "api-reference/meta/catalogue",
-              "api-reference/meta/health"
-            ]
-          },
-          {
-            "group": "Surah",
-            "pages": [
-              "api-reference/surah/overview",
-              "api-reference/surah/list",
-              "api-reference/surah/get",
-              "api-reference/surah/search"
-            ]
-          },
-          {
-            "group": "Ayat",
-            "pages": [
-              "api-reference/ayat/overview",
-              "api-reference/ayat/all",
-              "api-reference/ayat/get-by-number",
-              "api-reference/ayat/get-by-surah-aya",
-              "api-reference/ayat/search"
-            ]
-          },
-          {
-            "group": "Reciters",
-            "pages": [
-              "api-reference/reciters/overview"
-            ]
-          },
-          {
-            "group": "Tafsir",
-            "pages": [
-              "api-reference/tafsir/overview"
-            ]
-          },
-          {
-            "group": "Azkar",
-            "pages": [
-              "api-reference/azkar/overview"
-            ]
-          },
-          {
-            "group": "Hadith",
-            "pages": [
-              "api-reference/hadith/overview"
-            ]
-          },
-          {
-            "group": "Prayer",
-            "pages": [
-              "api-reference/prayer/overview"
-            ]
-          },
-          {
-            "group": "Hijri",
-            "pages": [
-              "api-reference/hijri/overview"
-            ]
-          },
-          {
-            "group": "Qibla",
-            "pages": [
-              "api-reference/qibla/overview"
-            ]
-          }
-        ]
-      }
-    ]
-  },
-  "footer": {
-    "socials": {
-      "github": "https://github.com/BonyanOSS",
-      "x": "https://x.com/BonyanOSS"
-    },
-    "links": [
-      {
-        "header": "BonyanOSS",
-        "items": [
-          {
-            "label": "Main site",
-            "href": "https://bonyanoss.org"
-          },
-          {
-            "label": "Projects",
-            "href": "/projects"
-          },
-          {
-            "label": "Contributing",
-            "href": "/contributing"
-          },
-          {
-            "label": "Code of Conduct",
-            "href": "/code-of-conduct"
-          }
-        ]
-      },
-      {
-        "header": "Platform",
-        "items": [
-          {
-            "label": "Docs",
-            "href": "https://docs.bonyanoss.org"
-          },
-          {
-            "label": "Unified API",
-            "href": "https://api.bonyanoss.org"
-          },
-          {
-            "label": "Status",
-            "href": "https://status.bonyanoss.org"
-          }
-        ]
-      },
-      {
-        "header": "Bonyan API",
-        "items": [
-          {
-            "label": "Overview",
-            "href": "/bonyan-api"
-          },
-          {
-            "label": "Bonyan API",
-            "href": "/reference"
-          },
-          {
-            "label": "Quickstart",
-            "href": "/quickstart"
-          }
-        ]
-      }
-    ]
-  },
-  "seo": {
-    "metatags": {
-      "og:site_name": "BonyanOSS Docs",
-      "twitter:card": "summary_large_image",
-      "canonical": "https://docs.bonyanoss.org"
-    },
-    "indexing": "navigable"
-  },
-  "search": {
-    "prompt": "Search BonyanOSS docs..."
-  },
-  "api": {
-    "openapi": [
-      "openapi.yaml"
     ],
-    "playground": {
-      "display": "simple"
+    "api": {
+        "playground": {
+            "display": "interactive"
+        },
+        "examples": {
+            "languages": ["curl", "javascript", "python"],
+            "prefill": true
+        }
     },
-    "examples": {
-      "languages": [
-        "curl",
-        "javascript",
-        "node",
-        "python",
-        "php",
-        "go"
-      ]
+    "contextual": {
+        "options": ["copy", "view"]
+    },
+    "seo": {
+        "indexing": "navigable"
     }
-  }
 }

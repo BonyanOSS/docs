@@ -1,0 +1,44 @@
+---
+title: "Responses and errors"
+description: "Success envelopes, search counts and structured failures."
+---
+
+## Success shapes
+
+| Route family | Raw HTTP body |
+| --- | --- |
+| Most content endpoints | `{ success: true, data: ... }` |
+| `/ayat/search`, `/azkar/search` | `{ success: true, total: number, data: [...] }` |
+| `/`, `/health`, `/ready` | A plain JSON object without a success envelope. |
+| `/metrics` | Prometheus text, not JSON. |
+
+Search `total` counts returned items after applying `limit`. It is not a corpus-wide count and there is no offset or cursor parameter.
+
+## Failure shape
+
+This is an illustrative 400 response; request IDs change for each request.
+
+```json
+{
+  "success": false,
+  "message": "Surah id must be between 1 and 114",
+  "error": {
+    "code": "BAD_REQUEST",
+    "message": "Surah id must be between 1 and 114",
+    "requestId": "req-example"
+  }
+}
+```
+
+
+| HTTP status | Typical code | Action |
+| --- | --- | --- |
+| 400 | `BAD_REQUEST` | Correct the input before retrying. |
+| 404 | `NOT_FOUND` | Check the identifier or show an empty-search state. |
+| 429 | `RATE_LIMITED` | Wait according to `Retry-After` when present. |
+| 503 | `ALL_SOURCES_FAILED` | Retry with a bounded delay or show temporary unavailability. |
+| 500 | `INTERNAL_SERVER_ERROR` | Record the request ID and report a reproducible failure. |
+
+Some explicit 503 branches, such as an unavailable random hadith, currently use `INTERNAL_SERVER_ERROR`. Handle HTTP status as well as the code. An unknown hadith book can become 503 after upstream failures instead of 404. Reverse proxies can return their own non-JSON errors.
+
+The SDK exposes `status`, `code`, `requestId` and `retryAfterMs` on `BonyanApiError`. See [SDK errors](/locales/en/sdk/errors).

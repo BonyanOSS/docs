@@ -1,0 +1,35 @@
+---
+title: "البحث في أسماء القراء"
+description: "يعيد القراء المطابقين لجزء من الاسم العربي. لا يدعم البحث التقريبي أو البحث الإنجليزي."
+openapi: "locales/ar/openapi.yaml GET /reciters/search"
+---
+
+## مثال الطلب
+
+<CodeGroup>
+
+```bash cURL
+curl --fail-with-body --get 'https://api.bonyanoss.org/reciters/search' \
+  --data-urlencode 'name=العفاسي'
+```
+
+```js JavaScript
+const url = new URL("https://api.bonyanoss.org/reciters/search");
+url.searchParams.set("name", "العفاسي");
+const response = await fetch(url, { signal: AbortSignal.timeout(45000) });
+if (!response.ok) throw new Error(`HTTP ${response.status}: ${await response.text()}`);
+const body = await response.json();
+console.log(body);
+```
+
+```ts SDK
+import { BonyanClient } from '@bonyanoss/bonyan-api';
+
+const client = new BonyanClient({ timeoutMs: 45000, retry: 1 });
+const result = await client.reciters.search('العفاسي');
+console.log(result);
+```
+
+</CodeGroup>
+
+[الاستجابات والأخطاء](/locales/ar/concepts/errors) · [دليل SDK](/locales/ar/sdk/overview) · [كود المسار](https://github.com/BonyanOSS/Bonyan-API/blob/e76bc4e114f2f174bc93d0c7f90b163f0721a9f4/src/modules/reciters/reciters.controller.ts)

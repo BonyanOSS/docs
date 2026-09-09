@@ -1,0 +1,45 @@
+---
+title: "مواقيت الصلاة"
+description: "أرسل latitude وlongitude أو city وcountry. عند إرسال الزوجين، تُجرّب إحداثيات Aladhan قبل البحث باسم المدينة."
+openapi: "locales/ar/openapi.yaml GET /prayer/times"
+---
+
+<Warning>
+يتاح بديل pray.zone لطلبات الإحداثيات بتاريخ اليوم على خادم API فقط. لا يستقبل method وقد يحذف method وcoordinates من النتيجة. افحص apiName قبل افتراض ثبات طريقة الحساب. يتحقق هذا المتحكم من كون الإحداثيات أرقامًا دون فرض حدودها الجغرافية؛ يفرض SDK الحدود.
+</Warning>
+
+## مثال الطلب
+
+<CodeGroup>
+
+```bash cURL
+curl --fail-with-body --get 'https://api.bonyanoss.org/prayer/times' \
+  --data-urlencode 'date=01-01-2026' \
+  --data-urlencode 'latitude=21.4225' \
+  --data-urlencode 'longitude=39.8262' \
+  --data-urlencode 'method=4'
+```
+
+```js JavaScript
+const url = new URL("https://api.bonyanoss.org/prayer/times");
+url.searchParams.set("date", "01-01-2026");
+url.searchParams.set("latitude", "21.4225");
+url.searchParams.set("longitude", "39.8262");
+url.searchParams.set("method", "4");
+const response = await fetch(url, { signal: AbortSignal.timeout(45000) });
+if (!response.ok) throw new Error(`HTTP ${response.status}: ${await response.text()}`);
+const body = await response.json();
+console.log(body);
+```
+
+```ts SDK
+import { BonyanClient } from '@bonyanoss/bonyan-api';
+
+const client = new BonyanClient({ timeoutMs: 45000, retry: 1 });
+const result = await client.prayer.getTimes({ latitude: 21.4225, longitude: 39.8262, method: 4 });
+console.log(result);
+```
+
+</CodeGroup>
+
+[الاستجابات والأخطاء](/locales/ar/concepts/errors) · [دليل SDK](/locales/ar/sdk/overview) · [كود المسار](https://github.com/BonyanOSS/Bonyan-API/blob/e76bc4e114f2f174bc93d0c7f90b163f0721a9f4/src/modules/prayer/prayer.controller.ts)

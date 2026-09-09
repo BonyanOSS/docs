@@ -1,0 +1,49 @@
+---
+title: "مكتبة JavaScript وTypeScript"
+description: "ثبّت SDK 1.0.2 وافهم القيم التي تعيدها دواله."
+---
+
+اسم الحزمة الرسمية `@bonyanoss/bonyan-api`. تدعم ESM وCommonJS، وتضم أنواع TypeScript، وتحدد Node.js 22 أو أحدث كمتطلب. تحتاج تطبيقات المتصفح واجهات fetch وAbortController وURL؛ استخدم أداة تجميع تطبيقك.
+
+```bash
+npm install @bonyanoss/bonyan-api@1.0.2
+```
+
+
+```ts
+import { BonyanClient, createBonyanClient } from '@bonyanoss/bonyan-api';
+
+const client = new BonyanClient({ timeoutMs: 45000, retry: 1 });
+const surahs = await client.surah.list();
+console.log(surahs[0]?.name);
+
+const local = createBonyanClient({ baseUrl: 'http://localhost:3000' });
+console.log(await local.health());
+```
+
+تعادل `createBonyanClient(options)` الاستدعاء `new BonyanClient(options)`. أعد استخدام عميل واحد لكل إعداد.
+
+## القيم المعادة
+
+تفك معظم دوال الموارد الغلاف `{ success, data }`. وتستخرج دوال القوائم المصفوفة أيضًا: تعيد `surah.list()` المصفوفة الموجودة في `data.surah`، وتعيد `reciters.list()` قيمة `data.reciters`. لا تضف وصولًا آخر إلى `.data`.
+
+تعيد دوال التشغيل كائن JSON الخام، وتعيد `metrics()` نصًا. لا ترسل أي دالة طلب كتابة.
+
+<Warning>
+في الإصدار 1.0.2 تتوقع `ayat.search()` و`azkar.search()` غلافًا مختلفًا عن API الحالي. لذلك قد تحتوي النتيجة على حقول undefined وقت التشغيل رغم أنواع TypeScript. استخدم [دالة البحث البديلة](/locales/ar/sdk/search) حتى إصلاح عدم التطابق في الحزمة.
+</Warning>
+
+## CommonJS
+
+```js
+const { BonyanClient } = require('@bonyanoss/bonyan-api');
+
+async function main() {
+  const client = new BonyanClient();
+  console.log(await client.health());
+}
+main().catch(console.error);
+```
+
+
+تابع إلى [الإعدادات](/locales/ar/sdk/configuration) أو [مرجع الدوال](/locales/ar/sdk/resources) أو [التعامل مع الأخطاء](/locales/ar/sdk/errors).

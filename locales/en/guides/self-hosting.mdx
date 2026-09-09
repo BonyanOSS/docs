@@ -1,0 +1,68 @@
+---
+title: "Self-host the API"
+description: "Run, configure and verify a Bonyan API instance."
+---
+
+Use Node.js 22 or later for a new local setup. The API repository currently uses pnpm 10.33.4. Outbound HTTPS access to the configured data providers is required for content requests. No database or provider API key is configured by this server.
+
+## Local development
+
+```bash
+git clone https://github.com/BonyanOSS/Bonyan-API.git
+cd Bonyan-API
+corepack enable
+corepack prepare pnpm@10.33.4 --activate
+pnpm install --frozen-lockfile
+pnpm dev
+```
+
+To override defaults, copy `.env.example` to `.env` before starting: `cp .env.example .env` on Unix, or `Copy-Item .env.example .env` in PowerShell.
+
+The local base URL is `http://localhost:3000`. The application does not register `/bonyan-api/v1`; add and strip a prefix at your own gateway only if your deployment needs it.
+
+## Configuration
+
+```dotenv
+PORT=3000
+HOST=0.0.0.0
+RATE_LIMIT_MAX=120
+RATE_LIMIT_WINDOW=1 minute
+CORS_ORIGIN=*
+TRUST_PROXY=false
+LOG_LEVEL=info
+CACHE_MAX_ENTRIES=1000
+```
+
+
+| Variable | Effect |
+| --- | --- |
+| PORT / HOST | Listener port and bind address. Use 127.0.0.1 for a loopback-only listener. |
+| RATE_LIMIT_MAX / RATE_LIMIT_WINDOW | Global per-IP request budget and window. |
+| CORS_ORIGIN | `*` or `true` allows reflected origins; otherwise a comma-separated origin list. This setting is not authentication. |
+| TRUST_PROXY | Only the exact value `true` enables proxy trust. Enable it only behind a trusted, correctly configured proxy. |
+| LOG_LEVEL | Fastify logger level, default info. |
+| CACHE_MAX_ENTRIES | Maximum in-process cache entries, default 1000. |
+
+`NODE_ENV` may be set by the runtime; the server's own configuration logic does not branch on it. Keep positive numeric values for the numeric settings.
+
+## Build and run
+
+```bash
+pnpm lint:check
+pnpm test
+pnpm build
+pnpm start
+```
+
+The repository includes a Dockerfile. Build with `docker build -t bonyan-api .`, then run `docker run --rm -p 3000:3000 --env-file .env bonyan-api`. The supplied Dockerfile currently uses Node 20; that is the repository's image choice, not the SDK's runtime requirement.
+
+## Verify deployment
+
+```bash
+curl --fail-with-body http://localhost:3000/health
+curl --fail-with-body http://localhost:3000/ready
+curl --fail-with-body http://localhost:3000/tafsir
+curl --fail-with-body 'http://localhost:3000/surah/1'
+```
+
+The first three requests do not prove provider connectivity. The surah request exercises a content provider or existing cache. Scrape `/metrics` as text; health, readiness and metrics are also subject to rate limits. See [operations](/locales/en/guides/operations).

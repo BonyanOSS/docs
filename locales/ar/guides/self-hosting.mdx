@@ -1,0 +1,68 @@
+---
+title: "استضافة API ذاتيًا"
+description: "شغّل نسخة Bonyan API واضبطها وتحقق منها."
+---
+
+استخدم Node.js 22 أو أحدث لإعداد محلي جديد. يستخدم مستودع API حاليًا pnpm 10.33.4. تحتاج طلبات المحتوى اتصال HTTPS صادرًا إلى مصادر البيانات المضبوطة. لا يضبط هذا الخادم قاعدة بيانات أو مفتاح API للمصادر.
+
+## التطوير المحلي
+
+```bash
+git clone https://github.com/BonyanOSS/Bonyan-API.git
+cd Bonyan-API
+corepack enable
+corepack prepare pnpm@10.33.4 --activate
+pnpm install --frozen-lockfile
+pnpm dev
+```
+
+لتغيير الافتراضيات، انسخ `.env.example` إلى `.env` قبل التشغيل: باستخدام `cp .env.example .env` على Unix أو `Copy-Item .env.example .env` في PowerShell.
+
+الرابط المحلي `http://localhost:3000`. لا يسجّل التطبيق بادئة `/bonyan-api/v1`؛ أضف البادئة واحذفها في بوابتك فقط إذا كان النشر يحتاجها.
+
+## الإعدادات
+
+```dotenv
+PORT=3000
+HOST=0.0.0.0
+RATE_LIMIT_MAX=120
+RATE_LIMIT_WINDOW=1 minute
+CORS_ORIGIN=*
+TRUST_PROXY=false
+LOG_LEVEL=info
+CACHE_MAX_ENTRIES=1000
+```
+
+
+| المتغير | التأثير |
+| --- | --- |
+| PORT / HOST | منفذ الاستماع وعنوان الربط. استخدم 127.0.0.1 للاستماع محليًا فقط. |
+| RATE_LIMIT_MAX / RATE_LIMIT_WINDOW | ميزانية الطلبات العامة لكل IP ونافذتها. |
+| CORS_ORIGIN | يسمح `*` أو`true` بعكس النطاقات؛ وإلا فقائمة نطاقات مفصولة بفواصل. هذا الإعداد ليس مصادقة. |
+| TRUST_PROXY | تفعّل القيمة المطابقة `true` الثقة بالبروكسي. فعّلها فقط خلف بروكسي موثوق مضبوط بشكل صحيح. |
+| LOG_LEVEL | مستوى سجلات Fastify، افتراضيًا info. |
+| CACHE_MAX_ENTRIES | أقصى عدد لعناصر الكاش داخل العملية، افتراضيًا 1000. |
+
+قد تضبط بيئة التشغيل `NODE_ENV`، لكن منطق إعداد الخادم نفسه لا يتفرع بحسبه. استخدم قيمًا رقمية موجبة للإعدادات الرقمية.
+
+## البناء والتشغيل
+
+```bash
+pnpm lint:check
+pnpm test
+pnpm build
+pnpm start
+```
+
+يتضمن المستودع Dockerfile. ابنِ الصورة باستخدام `docker build -t bonyan-api .`، ثم شغّل `docker run --rm -p 3000:3000 --env-file .env bonyan-api`. يستخدم Dockerfile المرفق Node 20 حاليًا؛ هذا اختيار صورة المستودع وليس متطلب تشغيل SDK.
+
+## تحقق من النشر
+
+```bash
+curl --fail-with-body http://localhost:3000/health
+curl --fail-with-body http://localhost:3000/ready
+curl --fail-with-body http://localhost:3000/tafsir
+curl --fail-with-body 'http://localhost:3000/surah/1'
+```
+
+لا تثبت الطلبات الثلاثة الأولى الاتصال بالمصادر. يختبر طلب السورة مصدر محتوى أو الكاش الموجود. اقرأ `/metrics` كنص؛ وتخضع الصحة والجاهزية والمقاييس لحدود الطلبات أيضًا. راجع [التشغيل والمراقبة](/locales/ar/guides/operations).

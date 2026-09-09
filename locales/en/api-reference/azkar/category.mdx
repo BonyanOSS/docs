@@ -1,0 +1,33 @@
+---
+title: "Azkar in a category"
+description: "Returns the first category whose normalized Arabic name contains the supplied value. Use the full name from the catalogue to avoid ambiguous matches."
+openapi: "locales/en/openapi.yaml GET /azkar/{category}"
+---
+
+## Request example
+
+<CodeGroup>
+
+```bash cURL
+curl --fail-with-body 'https://api.bonyanoss.org/azkar/%D8%A3%D8%B0%D9%83%D8%A7%D8%B1%20%D8%A7%D9%84%D8%B5%D8%A8%D8%A7%D8%AD'
+```
+
+```js JavaScript
+const url = new URL("https://api.bonyanoss.org/azkar/%D8%A3%D8%B0%D9%83%D8%A7%D8%B1%20%D8%A7%D9%84%D8%B5%D8%A8%D8%A7%D8%AD");
+const response = await fetch(url, { signal: AbortSignal.timeout(45000) });
+if (!response.ok) throw new Error(`HTTP ${response.status}: ${await response.text()}`);
+const body = await response.json();
+console.log(body);
+```
+
+```ts SDK
+import { BonyanClient } from '@bonyanoss/bonyan-api';
+
+const client = new BonyanClient({ timeoutMs: 45000, retry: 1 });
+const result = await client.azkar.getByCategory('أذكار الصباح');
+console.log(result);
+```
+
+</CodeGroup>
+
+[Responses and errors](/locales/en/concepts/errors) · [SDK guide](/locales/en/sdk/overview) · [Route implementation](https://github.com/BonyanOSS/Bonyan-API/blob/e76bc4e114f2f174bc93d0c7f90b163f0721a9f4/src/modules/azkar/azkar.controller.ts)
