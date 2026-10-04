@@ -1,19 +1,20 @@
 ---
 title: "Troubleshooting"
-description: "Diagnose failed requests without guessing at response shapes."
+description: "Identify configuration, provider and playback failures."
 ---
 
 | Symptom | Check and action |
 | --- | --- |
-| Every hosted request returns 404 | Use `https://api.bonyanoss.org`; remove the old `/bonyan-api/v1` prefix. |
-| Tafsir returns 400 | Get edition IDs from `/tafsir`. Use `muyassar`, not `ar.muyassar`, in the path. |
-| SDK search gives undefined fields | Apply the [search helper](/locales/en/sdk/search) for SDK 1.0.2. |
-| English search returns unrelated data | Submit Arabic text. Latin-only strings can normalize to an empty match. |
-| Audio returns 404 | Choose a reciter with a first moshaf server. The fallback catalogue may omit it. |
-| Audio URL exists but playback fails | Inspect the MP3 request itself; the API only constructs the URL. |
-| Content request times out | Increase the per-attempt timeout for cold cache loads; avoid multiplying retry loops. |
-| Prayer method is absent | Inspect apiName; pray.zone fallback does not forward the Aladhan method. |
-| Health is green but content fails | Probe a content route and inspect provider errors. Health does not contact providers. |
-| Hadith book returns 503 | Check the book ID against the current catalogue before assuming an outage. |
+| Every request returns 404 | Use https://api.bonyanoss.org without /bonyan-api/v1. |
+| Tafsir returns 400 | Use muyassar or saadi; discover IDs through /tafsir. |
+| SDK search gives undefined fields | Upgrade to 2.0.0; see installation guidance. |
+| English search matches unrelated entries | Use meaningful Arabic; Latin-only input can normalize to empty. |
+| Audio returns 404 | Check that moshaf belongs to the reciter and surahList covers the surah. |
+| Audio returns 503 | All eligible sources failed the HEAD check. |
+| A successful audio URL fails playback | Inspect the browser audio request; availability can change after API verification. |
+| Prayer time seems wrong | Inspect timezone and method; defaults are UTC and method 4. |
+| City prayer request returns 503 | The provider is unavailable; use coordinates for local calculation. |
+| Hadith returns 404 | Verify the book ID; numbering gaps can explain missing narrations. |
+| Health succeeds but content fails | Health does not probe providers; inspect the route, request ID and metrics. |
 
-When reporting an issue, include the route and query, status, request ID, SDK version and a minimal example. State whether you used the hosted service or your own server. Report API issues in [Bonyan-API](https://github.com/BonyanOSS/Bonyan-API/issues), SDK issues in [bonyan-sdk-js](https://github.com/BonyanOSS/bonyan-sdk-js/issues), and documentation corrections in [docs](https://github.com/BonyanOSS/docs/issues).
+Include the route/query, HTTP status, request ID, SDK version and a minimal example when reporting an issue. See [SDK installation](/locales/en/sdk/overview).

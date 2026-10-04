@@ -1,33 +1,32 @@
 ---
-title: "Client configuration"
-description: "Base URL, timeout, retries, headers and custom fetch."
+title: "Client and request configuration"
+description: "Base URL, timeouts, retries, headers and cancellation."
 ---
 
 ```ts
 import { BonyanClient } from '@bonyanoss/bonyan-api';
 
-const client = new BonyanClient({
-  baseUrl: 'https://api.bonyanoss.org',
-  timeoutMs: 45000,
-  retry: 1,
+const client = new BonyanClient({ timeoutMs: 45000, retry: 1 });
+const controller = new AbortController();
+const pending = client.ayat.search('الله', { limit: 10 }, {
+  signal: controller.signal,
+  timeoutMs: 20000,
   headers: { 'X-Application': 'my-app' },
-  fetch: globalThis.fetch.bind(globalThis),
 });
-console.log(await client.health());
+controller.abort();
+await pending.catch(console.error);
+console.log(await client.health({ timeoutMs: 2000 }));
 ```
 
+| Option | Default |
+| --- | --- |
+| baseUrl | https://api.bonyanoss.org |
+| timeoutMs | 10000 |
+| retry | 3 |
+| headers | Accept: application/json |
+| fetch | globalThis.fetch |
+| userAgent | Unset |
 
-| Option | Default | Meaning |
-| --- | --- | --- |
-| `baseUrl` | `https://api.bonyanoss.org` | Origin and optional deployment prefix; trailing slashes are removed. |
-| `timeoutMs` | `10000` | Timeout in milliseconds for each attempt. |
-| `retry` | `3` | Retries after the initial request. Use a nonnegative integer; 0 disables retries. |
-| `headers` | `Accept: application/json` | Extra headers merged over defaults. |
-| `fetch` | Global fetch | Replacement with the standard fetch signature, useful for tests and controlled transport. |
-| `userAgent` | Unset | Optional User-Agent header; browser behavior is platform-dependent. |
+Every method accepts BonyanRequestOptions as its final argument: signal, timeoutMs and headers. Pass domain options such as limit or moshaf first. timeoutMs must be a positive integer up to 2147483647; retry must be a nonnegative integer. The timeout applies per attempt. Use a signal for a total deadline. Cancellation stops an active request or retry delay; an already aborted signal prevents fetch.
 
-For a gateway mounted at a prefix, pass the full prefix in `baseUrl`. The SDK appends its resource paths. The public deployment reviewed here needs no prefix.
-
-Resource methods do not expose per-call timeout, headers or AbortSignal options in 1.0.2. Those options exist in the internal HTTP client but are not part of the exported resource methods. Use separate clients for different timeout policies or use fetch when you need per-request cancellation.
-
-The SDK has no response cache, authentication flow or runtime schema validation of every returned field. TypeScript declarations describe the expected data; validate fields your application relies on.
+Header names merge case-insensitively. baseUrl can include a gateway prefix; trailing slashes are removed and resource paths appended. Browser User-Agent behavior is platform-dependent. The SDK has no response cache and does not validate every response field at runtime; malformed success or search envelopes are rejected.

@@ -1,23 +1,23 @@
 ---
-title: "Play a recitation"
-description: "Discover a reciter with audio metadata before requesting a URL."
+title: "Play a selected recording"
+description: "Choose a moshaf with the required surah and narration."
 ---
 
-Fetch the reciter catalogue and choose an entry with a first moshaf server. Do not assume that a hard-coded reciter ID means the same person across providers.
+The reciter catalogue preserves mp3quran IDs in its local fallback. Every reciter has normalized moshaf recordings containing surahList, rewayaId and type. Select a recording that covers the surah and matches your desired narration.
 
 ```ts
 import { BonyanClient } from '@bonyanoss/bonyan-api';
 
 const client = new BonyanClient({ timeoutMs: 45000, retry: 1 });
+const surah = 1;
 const reciters = await client.reciters.list();
-const reciter = reciters.find(item => item.moshaf?.[0]?.server);
-if (!reciter) throw new Error('No audio-enabled reciter is available');
-const result = await client.reciters.getSurah(reciter.id, 1);
-console.log(result.reciter, result.audio);
+const reciter = reciters.find(item => item.moshaf.some(m => m.surahList.includes(surah)));
+if (!reciter) throw new Error('No recording covers this surah');
+const recording = reciter.moshaf.find(m => m.surahList.includes(surah))!;
+const result = await client.reciters.getSurah(reciter.id, surah, { moshaf: recording.id });
+console.log(result.audio, result.moshafId, result.rewayaId, result.apiName);
 ```
 
-Set an HTML audio element's `src` to the returned `audio` URL and show playback controls. The API itself returns JSON; the browser downloads the MP3 from the provider. Handle the audio element's error event and allow the user to choose another reciter.
+Without moshaf, the API prefers Hafs murattal covering the surah, then another covering recording. It verifies URLs with HEAD and rejects unavailable audio. Quran.com fallback is restricted to verified recordings of the same reciter, narration and style.
 
-The endpoint uses the first moshaf only. There is no public moshaf selector parameter. It constructs `server + paddedSurah + '.mp3'` and does not check the file or the moshaf's surah coverage. A successful API call can still lead to a failed MP3 request.
-
-When the quran.com fallback supplies the catalogue, audio servers may be absent. Show an unavailable state instead of inventing an audio URL. See [audio endpoint](/locales/en/api-reference/reciters/audio).
+No matching recording returns 404. Failure of all eligible audio sources returns 503. A successful check is cached for 15 minutes; playback can still fail later. Set the returned audio URL on an HTML audio element, show controls and handle its error event. The API returns JSON; the browser loads audio from the provider. [Endpoint](/locales/en/api-reference/reciters/audio).

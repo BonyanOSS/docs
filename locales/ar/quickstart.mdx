@@ -30,10 +30,10 @@ console.log(body.data.aya.text);
 
 ## 3. استخدم SDK في Node.js
 
-استخدم Node.js 22 أو أحدث وملف ESM مثل `example.mjs`.
+استخدم Node.js 22.12 أو أحدث وملف ESM مثل `example.mjs`.
 
 ```bash
-npm install @bonyanoss/bonyan-api@1.0.2
+npm install ./bonyanoss-bonyan-api-2.0.0.tgz
 ```
 
 
@@ -44,6 +44,8 @@ const client = new BonyanClient({ timeoutMs: 45000, retry: 1 });
 const result = await client.ayat.getById(1);
 console.log(result.aya.text);
 ```
+
+ثبّت @bonyanoss/bonyan-api@2.0.0 من npm. راجع [تثبيت SDK](/locales/ar/sdk/overview).
 
 يفك SDK غلاف النجاح، لذا استخدم `result.aya.text` دون `result.data`.
 

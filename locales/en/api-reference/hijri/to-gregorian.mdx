@@ -1,6 +1,6 @@
 ---
 title: "Hijri to Gregorian"
-description: "Converts a required Hijri date. Returned month and weekday names come from the provider."
+description: "Converts a required Hijri date using islamic-umalqura. Validates day 1..30, month 1..12 and year 1..2400 before fetching."
 openapi: "locales/en/openapi.yaml GET /hijri/to-gregorian"
 ---
 
@@ -32,4 +32,4 @@ console.log(result);
 
 </CodeGroup>
 
-[Responses and errors](/locales/en/concepts/errors) · [SDK guide](/locales/en/sdk/overview) · [Route implementation](https://github.com/BonyanOSS/Bonyan-API/blob/e76bc4e114f2f174bc93d0c7f90b163f0721a9f4/src/modules/hijri/hijri.controller.ts)
+[Responses and errors](/locales/en/concepts/errors) · [SDK guide](/locales/en/sdk/overview) · [Route implementation](https://github.com/BonyanOSS/Bonyan-API/blob/c851b1a610c5169d3bffd822ed68886338ea3067/src/modules/hijri/hijri.controller.ts)

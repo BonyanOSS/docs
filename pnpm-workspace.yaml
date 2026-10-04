@@ -1,6 +1,8 @@
 allowBuilds:
-    keytar: false
-    puppeteer: false
-    sharp: true
+  keytar: false
+  puppeteer: false
+  sharp: true
+minimumReleaseAgeExclude:
+  - '@bonyanoss/bonyan-api@2.0.0'
 patchedDependencies:
-    "@mintlify/link-rot@3.0.1334": patches/@mintlify__link-rot@3.0.1334.patch
+  "@mintlify/link-rot@3.0.1414": patches/@mintlify__link-rot@3.0.1414.patch

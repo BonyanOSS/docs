@@ -1,24 +1,32 @@
 name: Documentation checks
 on:
-    pull_request:
-    push:
-        branches: [main]
+  pull_request:
+  push:
+    branches: [main]
 permissions:
-    contents: read
+  contents: read
 jobs:
-    validate:
-        strategy:
-            matrix:
-                os: [ubuntu-latest, windows-latest]
-        runs-on: ${{ matrix.os }}
-        steps:
-            - uses: actions/checkout@v4
-            - uses: pnpm/action-setup@v4
-            - uses: actions/setup-node@v4
-              with:
-                  node-version: 24
-                  cache: pnpm
-            - run: pnpm install --frozen-lockfile
-            - run: pnpm check
-            - run: pnpm build
-            - run: pnpm broken-links
+  validate:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm check
+      - run: pnpm build
+      - run: pnpm broken-links
+      - uses: actions/checkout@v7
+        with:
+          repository: BonyanOSS/Bonyan-API
+          ref: c851b1a610c5169d3bffd822ed68886338ea3067
+          path: work/api
+      - run: pnpm --dir work/api install --frozen-lockfile
+      - run: pnpm --dir work/api build
+      - run: pnpm check:api work/api

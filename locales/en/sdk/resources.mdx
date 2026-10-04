@@ -5,11 +5,7 @@ description: "Resource methods, signatures and return types."
 
 Every method below is called on `client` and returns a Promise of the listed type. `?` denotes an optional argument or option; table signatures are shorthand, not copyable code.
 
-Numeric arguments are JavaScript numbers; names, queries, book IDs and edition IDs are strings. Dates use `DD-MM-YYYY`. prayer.getTimes accepts coordinates or city/country, plus optional date and method.
-
-<Warning>
-The ayat and azkar search methods in 1.0.2 do not match the current API envelope. Their declared types do not make their runtime result valid. [Search adapter](/locales/en/sdk/search).
-</Warning>
+Numeric arguments are JavaScript numbers; names, queries, book IDs and edition IDs are strings. Dates use `DD-MM-YYYY`. prayer.getTimes accepts coordinates or city/country, plus optional date, method and timezone. Every method also accepts transport options as its last argument.
 
 ## Service operations
 
@@ -44,14 +40,14 @@ The ayat and azkar search methods in 1.0.2 do not match the current API envelope
 | `reciters.list()` | `Reciter[]` | [`GET /reciters`](/locales/en/api-reference/reciters/list) |
 | `reciters.getById(id)` | `Reciter` | [`GET /reciters/{id}`](/locales/en/api-reference/reciters/get) |
 | `reciters.search(name)` | `Reciter[]` | [`GET /reciters/search`](/locales/en/api-reference/reciters/search) |
-| `reciters.getSurah(reciterId, surah)` | `ReciterAudio` | [`GET /reciters/{id}/surah/{surah}`](/locales/en/api-reference/reciters/audio) |
+| `reciters.getSurah(reciterId, surah, { moshaf? }?)` | `ReciterAudio` | [`GET /reciters/{id}/surah/{surah}`](/locales/en/api-reference/reciters/audio) |
 
 ## Tafsir
 
 | Method | Result type | HTTP |
 | --- | --- | --- |
 | `tafsir.listEditions()` | `TafsirEdition[]` | [`GET /tafsir`](/locales/en/api-reference/tafsir/editions) |
-| `tafsir.forSurah(edition, surah, { aya? }?)` | `TafsirItem[] \| TafsirItem` | [`GET /tafsir/{edition}/{surah}`](/locales/en/api-reference/tafsir/surah) |
+| `tafsir.forSurah(edition, surah, { aya? }?)` | `TafsirItem[]` | [`GET /tafsir/{edition}/{surah}`](/locales/en/api-reference/tafsir/surah) |
 | `tafsir.forAya(edition, surah, aya)` | `TafsirItem` | [`GET /tafsir/{edition}/{surah}/{aya}`](/locales/en/api-reference/tafsir/aya) |
 
 ## Azkar
@@ -61,7 +57,7 @@ The ayat and azkar search methods in 1.0.2 do not match the current API envelope
 | `azkar.listCategories()` | `AzkarCategorySummary[]` | [`GET /azkar`](/locales/en/api-reference/azkar/categories) |
 | `azkar.getByCategory(category)` | `AzkarCategory` | [`GET /azkar/{category}`](/locales/en/api-reference/azkar/category) |
 | `azkar.search(text, { limit? }?)` | `AzkarSearchResult` | [`GET /azkar/search`](/locales/en/api-reference/azkar/search) |
-| `azkar.random()` | `{ category: string; item: AzkarItem }` | [`GET /azkar/random`](/locales/en/api-reference/azkar/random) |
+| `azkar.random()` | `AzkarSearchHit` | [`GET /azkar/random`](/locales/en/api-reference/azkar/random) |
 
 ## Hadith
 
@@ -92,4 +88,4 @@ The ayat and azkar search methods in 1.0.2 do not match the current API envelope
 | --- | --- | --- |
 | `qibla.getDirection(latitude, longitude)` | `QiblaInfo` | [`GET /qibla`](/locales/en/api-reference/qibla/direction) |
 
-This API always returns an array for forSurah; the SDK declaration is broader. List methods return extracted arrays, and operational methods return raw data. Consult the [HTTP reference](/locales/en/api-reference/overview) for limits and failure cases.
+forSurah always returns an array, and the SDK declaration matches. List methods return extracted arrays, and operational methods return raw data. Consult the [HTTP reference](/locales/en/api-reference/overview) for limits and failure cases.

@@ -2,12 +2,12 @@
 openapi: 3.1.0
 info:
   title: Bonyan API
-  version: 2.0.0
+  version: 3.0.0
   description: واجهة HTTP للقرآن والتفسير والقراء والأذكار والحديث ومواقيت الصلاة والتقويم والقبلة. لغة التوثيق لا تغيّر لغة المحتوى.
   license:
     name: MIT
     identifier: MIT
-  x-source-revision: e76bc4e114f2f174bc93d0c7f90b163f0721a9f4
+  x-source-revision: c851b1a610c5169d3bffd822ed68886338ea3067
 servers:
   - url: https://api.bonyanoss.org
     description: الخدمة العامة
@@ -149,7 +149,7 @@ paths:
       tags:
         - surah
       summary: قائمة السور
-      description: يعيد فهرس السور داخل data.surah. يحتوي أسماء وبيانات السور دون نص الآيات.
+      description: يعيد فهرس السور الـ114 كاملًا بأسماء عربية ثابتة وحقل makkia مطلوب.
       parameters: []
       responses:
         "200":
@@ -419,7 +419,7 @@ paths:
             type: integer
             minimum: 1
           example: 1
-          description: رقم الآية داخل السورة. النتيجة الفارغة تعيد 404؛ وقد يعيد رفض مصادر التفسير 503 عند فشل جميع المصادر المضبوطة.
+          description: رقم آية موجب داخل السورة. الآية غير الموجودة تعيد 404.
       responses:
         "200":
           description: نجاح
@@ -468,10 +468,7 @@ paths:
       tags:
         - ayat
       summary: البحث في نص القرآن
-      description: |-
-        يعيد {success, total, data: [...]}. يحسب total النتائج المعادة بعد تطبيق الحد، وليس جميع التطابقات في القرآن.
-
-        توجد مشكلة في فك الاستجابة داخل client.ayat.search() في SDK 1.0.2. استخدم مثال fetch هنا أو الدالة البديلة في دليل SDK.
+      description: "يعيد {success, total, data: [...]}؛ total هو عدد النتائج المعادة بعد limit. كل نتيجة تحتوي apiName."
       parameters:
         - name: text
           in: query
@@ -490,7 +487,7 @@ paths:
             minimum: 1
             maximum: 500
           example: 10
-          description: حد النتائج وليس ترقيم صفحات. يضبطه الخادم بين 1 و500؛ الصفر أو القيمة غير القابلة للتحليل تعود إلى 50.
+          description: الحد الأقصى للنتائج. القيمة الافتراضية 50؛ القيم غير الصالحة تعيد 400.
       responses:
         "200":
           description: نجاح
@@ -539,7 +536,7 @@ paths:
       tags:
         - reciters
       summary: قائمة القراء
-      description: يعيد القراء داخل data.reciters. قد يحذف المصدر البديل المصاحف وبيانات خادم الصوت.
+      description: يعيد القراء داخل data.reciters. لكل قارئ مصاحف moshaf تحتوي surahList وrewayaId وtype. تحافظ النسخة المحلية على المعرّفات والمصاحف عند تعذر المصدر.
       parameters: []
       responses:
         "200":
@@ -577,15 +574,16 @@ paths:
       tags:
         - reciters
       summary: بيانات قارئ
-      description: يبحث عن المعرّف في فهرس المصدر المخزّن حاليًا.
+      description: يبحث بمعرّف قارئ ثابت من mp3quran في الفهرس الحالي أو النسخة المحلية.
       parameters:
         - name: id
           in: path
           required: true
           schema:
             type: integer
+            minimum: 1
           example: 1
-          description: المعرّف الذي يعيده فهرس القراء. المعرّفات مرتبطة بالمصدر.
+          description: معرّف القارئ من mp3quran، محفوظ في النسخة المحلية.
       responses:
         "200":
           description: نجاح
@@ -693,17 +691,18 @@ paths:
         - reciters
       summary: رابط صوت السورة
       description: |-
-        ينشئ الرابط من خادم أول مصحف ورقم السورة بثلاث خانات. يعيد JSON وليس بثًا صوتيًا.
+        يختار مصحفًا يغطي السورة، مع تفضيل حفص المرتل عند حذف moshaf. يفحص الصوت بطلب HEAD قبل إعادة رابط JSON وبيانات المصحف.
 
-        لا يتحقق API من وجود ملف MP3. قد يفتقد قارئ من quran.com بيانات المصحف فتُعاد 404. اختر قارئًا له moshaf قبل طلب الصوت.
+        moshaf هو معرّف مصحف من فهرس القارئ. عدم تغطية السورة يعيد 404؛ فشل مصادر الصوت المتاحة يعيد 503. يقتصر بديل Quran.com على مصاحف حفص المرتلة ذات المطابقة الموثقة.
       parameters:
         - name: id
           in: path
           required: true
           schema:
             type: integer
-          example: 1
-          description: المعرّف الذي يعيده فهرس القراء. المعرّفات مرتبطة بالمصدر.
+            minimum: 1
+          example: 123
+          description: معرّف القارئ من mp3quran، محفوظ في النسخة المحلية.
         - name: surah
           in: path
           required: true
@@ -713,6 +712,14 @@ paths:
             maximum: 114
           example: 1
           description: رقم السورة من 1 إلى 114.
+        - name: moshaf
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+          example: 7
+          description: معرّف مصحف اختياري تابع لهذا القارئ.
       responses:
         "200":
           description: نجاح
@@ -761,7 +768,7 @@ paths:
       tags:
         - tafsir
       summary: نسخ التفسير
-      description: يعرض معرّفات نسخ التفسير الخمس وأسماءها العربية. الفهرس محلي ولا يفحص توفر المصادر.
+      description: "يعرض معرّفي التفسير المدعومين: muyassar وsaadi. الفهرس محلي ولا يفحص توفر المصادر."
       parameters: []
       responses:
         "200":
@@ -793,7 +800,7 @@ paths:
       tags:
         - tafsir
       summary: تفسير سورة
-      description: يعيد مصفوفة حتى عند تحديد آية واحدة بالمعامل aya. حقل edition المعاد يستخدم معرّف المصدر.
+      description: يعيد مصفوفة TafsirItem حتى مع مرشح aya الاختياري. حقل edition هو المعرّف العام muyassar أوsaadi في جميع المصادر.
       parameters:
         - name: edition
           in: path
@@ -802,10 +809,7 @@ paths:
             type: string
             enum:
               - muyassar
-              - jalalayn
               - saadi
-              - waseet
-              - qurtubi
           example: muyassar
           description: معرّف النسخة من GET /tafsir. استخدم muyassar وليس ar.muyassar.
         - name: surah
@@ -824,7 +828,7 @@ paths:
             type: integer
             minimum: 1
           example: 1
-          description: آية اختيارية داخل السورة. تبقى الاستجابة مصفوفة.
+          description: رقم آية موجب داخل السورة. الآية غير الموجودة تعيد 404.
       responses:
         "200":
           description: نجاح
@@ -873,7 +877,7 @@ paths:
       tags:
         - tafsir
       summary: تفسير آية
-      description: يعيد كائن تفسير واحد. لنسخة muyassar مصدران، ولكل نسخة أخرى مصدر واحد.
+      description: يعيد عنصر تفسير واحدًا. يدعم muyassar وsaadi فقط؛ النسخ غير المدعومة تعيد 400 قبل طلب المصدر.
       parameters:
         - name: edition
           in: path
@@ -882,10 +886,7 @@ paths:
             type: string
             enum:
               - muyassar
-              - jalalayn
               - saadi
-              - waseet
-              - qurtubi
           example: muyassar
           description: معرّف النسخة من GET /tafsir. استخدم muyassar وليس ar.muyassar.
         - name: surah
@@ -904,7 +905,7 @@ paths:
             type: integer
             minimum: 1
           example: 1
-          description: رقم الآية داخل السورة. النتيجة الفارغة تعيد 404؛ وقد يعيد رفض مصادر التفسير 503 عند فشل جميع المصادر المضبوطة.
+          description: رقم آية موجب داخل السورة. الآية غير الموجودة تعيد 404.
       responses:
         "200":
           description: نجاح
@@ -1049,10 +1050,7 @@ paths:
       tags:
         - azkar
       summary: البحث في الأذكار
-      description: |-
-        يعيد {success, total, data: [...]} مع التصنيف والذكر لكل نتيجة. total هو عدد النتائج المعادة بعد تطبيق limit.
-
-        توجد مشكلة في فك الاستجابة داخل client.azkar.search() في SDK 1.0.2. استخدم fetch أو الدالة البديلة في دليل SDK.
+      description: "يعيد {success, total, data: [...]}؛ كل نتيجة تحتوي category وitem وapiName. عدم وجود نتائج يعيد 404."
       parameters:
         - name: text
           in: query
@@ -1071,7 +1069,7 @@ paths:
             minimum: 1
             maximum: 200
           example: 10
-          description: حد النتائج وليس ترقيم صفحات. يضبطه الخادم بين 1 و200؛ الصفر أو القيمة غير القابلة للتحليل تعود إلى 50.
+          description: الحد الأقصى للنتائج. القيمة الافتراضية 50؛ القيم غير الصالحة تعيد 400.
       responses:
         "200":
           description: نجاح
@@ -1164,7 +1162,7 @@ paths:
       tags:
         - hadith
       summary: كتب الحديث
-      description: يعيد معرّفات الكتب وأسماءها وأعداد الأحاديث من المصدر المستخدم. استخرج المعرّفات هنا بدل افتراض قائمة ثابتة.
+      description: يعرض الكتب التسعة المدعومة من بيانات محلية موثقة. يحسب available الأحاديث المخزنة فعليًا، ولا يمثل أكبر رقم حديث.
       parameters: []
       responses:
         "200":
@@ -1203,9 +1201,9 @@ paths:
         - hadith
       summary: نطاق أحاديث
       description: |-
-        يعيد book وavailable وhadiths داخل data. طرفا النطاق مشمولان؛ from الافتراضي 1 وto الافتراضي from + 29.
+        يعيد book وavailable وhadiths داخل data. النطاق شامل طرفيه؛ from الافتراضي 1 وto الافتراضي from+29. يقبل 300 رقم حديث كحد أقصى.
 
-        يرفض API حاليًا to - from > 300، فيقبل 301 عنصرًا عند شمول الطرفين. يرفض SDK 1.0.2 أكثر من 300 عند إرسال الطرفين. استخدم 300 أو أقل للتوافق. قد يعيد النطاق الفارغ 200 مع hadiths: [].
+        قد تحتوي الأرقام على فجوات. قد يعيد النطاق أحاديث أقل أو مصفوفة فارغة. available هو عدد الأحاديث المخزنة، فلا تستخدمه حدًا أعلى لأرقام البحث. الكتب المجهولة تعيد 404.
       parameters:
         - name: book
           in: path
@@ -1214,7 +1212,7 @@ paths:
             type: string
             minLength: 1
           example: bukhari
-          description: معرّف الكتاب من GET /hadith. قد يعيد المعرّف المجهول 503 إذا رفضه المصدران.
+          description: معرّف الكتاب من GET /hadith. المعرّف المجهول يعيد 404.
         - name: from
           in: query
           required: false
@@ -1241,6 +1239,12 @@ paths:
                 $ref: "#/components/schemas/HadithListResponse"
         "400":
           description: إدخال مفقود أو غير صالح.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: لم يوجد العنصر أو التطابق المطلوب.
           content:
             application/json:
               schema:
@@ -1283,7 +1287,7 @@ paths:
             type: string
             minLength: 1
           example: bukhari
-          description: معرّف الكتاب من GET /hadith. قد يعيد المعرّف المجهول 503 إذا رفضه المصدران.
+          description: معرّف الكتاب من GET /hadith. المعرّف المجهول يعيد 404.
         - name: number
           in: path
           required: true
@@ -1340,7 +1344,7 @@ paths:
       tags:
         - hadith
       summary: حديث عشوائي
-      description: يختار كتابًا ثم رقم حديث وفق العدد المتاح. يمكن تقييد الكتاب. تحتوي النتيجة book وhadith.
+      description: يختار حديثًا مخزنًا فعليًا من الكتاب المختار، فلا تؤدي فجوات الترقيم إلى نتيجة عشوائية فارغة. يمكن تقييد الاختيار بمعرّف كتاب.
       parameters:
         - name: book
           in: query
@@ -1348,7 +1352,7 @@ paths:
           schema:
             type: string
           example: bukhari
-          description: معرّف كتاب مطابق اختياري. المعرّف المجهول يعيد 404.
+          description: معرّف الكتاب من GET /hadith. المعرّف المجهول يعيد 404.
       responses:
         "200":
           description: نجاح
@@ -1392,9 +1396,9 @@ paths:
         - prayer
       summary: مواقيت الصلاة
       description: |-
-        أرسل latitude وlongitude أو city وcountry. عند إرسال الزوجين، تُجرّب إحداثيات Aladhan قبل البحث باسم المدينة.
+        أرسل latitude وlongitude أوcity وcountry. الإحداثيات لها الأولوية عند إرسال الاثنين. طريقة الحساب الافتراضية 4 والمنطقة الزمنية UTC، وتعيد سبعة أوقات بصيغة HH:mm.
 
-        يتاح بديل pray.zone لطلبات الإحداثيات بتاريخ اليوم على خادم API فقط. لا يستقبل method وقد يحذف method وcoordinates من النتيجة. افحص apiName قبل افتراض ثبات طريقة الحساب. يتحقق هذا المتحكم من كون الإحداثيات أرقامًا دون فرض حدودها الجغرافية؛ يفرض SDK الحدود.
+        طرق الحساب المدعومة: 1 و2 و3 و4 و5 و9 و10 و11. يتطلب بديل adhan المحلي إحداثيات ويحافظ على التاريخ والطريقة والمنطقة الزمنية. لا يوجد تحويل محلي لأسماء المدن إلى إحداثيات؛ تعذر المصدر يعيد 503. قد يغيب hijri في النتيجة المحلية.
       parameters:
         - name: date
           in: query
@@ -1403,12 +1407,14 @@ paths:
             type: string
             pattern: ^\d{2}-\d{2}-\d{4}$
           example: 01-01-2026
-          description: تاريخ ميلادي بصيغة DD-MM-YYYY. عند حذفه أو تركه فارغًا يستخدم تاريخ خادم API الحالي. التحقق من الصيغة فقط، وليس صحة اليوم في التقويم.
+          description: تاريخ بصيغة DD-MM-YYYY. يجب أن يكون تاريخًا ميلاديًا صحيحًا بسنة لا تقل عن 1000. عند حذفه أو تركه فارغًا يستخدم تاريخ خادم API.
         - name: latitude
           in: query
           required: false
           schema:
             type: number
+            minimum: -90
+            maximum: 90
           example: 21.4225
           description: خط العرض بالدرجات العشرية؛ أرسله مع خط الطول.
         - name: longitude
@@ -1416,6 +1422,8 @@ paths:
           required: false
           schema:
             type: number
+            minimum: -180
+            maximum: 180
           example: 39.8262
           description: خط الطول بالدرجات العشرية؛ أرسله مع خط العرض.
         - name: city
@@ -1437,8 +1445,26 @@ paths:
           required: false
           schema:
             type: integer
+            enum:
+              - 1
+              - 2
+              - 3
+              - 4
+              - 5
+              - 9
+              - 10
+              - 11
+            default: 4
           example: 4
-          description: معرّف طريقة الحساب لدى Aladhan. عند حذفه يستخدم المصدر افتراضيه.
+          description: طريقة الحساب المدعومة. القيمة الافتراضية 4 هي أم القرى.
+        - name: timezone
+          in: query
+          required: false
+          schema:
+            type: string
+            default: UTC
+          example: Asia/Riyadh
+          description: منطقة زمنية من IANA لتنسيق الأوقات بصيغة HH:mm.
       responses:
         "200":
           description: نجاح
@@ -1481,7 +1507,7 @@ paths:
       tags:
         - hijri
       summary: تاريخ اليوم بالتقويمين
-      description: يحوّل تاريخ خادم API الميلادي الحالي عبر Aladhan. لا يستخدم المنطقة الزمنية للمتصفح.
+      description: يحوّل تاريخ خادم API بتقويم islamic-umalqura الثابت. لا يستخدم منطقة المتصفح الزمنية.
       parameters: []
       responses:
         "200":
@@ -1519,7 +1545,7 @@ paths:
       tags:
         - hijri
       summary: من الميلادي إلى الهجري
-      description: يعيد تمثيل التاريخ بالتقويمين. Aladhan هو المصدر الوحيد المضبوط.
+      description: يعيد التقويمين وحقل calendar=islamic-umalqura. تُطابق نتيجة Aladhan UAQ مع تحويل Intl المحلي، الذي يُستخدم أيضًا مصدرًا بديلًا.
       parameters:
         - name: date
           in: query
@@ -1528,7 +1554,7 @@ paths:
             type: string
             pattern: ^\d{2}-\d{2}-\d{4}$
           example: 01-01-2026
-          description: تاريخ ميلادي بصيغة DD-MM-YYYY. عند حذفه أو تركه فارغًا يستخدم تاريخ خادم API الحالي. التحقق من الصيغة فقط، وليس صحة اليوم في التقويم.
+          description: تاريخ بصيغة DD-MM-YYYY. يجب أن يكون تاريخًا ميلاديًا صحيحًا بسنة لا تقل عن 1000. عند حذفه أو تركه فارغًا يستخدم تاريخ خادم API.
       responses:
         "200":
           description: نجاح
@@ -1571,7 +1597,7 @@ paths:
       tags:
         - hijri
       summary: من الهجري إلى الميلادي
-      description: يحوّل تاريخًا هجريًا مطلوبًا. تأتي أسماء الأشهر وأيام الأسبوع من المصدر.
+      description: يحوّل تاريخًا هجريًا مطلوبًا بتقويم islamic-umalqura. يتحقق من اليوم 1..30 والشهر 1..12 والسنة 1..2400 قبل طلب المصدر.
       parameters:
         - name: date
           in: query
@@ -1580,7 +1606,7 @@ paths:
             type: string
             pattern: ^\d{2}-\d{2}-\d{4}$
           example: 01-09-1447
-          description: تاريخ هجري بصيغة DD-MM-YYYY. مطلوب. التحقق من الصيغة فقط، وليس صحة اليوم في التقويم.
+          description: تاريخ بصيغة DD-MM-YYYY. اليوم الهجري 1..30 والشهر 1..12 والسنة 1..2400.
       responses:
         "200":
           description: نجاح
@@ -1806,6 +1832,7 @@ components:
       required:
         - id
         - name
+        - makkia
         - apiName
       properties:
         id:
@@ -1818,7 +1845,7 @@ components:
           description: اسم السورة من المصدر.
         makkia:
           type: boolean
-          description: هل السورة مكية، إذا وفر المصدر القيمة.
+          description: هل السورة مكية.
         apiName:
           type: string
           description: المصدر الذي أعاد هذه النتيجة. قد تختلف الحقول الاختيارية حسب المصدر.
@@ -1826,6 +1853,7 @@ components:
             - mp3quran.net
             - alquran.cloud
             - quran.com
+            - local
     Aya:
       type: object
       required:
@@ -1866,12 +1894,14 @@ components:
           enum:
             - alquran.cloud
             - cdn.jsdelivr.net/fawazahmed0/quran-api
+            - quran.com
     AyaLookup:
       type: object
       required:
         - surahNumber
         - surahName
         - aya
+        - apiName
       properties:
         surahNumber:
           type: integer
@@ -1881,12 +1911,22 @@ components:
           description: اسم السورة.
         aya:
           $ref: "#/components/schemas/Aya"
+        apiName:
+          type: string
+          description: المصدر الذي أعاد هذه النتيجة. قد تختلف الحقول الاختيارية حسب المصدر.
+          enum:
+            - alquran.cloud
+            - cdn.jsdelivr.net/fawazahmed0/quran-api
+            - quran.com
     Moshaf:
       type: object
       required:
         - id
         - name
         - server
+        - surahList
+        - rewayaId
+        - type
       properties:
         id:
           type: integer
@@ -1898,11 +1938,24 @@ components:
           type: string
           description: الرابط الأساسي لخادم الصوت.
           format: uri
+        surahList:
+          type: array
+          items:
+            type: integer
+            minimum: 1
+            maximum: 114
+        rewayaId:
+          type: integer
+          description: معرّف الرواية.
+        type:
+          type: integer
+          description: نوع التسجيل؛ 11 للمرتل.
     Reciter:
       type: object
       required:
         - id
         - name
+        - moshaf
         - apiName
       properties:
         id:
@@ -1918,23 +1971,21 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/Moshaf"
-        style:
-          type:
-            - string
-            - "null"
-          description: أسلوب التلاوة إذا توفر.
         apiName:
           type: string
           description: المصدر الذي أعاد هذه النتيجة. قد تختلف الحقول الاختيارية حسب المصدر.
           enum:
             - mp3quran.net
-            - quran.com
+            - local
     ReciterAudio:
       type: object
       required:
         - reciter
         - surah
         - audio
+        - moshafId
+        - rewayaId
+        - apiName
       properties:
         reciter:
           type: string
@@ -1944,8 +1995,20 @@ components:
           description: رقم السورة.
         audio:
           type: string
-          description: رابط MP3 منشأ؛ لا يجري التحقق من وجود الملف.
+          description: رابط صوت جرى فحصه بطلب HEAD قبل التخزين؛ قد يفشل التشغيل لاحقًا.
           format: uri
+        moshafId:
+          type: integer
+          description: معرّف المصحف المختار.
+        rewayaId:
+          type: integer
+          description: معرّف الرواية المختارة.
+        apiName:
+          type: string
+          description: المصدر الذي أعاد هذه النتيجة. قد تختلف الحقول الاختيارية حسب المصدر.
+          enum:
+            - mp3quran.net
+            - quran.com
     TafsirEdition:
       type: object
       required:
@@ -1957,10 +2020,7 @@ components:
           description: معرّف النسخة العام المقبول في المسار.
           enum:
             - muyassar
-            - jalalayn
             - saadi
-            - waseet
-            - qurtubi
         label:
           type: string
           description: اسم النسخة بالعربية.
@@ -1984,13 +2044,18 @@ components:
           description: نص المصدر كما يعيده API. لغة التوثيق لا تترجم المحتوى.
         edition:
           type: string
-          description: معرّف النسخة لدى المصدر مثل ar.muyassar أو arabic_moyassar. يختلف عن المعرّف العام في المسار.
+          description: معرّف النسخة العام، ثابت عبر المصادر.
+          enum:
+            - muyassar
+            - saadi
         apiName:
           type: string
           description: المصدر الذي أعاد هذه النتيجة. قد تختلف الحقول الاختيارية حسب المصدر.
           enum:
             - alquran.cloud
             - quranenc.com
+            - quran.com
+            - cdn.jsdelivr.net/spa5k/tafsir_api
     AzkarCategorySummary:
       type: object
       required:
@@ -2008,8 +2073,8 @@ components:
           type: string
           description: المصدر الذي أعاد هذه النتيجة. قد تختلف الحقول الاختيارية حسب المصدر.
           enum:
-            - github.com/nawafalqari
-            - hisnmuslim.com
+            - cdn.jsdelivr.net/rn0x/hisn_almuslim_json
+            - raw.githubusercontent.com/rn0x/hisn_almuslim_json
     AzkarItem:
       type: object
       required:
@@ -2052,19 +2117,26 @@ components:
           type: string
           description: المصدر الذي أعاد هذه النتيجة. قد تختلف الحقول الاختيارية حسب المصدر.
           enum:
-            - github.com/nawafalqari
-            - hisnmuslim.com
+            - cdn.jsdelivr.net/rn0x/hisn_almuslim_json
+            - raw.githubusercontent.com/rn0x/hisn_almuslim_json
     AzkarPick:
       type: object
       required:
         - category
         - item
+        - apiName
       properties:
         category:
           type: string
           description: اسم التصنيف.
         item:
           $ref: "#/components/schemas/AzkarItem"
+        apiName:
+          type: string
+          description: المصدر الذي أعاد هذه النتيجة. قد تختلف الحقول الاختيارية حسب المصدر.
+          enum:
+            - cdn.jsdelivr.net/rn0x/hisn_almuslim_json
+            - raw.githubusercontent.com/rn0x/hisn_almuslim_json
     HadithBook:
       type: object
       required:
@@ -2081,13 +2153,14 @@ components:
           description: اسم الكتاب.
         available:
           type: integer
-          description: عدد الأحاديث الذي يذكره المصدر.
+          description: عدد الأحاديث الفعلية، ولا يمثل أكبر رقم عند وجود فجوات في الترقيم.
         apiName:
           type: string
           description: المصدر الذي أعاد هذه النتيجة. قد تختلف الحقول الاختيارية حسب المصدر.
           enum:
-            - hadith.gading.dev
-            - cdn.jsdelivr.net/sutanlab/hadith-api
+            - cdn.jsdelivr.net/gadingnst/hadith-api
+            - raw.githubusercontent.com/gadingnst/hadith-api
+            - local
     Hadith:
       type: object
       required:
@@ -2109,8 +2182,9 @@ components:
           type: string
           description: المصدر الذي أعاد هذه النتيجة. قد تختلف الحقول الاختيارية حسب المصدر.
           enum:
-            - hadith.gading.dev
-            - cdn.jsdelivr.net/sutanlab/hadith-api
+            - cdn.jsdelivr.net/gadingnst/hadith-api
+            - raw.githubusercontent.com/gadingnst/hadith-api
+            - local
     HadithRange:
       type: object
       required:
@@ -2132,38 +2206,41 @@ components:
       type: object
       required:
         - Fajr
+        - Sunrise
         - Dhuhr
         - Asr
+        - Sunset
         - Maghrib
         - Isha
       properties:
         Fajr:
           type: string
-          description: وقت محلي بصيغة المصدر. قد يحتوي لاحقة منطقة زمنية؛ ليس بالضرورة طابعًا زمنيًا بصيغة ISO.
+          description: وقت بصيغة HH:mm في المنطقة الزمنية المطلوبة.
+          pattern: ^([01][0-9]|2[0-3]):[0-5][0-9]$
         Sunrise:
           type: string
-          description: وقت محلي بصيغة المصدر. قد يحتوي لاحقة منطقة زمنية؛ ليس بالضرورة طابعًا زمنيًا بصيغة ISO.
+          description: وقت بصيغة HH:mm في المنطقة الزمنية المطلوبة.
+          pattern: ^([01][0-9]|2[0-3]):[0-5][0-9]$
         Dhuhr:
           type: string
-          description: وقت محلي بصيغة المصدر. قد يحتوي لاحقة منطقة زمنية؛ ليس بالضرورة طابعًا زمنيًا بصيغة ISO.
+          description: وقت بصيغة HH:mm في المنطقة الزمنية المطلوبة.
+          pattern: ^([01][0-9]|2[0-3]):[0-5][0-9]$
         Asr:
           type: string
-          description: وقت محلي بصيغة المصدر. قد يحتوي لاحقة منطقة زمنية؛ ليس بالضرورة طابعًا زمنيًا بصيغة ISO.
+          description: وقت بصيغة HH:mm في المنطقة الزمنية المطلوبة.
+          pattern: ^([01][0-9]|2[0-3]):[0-5][0-9]$
         Sunset:
           type: string
-          description: وقت محلي بصيغة المصدر. قد يحتوي لاحقة منطقة زمنية؛ ليس بالضرورة طابعًا زمنيًا بصيغة ISO.
+          description: وقت بصيغة HH:mm في المنطقة الزمنية المطلوبة.
+          pattern: ^([01][0-9]|2[0-3]):[0-5][0-9]$
         Maghrib:
           type: string
-          description: وقت محلي بصيغة المصدر. قد يحتوي لاحقة منطقة زمنية؛ ليس بالضرورة طابعًا زمنيًا بصيغة ISO.
+          description: وقت بصيغة HH:mm في المنطقة الزمنية المطلوبة.
+          pattern: ^([01][0-9]|2[0-3]):[0-5][0-9]$
         Isha:
           type: string
-          description: وقت محلي بصيغة المصدر. قد يحتوي لاحقة منطقة زمنية؛ ليس بالضرورة طابعًا زمنيًا بصيغة ISO.
-        Imsak:
-          type: string
-          description: وقت محلي بصيغة المصدر. قد يحتوي لاحقة منطقة زمنية؛ ليس بالضرورة طابعًا زمنيًا بصيغة ISO.
-        Midnight:
-          type: string
-          description: وقت محلي بصيغة المصدر. قد يحتوي لاحقة منطقة زمنية؛ ليس بالضرورة طابعًا زمنيًا بصيغة ISO.
+          description: وقت بصيغة HH:mm في المنطقة الزمنية المطلوبة.
+          pattern: ^([01][0-9]|2[0-3]):[0-5][0-9]$
     Coordinates:
       type: object
       required:
@@ -2181,6 +2258,9 @@ components:
       required:
         - date
         - timings
+        - timezone
+        - method
+        - coordinates
         - apiName
       properties:
         date:
@@ -2196,17 +2276,21 @@ components:
           description: اسم طريقة الحساب إذا توفر.
         coordinates:
           $ref: "#/components/schemas/Coordinates"
+        timezone:
+          type: string
+          description: منطقة IANA الزمنية؛ الافتراضي UTC.
         apiName:
           type: string
           description: المصدر الذي أعاد هذه النتيجة. قد تختلف الحقول الاختيارية حسب المصدر.
           enum:
             - aladhan.com
-            - pray.zone
+            - local
     HijriDate:
       type: object
       required:
         - hijri
         - gregorian
+        - calendar
         - apiName
       properties:
         hijri:
@@ -2261,11 +2345,16 @@ components:
             year:
               type: string
               description: السنة كنص.
+        calendar:
+          type: string
+          description: تقويم أم القرى الثابت.
+          const: islamic-umalqura
         apiName:
           type: string
           description: المصدر الذي أعاد هذه النتيجة. قد تختلف الحقول الاختيارية حسب المصدر.
           enum:
             - aladhan.com
+            - local
     Qibla:
       type: object
       required:

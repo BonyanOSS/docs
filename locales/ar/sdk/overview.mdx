@@ -1,49 +1,31 @@
 ---
-title: "مكتبة JavaScript وTypeScript"
-description: "ثبّت SDK 1.0.2 وافهم القيم التي تعيدها دواله."
+title: "SDK لـ JavaScript وTypeScript"
+description: "استخدام الإصدار 2.0.0 والهجرة من 1.0.2."
 ---
 
-اسم الحزمة الرسمية `@bonyanoss/bonyan-api`. تدعم ESM وCommonJS، وتضم أنواع TypeScript، وتحدد Node.js 22 أو أحدث كمتطلب. تحتاج تطبيقات المتصفح واجهات fetch وAbortController وURL؛ استخدم أداة تجميع تطبيقك.
+الحزمة الرسمية @bonyanoss/bonyan-api تدعم ESM وCommonJS وتحتوي أنواع TypeScript. تتطلب Node.js 22.12 أو أحدث. يمكن لتطبيقات المتصفح استخدام مجمع حزم وواجهات fetch وURL وAbortController.
+
+إصدار SDK 2.0.0 متوفر على npm. تتحقق الوثائق من الأمثلة والتكامل مع API باستخدام نفس الإصدار المنشور.
 
 ```bash
-npm install @bonyanoss/bonyan-api@1.0.2
+npm install @bonyanoss/bonyan-api@2.0.0
 ```
 
 
 ```ts
-import { BonyanClient, createBonyanClient } from '@bonyanoss/bonyan-api';
+import { BonyanClient } from '@bonyanoss/bonyan-api';
 
 const client = new BonyanClient({ timeoutMs: 45000, retry: 1 });
-const surahs = await client.surah.list();
-console.log(surahs[0]?.name);
-
-const local = createBonyanClient({ baseUrl: 'http://localhost:3000' });
-console.log(await local.health());
+const { total, results } = await client.ayat.search('الرحمن', { limit: 10 });
+console.log(total, results[0]?.aya.text, results[0]?.apiName);
+const azkar = await client.azkar.search('الله', { limit: 10 });
+console.log(azkar.results[0]?.category, azkar.results[0]?.apiName);
 ```
 
-تعادل `createBonyanClient(options)` الاستدعاء `new BonyanClient(options)`. أعد استخدام عميل واحد لكل إعداد.
+تعيد دوال المحتوى data مباشرة، ودوال القوائم مصفوفة. يعيد البحث `{ total, results }`. تعيد دوال التشغيل كائن JSON مباشرًا وmetrics نصًا. createBonyanClient(options) يكافئ new BonyanClient(options).
 
-## القيم المعادة
+## الهجرة من 1.0.2
 
-تفك معظم دوال الموارد الغلاف `{ success, data }`. وتستخرج دوال القوائم المصفوفة أيضًا: تعيد `surah.list()` المصفوفة الموجودة في `data.surah`، وتعيد `reciters.list()` قيمة `data.reciters`. لا تضف وصولًا آخر إلى `.data`.
+أزل دالة البحث البديلة. استخدم muyassar أو saadi للتفسير؛ forSurah يعيد مصفوفة دائمًا. حدّث الأنواع التي تنشئها يدويًا لتشمل حقول المصحف والمصدر والمنطقة الزمنية والتقويم المطلوبة. حُذفت style وImsak وMidnight من العقد. بعض قيم apiName القديمة لم تعد مصادر مدعومة. اختيار moshaf وtimezone وخيارات الطلب إضافات اختيارية.
 
-تعيد دوال التشغيل كائن JSON الخام، وتعيد `metrics()` نصًا. لا ترسل أي دالة طلب كتابة.
-
-<Warning>
-في الإصدار 1.0.2 تتوقع `ayat.search()` و`azkar.search()` غلافًا مختلفًا عن API الحالي. لذلك قد تحتوي النتيجة على حقول undefined وقت التشغيل رغم أنواع TypeScript. استخدم [دالة البحث البديلة](/locales/ar/sdk/search) حتى إصلاح عدم التطابق في الحزمة.
-</Warning>
-
-## CommonJS
-
-```js
-const { BonyanClient } = require('@bonyanoss/bonyan-api');
-
-async function main() {
-  const client = new BonyanClient();
-  console.log(await client.health());
-}
-main().catch(console.error);
-```
-
-
-تابع إلى [الإعدادات](/locales/ar/sdk/configuration) أو [مرجع الدوال](/locales/ar/sdk/resources) أو [التعامل مع الأخطاء](/locales/ar/sdk/errors).
+[مرجع الدوال](/locales/ar/sdk/resources) · [الأخطاء](/locales/ar/sdk/errors) · [المصادر والإصدارات](/locales/ar/guides/source-status)

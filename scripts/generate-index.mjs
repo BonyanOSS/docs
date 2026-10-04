@@ -8,8 +8,7 @@ const check = process.argv.includes("--check");
 function write(path, text) {
   const file = resolve(root, path);
   if (check) {
-    if (readFileSync(file, "utf8") !== text)
-      throw new Error(`Generated file is stale: ${path}`);
+    if (readFileSync(file, "utf8") !== text) throw new Error(`Generated file is stale: ${path}`);
   } else {
     mkdirSync(dirname(file), { recursive: true });
     writeFileSync(file, text);
@@ -44,12 +43,12 @@ const returns = {
   searchReciters: "Reciter[]",
   getReciterAudio: "ReciterAudio",
   listTafsirEditions: "TafsirEdition[]",
-  getSurahTafsir: "TafsirItem[] | TafsirItem",
+  getSurahTafsir: "TafsirItem[]",
   getAyaTafsir: "TafsirItem",
   listAzkarCategories: "AzkarCategorySummary[]",
   getAzkarCategory: "AzkarCategory",
   searchAzkar: "AzkarSearchResult",
-  getRandomZekr: "{ category: string; item: AzkarItem }",
+  getRandomZekr: "AzkarSearchHit",
   listHadithBooks: "HadithBook[]",
   getHadithBook: "HadithBookContent",
   getHadith: "HadithItem",
@@ -75,7 +74,7 @@ const signatures = {
   listReciters: "reciters.list()",
   getReciter: "reciters.getById(id)",
   searchReciters: "reciters.search(name)",
-  getReciterAudio: "reciters.getSurah(reciterId, surah)",
+  getReciterAudio: "reciters.getSurah(reciterId, surah, { moshaf? }?)",
   listTafsirEditions: "tafsir.listEditions()",
   getSurahTafsir: "tafsir.forSurah(edition, surah, { aya? }?)",
   getAyaTafsir: "tafsir.forAya(edition, surah, aya)",
@@ -98,8 +97,7 @@ for (const lang of locales) {
     i = ar ? 1 : 0;
   const front = (title, desc) =>
     `---\ntitle: ${JSON.stringify(title)}\ndescription: ${JSON.stringify(desc)}\n---\n\n`;
-  const link = (e) =>
-    `[${e.title[lang]}](${localeRoute(lang, `/api-reference/${e.slug}`)})`;
+  const link = (e) => `[${e.title[lang]}](${localeRoute(lang, `/api-reference/${e.slug}`)})`;
   let index = front(
     ar ? "مرجع API" : "API reference",
     ar
@@ -120,9 +118,9 @@ for (const lang of locales) {
     ? "جميع الدوال أدناه تُستدعى على `client` وتعيد Promise بالنوع المذكور. يشير `?` إلى معامل أو خيار اختياري؛ التواقيع في الجدول مختصرة وليست كودًا للنسخ.\n"
     : "Every method below is called on `client` and returns a Promise of the listed type. `?` denotes an optional argument or option; table signatures are shorthand, not copyable code.\n";
   sdk += ar
-    ? "\nالأرقام أعداد JavaScript؛ الأسماء والنصوص ومعرّفات الكتب والنسخ نصوص. التاريخ بصيغة `DD-MM-YYYY`. تقبل prayer.getTimes زوج إحداثيات أو مدينة ودولة، مع date وmethod اختياريين.\n"
-    : "\nNumeric arguments are JavaScript numbers; names, queries, book IDs and edition IDs are strings. Dates use `DD-MM-YYYY`. prayer.getTimes accepts coordinates or city/country, plus optional date and method.\n";
-  sdk += `\n<Warning>\n${ar ? "بحث ayat وazkar في الإصدار 1.0.2 لا يطابق غلاف API الحالي. لا تعتمد على النوع المعلن دون استخدام الدالة البديلة." : "The ayat and azkar search methods in 1.0.2 do not match the current API envelope. Their declared types do not make their runtime result valid."} [${ar ? "بديل البحث" : "Search adapter"}](${localeRoute(lang, "/sdk/search")}).\n</Warning>\n`;
+    ? "\nالأرقام أعداد JavaScript؛ الأسماء والنصوص ومعرّفات الكتب والنسخ نصوص. التاريخ بصيغة `DD-MM-YYYY`. تقبل prayer.getTimes زوج إحداثيات أو مدينة ودولة، مع date وmethod وtimezone اختياريين. تقبل كل دالة خيارات نقل اختيارية في المعامل الأخير.\n"
+    : "\nNumeric arguments are JavaScript numbers; names, queries, book IDs and edition IDs are strings. Dates use `DD-MM-YYYY`. prayer.getTimes accepts coordinates or city/country, plus optional date, method and timezone. Every method also accepts transport options as its last argument.\n";
+
   for (const [group, titles] of Object.entries(groups)) {
     const members = endpoints.filter((e) => e.slug.startsWith(group + "/"));
     const table =
@@ -146,11 +144,9 @@ for (const lang of locales) {
         .join("\n") + "\n";
   }
   sdk += ar
-    ? `\nتعيد forSurah في هذا API مصفوفة دائمًا؛ تعريف SDK أوسع. تعيد دوال القوائم المصفوفة المستخرجة من الغلاف، وتعاد بيانات التشغيل مباشرة. استخدم [مرجع المسار](${localeRoute(lang, "/api-reference/overview")}) لمعرفة الحدود وحالات الفشل.\n`
-    : `\nThis API always returns an array for forSurah; the SDK declaration is broader. List methods return extracted arrays, and operational methods return raw data. Consult the [HTTP reference](${localeRoute(lang, "/api-reference/overview")}) for limits and failure cases.\n`;
+    ? `\nتعيد forSurah مصفوفة دائمًا، ويطابق نوع SDK هذا السلوك. تعيد دوال القوائم المصفوفة المستخرجة من الغلاف، وتعاد بيانات التشغيل مباشرة. استخدم [مرجع المسار](${localeRoute(lang, "/api-reference/overview")}) لمعرفة الحدود وحالات الفشل.\n`
+    : `\nforSurah always returns an array, and the SDK declaration matches. List methods return extracted arrays, and operational methods return raw data. Consult the [HTTP reference](${localeRoute(lang, "/api-reference/overview")}) for limits and failure cases.\n`;
   write(`${localeDirectory(lang)}/api-reference/overview.mdx`, index);
   write(`${localeDirectory(lang)}/sdk/resources.mdx`, sdk);
 }
-console.log(
-  `${check ? "Checked" : "Generated"} API indexes and SDK method tables.`,
-);
+console.log(`${check ? "Checked" : "Generated"} API indexes and SDK method tables.`);

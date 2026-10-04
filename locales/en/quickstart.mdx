@@ -30,10 +30,10 @@ This example gives cold provider requests 45 seconds. The SDK's default timeout 
 
 ## 3. Use the SDK in Node.js
 
-Use Node.js 22 or later and an ESM file such as `example.mjs`.
+Use Node.js 22.12 or later and an ESM file such as `example.mjs`.
 
 ```bash
-npm install @bonyanoss/bonyan-api@1.0.2
+npm install ./bonyanoss-bonyan-api-2.0.0.tgz
 ```
 
 ```ts
@@ -43,6 +43,8 @@ const client = new BonyanClient({ timeoutMs: 45000, retry: 1 });
 const result = await client.ayat.getById(1);
 console.log(result.aya.text);
 ```
+
+Install @bonyanoss/bonyan-api@2.0.0 from npm. See [SDK installation](/locales/en/sdk/overview).
 
 The SDK removes the success envelope, so use `result.aya.text`, without `result.data`.
 

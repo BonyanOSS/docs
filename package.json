@@ -1,37 +1,39 @@
 {
-    "name": "bonyan-docs",
-    "version": "1.0.0",
-    "private": true,
-    "description": "English and Arabic documentation for Bonyan API and its JavaScript SDK.",
-    "license": "MIT",
-    "author": "BonyanOSS",
-    "homepage": "https://docs.bonyanoss.org",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/BonyanOSS/docs.git"
-    },
-    "packageManager": "pnpm@11.0.8",
-    "scripts": {
-        "dev": "mintlify dev --no-open",
-        "generate": "node scripts/generate-api.mjs && node scripts/generate-index.mjs",
-        "check": "node scripts/generate-api.mjs --check && node scripts/generate-index.mjs --check && node scripts/check-docs.mjs && node --test scripts/search.test.mjs",
-        "build": "mintlify validate",
-        "broken-links": "mintlify broken-links",
-        "check:source": "node scripts/check-source.mjs"
-    },
-    "devDependencies": {
-        "@apidevtools/swagger-parser": "13.0.0",
-        "@bonyanoss/bonyan-api": "1.0.2",
-        "@mdx-js/mdx": "3.1.1",
-        "mintlify": "4.2.876",
-        "react": "19.2.3",
-        "react-dom": "19.2.3",
-        "typescript": "6.0.3",
-        "yaml": "2.9.0"
-    },
-    "engines": {
-        "node": ">=22",
-        "pnpm": ">=11"
-    },
-    "type": "module"
+  "name": "bonyan-docs",
+  "version": "1.1.0",
+  "private": true,
+  "description": "English and Arabic documentation for Bonyan API and its JavaScript SDK.",
+  "license": "MIT",
+  "author": "BonyanOSS",
+  "homepage": "https://docs.bonyanoss.org",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/BonyanOSS/docs.git"
+  },
+  "packageManager": "pnpm@11.22.0",
+  "scripts": {
+    "dev": "mintlify dev --no-open",
+    "generate": "node scripts/generate-api.mjs && node scripts/generate-index.mjs",
+    "check": "node scripts/generate-api.mjs --check && node scripts/generate-index.mjs --check && node scripts/check-docs.mjs && node --test scripts/*.test.mjs",
+    "build": "mintlify validate",
+    "broken-links": "mintlify broken-links",
+    "check:source": "node scripts/check-source.mjs",
+    "check:api": "node scripts/check-api.mjs"
+  },
+  "devDependencies": {
+    "@apidevtools/swagger-parser": "13.1.0",
+    "@bonyanoss/bonyan-api": "2.0.0",
+    "@mdx-js/mdx": "3.1.1",
+    "ajv": "8.20.0",
+    "mintlify": "4.2.981",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "typescript": "6.0.3",
+    "yaml": "2.9.1"
+  },
+  "engines": {
+    "node": ">=22.12.0",
+    "pnpm": ">=11"
+  },
+  "type": "module"
 }

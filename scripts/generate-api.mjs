@@ -6,17 +6,12 @@ import { endpoints, baseUrl } from "./api-catalog.mjs";
 import { schemas, localize } from "./api-schemas.mjs";
 import { locales, localeDirectory, localeRoute } from "./locales.mjs";
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const lock = JSON.parse(
-  readFileSync(resolve(root, "sources.lock.json"), "utf8"),
-);
+const lock = JSON.parse(readFileSync(resolve(root, "sources.lock.json"), "utf8"));
 const check = process.argv.includes("--check");
 const ref = (name) => ({ $ref: `#/components/schemas/${name}` });
 const statuses = {
   400: ["Invalid or missing input.", "إدخال مفقود أو غير صالح."],
-  404: [
-    "Requested item or matching result was not found.",
-    "لم يوجد العنصر أو التطابق المطلوب.",
-  ],
+  404: ["Requested item or matching result was not found.", "لم يوجد العنصر أو التطابق المطلوب."],
   429: [
     "Request rate exceeded. Respect Retry-After when present.",
     "تجاوز حد الطلبات. التزم بترويسة Retry-After عند وجودها.",
@@ -45,7 +40,7 @@ for (const lang of locales) {
     openapi: "3.1.0",
     info: {
       title: "Bonyan API",
-      version: lock.api.version,
+      version: lock.api.contractVersion ?? lock.api.version,
       description: ar
         ? "واجهة HTTP للقرآن والتفسير والقراء والأذكار والحديث ومواقيت الصلاة والتقويم والقبلة. لغة التوثيق لا تغيّر لغة المحتوى."
         : "HTTP API for Quran, tafsir, reciters, azkar, hadith, prayer times, calendars and Qibla. Documentation language does not change content language.",
@@ -64,8 +59,7 @@ for (const lang of locales) {
     components: { schemas: localize(schemas, lang) },
   };
   for (const e of endpoints) {
-    const description =
-      e.description[lang] + (e.notes ? "\n\n" + e.notes[lang] : "");
+    const description = e.description[lang] + (e.notes ? "\n\n" + e.notes[lang] : "");
     const responses = {
       200: {
         description: ar ? "نجاح" : "Success",
@@ -105,22 +99,16 @@ for (const lang of locales) {
     };
     let examplePath = e.path;
     for (const p of e.params.filter((p) => p.in === "path"))
-      examplePath = examplePath.replace(
-        `{${p.name}}`,
-        encodeURIComponent(p.example),
-      );
+      examplePath = examplePath.replace(`{${p.name}}`, encodeURIComponent(p.example));
     const query = e.params.filter((p) => p.in === "query");
     // A prayer request uses coordinates only; city/country are documented as an alternative.
     const exampleQuery = query.filter(
-      (p) =>
-        e.path !== "/prayer/times" || !["city", "country"].includes(p.name),
+      (p) => e.path !== "/prayer/times" || !["city", "country"].includes(p.name),
     );
     const url = baseUrl + examplePath;
     const curl =
       `curl --fail-with-body${exampleQuery.length ? " --get" : ""} '${url}'` +
-      exampleQuery
-        .map((p) => ` \\\n  --data-urlencode '${p.name}=${p.example}'`)
-        .join("");
+      exampleQuery.map((p) => ` \\\n  --data-urlencode '${p.name}=${p.example}'`).join("");
     const fetchCode =
       `const url = new URL(${JSON.stringify(url)});\n` +
       exampleQuery
@@ -131,7 +119,7 @@ for (const lang of locales) {
         .join("") +
       `const response = await fetch(url, { signal: AbortSignal.timeout(45000) });\nif (!response.ok) throw new Error(\`HTTP \${response.status}: \${await response.text()}\`);\nconst body = await response.${e.schema === "Metrics" ? "text" : "json"}();\nconsole.log(body);`;
     const sourcePath = e.slug.startsWith("meta/")
-      ? "src/server.ts"
+      ? "src/app.ts"
       : `src/modules/${e.slug.split("/")[0]}/${e.slug.split("/")[0]}.controller.ts`;
     let body = `---\ntitle: ${JSON.stringify(e.title[lang])}\ndescription: ${JSON.stringify(e.description[lang])}\nopenapi: ${JSON.stringify(`${specFile} GET ${e.path}`)}\n---\n`;
     if (e.notes) body += `\n<Warning>\n${e.notes[lang]}\n</Warning>\n`;

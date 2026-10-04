@@ -1,23 +1,23 @@
 ---
-title: "تشغيل تلاوة"
-description: "اختر قارئًا لديه بيانات صوت قبل طلب الرابط."
+title: "تشغيل مصحف مختار"
+description: "اختيار مصحف يغطي السورة والرواية المطلوبة."
 ---
 
-اجلب فهرس القراء واختر عنصرًا يحتوي خادمًا لأول مصحف. لا تفترض أن معرّف قارئ ثابت يعني الشخص نفسه عبر المصادر.
+يحافظ فهرس القراء على معرّفات mp3quran عند استخدام النسخة المحلية. لكل قارئ مصاحف moshaf تحتوي surahList وrewayaId وtype. اختر مصحفًا يغطي السورة ويلائم الرواية المطلوبة.
 
 ```ts
 import { BonyanClient } from '@bonyanoss/bonyan-api';
 
 const client = new BonyanClient({ timeoutMs: 45000, retry: 1 });
+const surah = 1;
 const reciters = await client.reciters.list();
-const reciter = reciters.find(item => item.moshaf?.[0]?.server);
-if (!reciter) throw new Error('No audio-enabled reciter is available');
-const result = await client.reciters.getSurah(reciter.id, 1);
-console.log(result.reciter, result.audio);
+const reciter = reciters.find(item => item.moshaf.some(m => m.surahList.includes(surah)));
+if (!reciter) throw new Error('No recording covers this surah');
+const recording = reciter.moshaf.find(m => m.surahList.includes(surah))!;
+const result = await client.reciters.getSurah(reciter.id, surah, { moshaf: recording.id });
+console.log(result.audio, result.moshafId, result.rewayaId, result.apiName);
 ```
 
-اضبط `src` لعنصر صوت HTML على الرابط المعاد في `audio` واعرض أدوات التشغيل. يعيد API نفسه JSON، بينما ينزّل المتصفح MP3 من المصدر. تعامل مع حدث الخطأ لعنصر الصوت وأتح للمستخدم اختيار قارئ آخر.
+عند حذف moshaf يفضّل API حفص المرتل الذي يغطي السورة، ثم مصحفًا آخر يغطيها. يفحص الرابط بطلب HEAD ويرفض الصوت غير المتاح. يقتصر بديل Quran.com على التسجيلات الموثقة لنفس القارئ والرواية والأسلوب.
 
-يستخدم المسار أول مصحف فقط. لا يوجد معامل عام لاختيار المصحف. ينشئ `server + paddedSurah + '.mp3'` دون التحقق من الملف أو السور المتاحة في المصحف. لذلك قد ينجح طلب API ويفشل طلب MP3.
-
-قد تغيب خوادم الصوت عندما يوفر بديل quran.com الفهرس. اعرض حالة عدم توفر بدل اختراع رابط صوت. راجع [مسار الصوت](/locales/ar/api-reference/reciters/audio).
+عدم وجود مصحف مطابق يعيد 404. فشل جميع مصادر الصوت المتاحة يعيد 503. يُخزن الفحص الناجح 15 دقيقة؛ قد يفشل التشغيل لاحقًا. ضع رابط audio في عنصر صوت HTML وأظهر أدوات التشغيل وتعامل مع حدث الخطأ. يعيد API بيانات JSON ويحمل المتصفح الصوت من المصدر. [المسار](/locales/ar/api-reference/reciters/audio).

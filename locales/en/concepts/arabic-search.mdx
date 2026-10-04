@@ -31,4 +31,4 @@ console.log(body.total, body.data);
 ```
 
 
-The server clamps verse search to 1..500 and azkar search to 1..200, with a default of 50. Zero or an unparsable limit also uses 50. The SDK validates limits more strictly. A search with no match returns 404 rather than an empty success array.
+The server and SDK accept limits 1..500 for ayat and 1..200 for azkar, with a server default of 50. Zero, fractional, unparsable or out-of-range limits are rejected. A search with no match returns 404 rather than an empty success array.

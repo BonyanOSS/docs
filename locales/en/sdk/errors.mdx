@@ -33,6 +33,6 @@ try {
 
 The package also exports `isValidationError`, `isBonyanApiError` and `isBonyanRequestError` type guards. Error metadata such as code and request ID can be absent when a proxy supplies the error.
 
-Input validation is stricter than some API controllers: SDK verse numbers within a surah are limited to 1..286, coordinates are bounded, and explicit hadith ranges are capped at 300 items. A valid SDK input can still return 404 or 503 from the server.
+Validation covers real Gregorian dates, Hijri date bounds, supported prayer methods/timezones, tafsir editions, coordinates and inclusive hadith ranges with defaulted bounds. SDK verse numbers within a surah are limited to 1..286. A valid SDK input can still return 404 or 503 from the server.
 
 See [retry behavior](/locales/en/concepts/rate-limit). Avoid another automatic retry loop around SDK calls unless you account for its existing attempts.

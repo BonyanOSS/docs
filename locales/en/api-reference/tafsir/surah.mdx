@@ -1,6 +1,6 @@
 ---
 title: "Tafsir for a surah"
-description: "Returns an array, including when the optional aya filter selects one verse. Returned edition is a provider-specific ID."
+description: "Returns a TafsirItem array, even with the optional aya filter. edition is the public ID muyassar or saadi across all sources."
 openapi: "locales/en/openapi.yaml GET /tafsir/{edition}/{surah}"
 ---
 
@@ -32,4 +32,4 @@ console.log(result);
 
 </CodeGroup>
 
-[Responses and errors](/locales/en/concepts/errors) · [SDK guide](/locales/en/sdk/overview) · [Route implementation](https://github.com/BonyanOSS/Bonyan-API/blob/e76bc4e114f2f174bc93d0c7f90b163f0721a9f4/src/modules/tafsir/tafsir.controller.ts)
+[Responses and errors](/locales/en/concepts/errors) · [SDK guide](/locales/en/sdk/overview) · [Route implementation](https://github.com/BonyanOSS/Bonyan-API/blob/c851b1a610c5169d3bffd822ed68886338ea3067/src/modules/tafsir/tafsir.controller.ts)
