@@ -20,6 +20,6 @@ Use a low-frequency content request in addition to probes when you need to monit
 | bonyan_api_upstream_failures_total | Failed provider attempts with the same labels. |
 | bonyan_api_upstream_duration_ms_sum | Sum of measured request durations in milliseconds. |
 
-Result labels are `ok`, `http_error` and `error`. Duration is measured by the HTTP helper around fetch, not full JSON parsing or end-to-end client latency. The duration sum is not a histogram and cannot provide latency percentiles. Counters reset with the process; provider series appear after requests occur.
+Result labels are `ok`, `http_error` and `error`. Duration is measured by the HTTP helper around fetch, including JSON decoding for fetchJson, but excluding controller mapping and end-to-end client latency. The duration sum is not a histogram and cannot provide latency percentiles. Counters reset with the process; provider series appear after requests occur.
 
 For a 503, log the HTTP route, status and request ID, then inspect server warnings and upstream counters. Keep monitoring requests inside the configured rate budget. There is no published availability guarantee in this reference.

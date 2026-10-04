@@ -43,16 +43,8 @@ function visit(x) {
   }
 }
 visit(docs.navigation);
-assert.equal(
-  new Set(navigated).size,
-  navigated.length,
-  "Duplicate navigation page",
-);
-assert.deepEqual(
-  [...navigated].sort(),
-  allPages.sort(),
-  "Missing or orphaned navigation pages",
-);
+assert.equal(new Set(navigated).size, navigated.length, "Duplicate navigation page");
+assert.deepEqual([...navigated].sort(), allPages.sort(), "Missing or orphaned navigation pages");
 function checkLink(link, origin) {
   if (!link.startsWith("/") || link.startsWith("//")) return;
   const path = decodeURIComponent(link.split(/[?#]/)[0]).slice(1);
@@ -64,27 +56,19 @@ function checkLink(link, origin) {
 }
 for (const r of docs.redirects ?? []) checkLink(r.destination, "redirect");
 const redirectSources = new Set((docs.redirects ?? []).map((r) => r.source));
-assert.equal(
-  redirectSources.size,
-  (docs.redirects ?? []).length,
-  "Duplicate redirects",
-);
+assert.equal(redirectSources.size, (docs.redirects ?? []).length, "Duplicate redirects");
 for (const r of docs.redirects ?? [])
   assert(!redirectSources.has(r.destination), `Redirect chain: ${r.source}`);
 for (const lang of locales) {
   assert(
     (docs.redirects ?? []).some(
-      (r) =>
-        r.source === `/${lang}` &&
-        r.destination === `/${localeDirectory(lang)}/introduction`,
+      (r) => r.source === `/${lang}` && r.destination === `/${localeDirectory(lang)}/introduction`,
     ),
     `Missing legacy ${lang} root redirect`,
   );
   assert(
     (docs.redirects ?? []).some(
-      (r) =>
-        r.source === `/${lang}/:slug*` &&
-        r.destination === `/${localeDirectory(lang)}/:slug*`,
+      (r) => r.source === `/${lang}/:slug*` && r.destination === `/${localeDirectory(lang)}/:slug*`,
     ),
     `Missing legacy ${lang} wildcard redirect`,
   );
@@ -94,11 +78,7 @@ for (const lang of locales) {
   const spec = parse(read(`${localeDirectory(lang)}/openapi.yaml`));
   await SwaggerParser.validate(structuredClone(spec));
   specs[lang] = spec;
-  assert.equal(
-    Object.keys(spec.paths).length,
-    endpoints.length,
-    "Endpoint coverage",
-  );
+  assert.equal(Object.keys(spec.paths).length, endpoints.length, "Endpoint coverage");
   for (const e of endpoints) {
     const operation = spec.paths[e.path]?.get;
     assert(operation, e.path);
@@ -138,16 +118,16 @@ for (const file of allPages) {
       read("examples/search.mjs").trim(),
       `${file}: search example differs from the tested helper`,
     );
-  await compile(body, { development: false });
-  for (const match of body.matchAll(/(?:\]\(|href=["'])(\/[^\s"')]+)/g))
-    checkLink(match[1], file);
+  try {
+    await compile(body, { development: false });
+  } catch (error) {
+    throw new Error(`${file}: ${error.message}`, { cause: error });
+  }
+  for (const match of body.matchAll(/(?:\]\(|href=["'])(\/[^\s"')]+)/g)) checkLink(match[1], file);
   const lang = localeFromFile(file);
   assert(lang, `${file}: unknown locale path`);
   if (lang === "ar") {
-    assert(
-      /[\u0600-\u06ff]/u.test(meta.title),
-      `${file}: Arabic title missing`,
-    );
+    assert(/[\u0600-\u06ff]/u.test(meta.title), `${file}: Arabic title missing`);
     for (const m of body.matchAll(/(?:\]\(|href=["'])(\/locales\/en\/[^\s"')]+)/g))
       assert.fail(`${file}: cross-language link ${m[1]}`);
   }
@@ -155,16 +135,13 @@ for (const file of allPages) {
     const match = meta.openapi.match(/^(\S+) GET (\S+)$/);
     assert(match, `${file}: invalid openapi binding`);
     assert.equal(match[1], `${localeDirectory(lang)}/openapi.yaml`);
-    assert(
-      specs[lang].paths[match[2]],
-      `${file}: unknown operation`,
-    );
+    assert(specs[lang].paths[match[2]], `${file}: unknown operation`);
   }
-  if (lang === "en")
-    for (const m of body.matchAll(/```ts[^\n]*\n([\s\S]*?)\n```/g)) {
-      const filename = resolve(root, `__docs_example_${snippets++}.ts`);
-      virtual.set(filename, m[1] + "\nexport {};\n");
-    }
+  // Compile examples from both locales, including translated guides.
+  for (const m of body.matchAll(/```ts[^\n]*\n([\s\S]*?)\n```/g)) {
+    const filename = resolve(root, `__docs_example_${snippets++}.ts`);
+    virtual.set(filename, m[1] + "\nexport {};\n");
+  }
 }
 const options = {
   strict: true,

@@ -4,30 +4,14 @@ import {
   BonyanClient,
   BonyanApiError,
   BonyanRequestError,
+  ValidationError,
 } from "@bonyanoss/bonyan-api";
 import { searchContent } from "../examples/search.mjs";
-const json = (body, status = 200) =>
-  new Response(JSON.stringify(body), {
-    status,
-    headers: { "Content-Type": "application/json" },
-  });
+const json = (body, status = 200) => Response.json(body, { status });
+
 for (const resource of ["ayat", "azkar"]) {
-  test(`${resource}: flat API search envelope survives the adapter`, async () => {
-    const hits =
-      resource === "ayat"
-        ? [
-            {
-              surahNumber: 1,
-              surahName: "الفاتحة",
-              aya: { number: 1, numberInSurah: 1, text: "نص للاختبار" },
-            },
-          ]
-        : [
-            {
-              category: "تصنيف للاختبار",
-              item: { id: 1, text: "نص للاختبار" },
-            },
-          ];
+  test(`${resource}: published SDK artifact decodes the flat API envelope`, async () => {
+    const hits = [{ apiName: "synthetic-test-source" }];
     const result = await searchContent(resource, "الله", {
       baseUrl: "https://example.test/prefix/",
       limit: 1,
@@ -40,67 +24,49 @@ for (const resource of ["ayat", "azkar"]) {
       },
     });
     assert.deepEqual(result, { total: 1, results: hits });
-  });
-  test(`${resource}: verify documented SDK 1.0.2 mismatch against the real flat body`, async () => {
     const client = new BonyanClient({
       retry: 0,
-      fetch: async () => json({ success: true, total: 1, data: [{}] }),
+      fetch: async () => json({ success: true, total: 1, data: hits }),
     });
-    assert.deepEqual(await client[resource].search("الله"), {
-      total: undefined,
-      results: undefined,
-    });
+    assert.deepEqual(await client[resource].search("الله"), result);
   });
 }
-test("HTTP failures preserve status and request ID", async () => {
+test("HTTP errors preserve status and request ID", async () => {
   await assert.rejects(
     searchContent("ayat", "الله", {
       fetch: async () =>
         json(
           {
             success: false,
-            error: {
-              code: "NOT_FOUND",
-              message: "No match",
-              requestId: "test-request",
-            },
+            error: { code: "NOT_FOUND", message: "No match", requestId: "test-request" },
           },
           404,
         ),
     }),
-    (e) =>
-      e instanceof BonyanApiError &&
-      e.status === 404 &&
-      e.requestId === "test-request",
+    (e) => e instanceof BonyanApiError && e.status === 404 && e.requestId === "test-request",
   );
 });
-test("malformed successful envelopes are rejected", async () => {
+test("malformed successful search envelopes reject", async () => {
   await assert.rejects(
-    searchContent("ayat", "الله", {
-      fetch: async () => json({ success: true, data: {} }),
-    }),
+    searchContent("ayat", "الله", { fetch: async () => json({ success: true, data: {} }) }),
     BonyanRequestError,
   );
 });
-test("invalid Arabic input and limits are rejected before transport", async () => {
+test("invalid limits and blank queries reject before transport", async () => {
   const fetch = () => {
     throw new Error("Transport must not run");
   };
-  await assert.rejects(searchContent("ayat", "latin", { fetch }), TypeError);
-  await assert.rejects(
-    searchContent("azkar", "الله", { limit: 201, fetch }),
-    RangeError,
-  );
+  await assert.rejects(searchContent("ayat", " ", { fetch }), ValidationError);
+  await assert.rejects(searchContent("azkar", "الله", { limit: 201, fetch }), ValidationError);
 });
-test("caller cancellation signal is forwarded", async () => {
+test("already cancelled requests never reach fetch", async () => {
   const controller = new AbortController();
   controller.abort();
   await assert.rejects(
     searchContent("ayat", "الله", {
       signal: controller.signal,
-      fetch: async (_url, options) => {
-        assert.equal(options.signal, controller.signal);
-        options.signal.throwIfAborted();
+      fetch: () => {
+        throw new Error("Transport must not run");
       },
     }),
     BonyanRequestError,

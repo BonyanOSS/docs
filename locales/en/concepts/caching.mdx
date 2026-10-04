@@ -3,18 +3,19 @@ title: "Caching"
 description: "Per-process cache lifetimes and what happens on a miss."
 ---
 
-The API stores successful service results in an in-memory Map. Concurrent requests for the same uncached key share one loader. Failed loads are not stored as successful entries.
+The API stores successful service results in an in-memory Map. Node.js requests for the same uncached key share one loader. Worker in-flight deduplication stays within a request context. Failed loads are not stored as successful entries.
 
 | Data | TTL | Cache key includes |
 | --- | --- | --- |
 | Surah catalogue | 12 hours | One shared key |
 | Full Quran | 24 hours | One shared key |
 | Reciters | 1 hour | One shared key |
+| Verified audio URL | 15 minutes | Reciter, recording, surah |
 | Azkar | 24 hours | One shared key |
 | Tafsir | 24 hours | Edition, surah, optional aya |
-| Hadith book catalogue | 24 hours | One shared key |
-| Hadith range | 12 hours | Book, from, to |
-| Prayer times | 1 hour | Date, coordinates, city, country, method |
+| Hadith book catalogue | Local metadata, no cache load | None |
+| Full hadith book used by ranges/lookups/random | 12 hours | Book ID |
+| Prayer times | 1 hour | Date, coordinates, city, country, method, timezone |
 | Hijri conversion | 7 days | Direction and date |
 | Qibla | 30 days | Coordinates |
 

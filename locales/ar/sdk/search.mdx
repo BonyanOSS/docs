@@ -1,71 +1,44 @@
 ---
-title: "توافق البحث"
-description: "دالة بحث تعمل مع API 2.0.0 وSDK 1.0.2."
+title: "البحث باستخدام SDK"
+description: "استجابات البحث وعدد النتائج وحالة عدم وجود تطابق."
 ---
 
-يعيد API الشكل `{ success: true, total, data: [...] }`. في SDK 1.0.2 يفك موردا البحث `data` أولًا، ثم يحاولان قراءة `total` و`data` من المصفوفة الناتجة. لذلك قد تتحول استجابة HTTP الناجحة إلى `{ total: undefined, results: undefined }`.
+يحافظ SDK 2.0.0 على استجابة API بالشكل `{ success: true, total, data: [...] }` ويعيد `{ total, results }`. استخدم دوال الموارد مباشرة؛ لم تعد الدالة البديلة الخاصة بالإصدار 1.0.2 مطلوبة.
 
-احفظ الدالة التالية في `search.mjs`. تستخدم fetch مباشرة وتحافظ على فئات أخطاء SDK. ترسل طلبًا واحدًا دون إعادة تلقائية؛ وتبقى 404 خطأ وليست قائمة فارغة.
+```ts
+import { BonyanClient } from '@bonyanoss/bonyan-api';
+
+const client = new BonyanClient({ timeoutMs: 45000, retry: 1 });
+const { total, results } = await client.ayat.search('الرحمن', { limit: 10 });
+console.log(total, results[0]?.aya.text, results[0]?.apiName);
+const azkar = await client.azkar.search('الله', { limit: 10 });
+console.log(azkar.results[0]?.category, azkar.results[0]?.apiName);
+```
+
+الحد الافتراضي 50. يقبل بحث الآيات 1..500 وبحث الأذكار 1..200. يحسب total النتائج المعادة بعد الحد، ولا يمثل عدد التطابقات في المحتوى كله. لا يوجد ترقيم صفحات. عدم وجود نتائج يعيد HTTP 404 من خلال BonyanApiError. تحتوي النتائج apiName؛ ونتائج الأذكار تحتوي category وitem.
+
+تقبل كل دالة خيارات النقل في المعامل الأخير. راجع [الإعدادات](/locales/ar/sdk/configuration) لاستخدام signal وtimeoutMs وheaders، و[البحث بالعربية](/locales/ar/concepts/arabic-search) لفهم التطبيع.
+
+مثال دالة تطبيق تستخدم SDK مباشرة، دون فك غلاف مخصص:
 
 ```js
-import { BonyanApiError, BonyanRequestError } from "@bonyanoss/bonyan-api";
+import { BonyanClient, ValidationError } from "@bonyanoss/bonyan-api";
 
-// Compatibility helper for the flat search envelope returned by API 2.0.0.
+// Application helper using the supported SDK search methods.
 export async function searchContent(
   resource,
   text,
   {
     limit = 10,
     baseUrl = "https://api.bonyanoss.org",
-    fetch: fetchFn = globalThis.fetch,
+    fetch = globalThis.fetch,
     signal = AbortSignal.timeout(45000),
   } = {},
 ) {
-  if (!["ayat", "azkar"].includes(resource))
-    throw new TypeError("resource must be ayat or azkar");
-  const maximum = resource === "ayat" ? 500 : 200;
-  if (!Number.isInteger(limit) || limit < 1 || limit > maximum)
-    throw new RangeError("Invalid limit");
-  if (typeof text !== "string" || !/[\u0621-\u064A]/u.test(text))
-    throw new TypeError("Use an Arabic query");
-  const url = new URL(baseUrl.replace(/\/+$/, "") + "/" + resource + "/search");
-  url.searchParams.set("text", text);
-  url.searchParams.set("limit", String(limit));
-  let response;
-  try {
-    response = await fetchFn(url, {
-      signal,
-      headers: { Accept: "application/json" },
-    });
-  } catch (error) {
-    throw BonyanRequestError.from(error);
+  if (!["ayat", "azkar"].includes(resource)) {
+    throw new ValidationError("resource must be ayat or azkar", "resource");
   }
-  const body = await response.json().catch(() => null);
-  if (!response.ok)
-    throw BonyanApiError.fromResponse(
-      response.status,
-      body,
-      response.statusText,
-    );
-  if (
-    body?.success !== true ||
-    !Array.isArray(body.data) ||
-    !Number.isInteger(body.total)
-  ) {
-    throw new BonyanRequestError("Unexpected search response", body);
-  }
-  return { total: body.total, results: body.data };
+  const client = new BonyanClient({ baseUrl, fetch, timeoutMs: 45000, retry: 0 });
+  return client[resource].search(text, { limit }, { signal });
 }
 ```
-
-
-```js
-import { searchContent } from './search.mjs';
-
-const { total, results } = await searchContent('ayat', 'الرحمن', { limit: 10 });
-console.log(total, results[0]?.aya.text);
-```
-
-أرسل `'azkar'` للبحث في الأذكار. تحتوي نتائجه `category` و`item`. تحافظ الدالة على بادئة الرابط في الاستضافة الذاتية وتقبل AbortSignal. تحويل الخطأ فيها لا يملأ `retryAfterMs`؛ إذا أضفت إعادة محاولة فاستخدم سياسة نقل تقرأ Retry-After.
-
-هذه دالة توافق موثّقة وليست تعديلًا للحزمة المنشورة. أعد فحص الحزمة قبل حذفها. [نسخ المصادر](/locales/ar/guides/source-status).

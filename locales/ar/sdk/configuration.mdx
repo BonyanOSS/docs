@@ -1,33 +1,32 @@
 ---
-title: "إعداد العميل"
-description: "الرابط الأساسي والمهلة والمحاولات والترويسات وfetch المخصص."
+title: "إعداد العميل والطلبات"
+description: "الرابط والمهلة والمحاولات والترويسات وإلغاء الطلب."
 ---
 
 ```ts
 import { BonyanClient } from '@bonyanoss/bonyan-api';
 
-const client = new BonyanClient({
-  baseUrl: 'https://api.bonyanoss.org',
-  timeoutMs: 45000,
-  retry: 1,
+const client = new BonyanClient({ timeoutMs: 45000, retry: 1 });
+const controller = new AbortController();
+const pending = client.ayat.search('الله', { limit: 10 }, {
+  signal: controller.signal,
+  timeoutMs: 20000,
   headers: { 'X-Application': 'my-app' },
-  fetch: globalThis.fetch.bind(globalThis),
 });
-console.log(await client.health());
+controller.abort();
+await pending.catch(console.error);
+console.log(await client.health({ timeoutMs: 2000 }));
 ```
 
+| الخيار | الافتراضي |
+| --- | --- |
+| baseUrl | https://api.bonyanoss.org |
+| timeoutMs | 10000 |
+| retry | 3 |
+| headers | Accept: application/json |
+| fetch | globalThis.fetch |
+| userAgent | غير محدد |
 
-| الخيار | الافتراضي | المعنى |
-| --- | --- | --- |
-| `baseUrl` | `https://api.bonyanoss.org` | النطاق وبادئة النشر إن وجدت؛ تُحذف الشرطات المائلة الأخيرة. |
-| `timeoutMs` | `10000` | مهلة كل محاولة بالمللي ثانية. |
-| `retry` | `3` | المحاولات الإضافية بعد الطلب الأول. استخدم عددًا صحيحًا غير سالب؛ الصفر يعطّل الإعادة. |
-| `headers` | `Accept: application/json` | ترويسات إضافية تُدمج فوق الافتراضيات. |
-| `fetch` | fetch العام | بديل بتوقيع fetch القياسي للاختبارات أو التحكم بالنقل. |
-| `userAgent` | غير مضبوط | ترويسة User-Agent اختيارية؛ يختلف سلوكها بحسب المتصفح. |
+تقبل كل دالة BonyanRequestOptions في المعامل الأخير: signal وtimeoutMs وheaders. إذا كانت للدالة خيارات مثل limit أو moshaf، أرسلها أولًا. تقبل timeoutMs عددًا صحيحًا موجبًا حتى 2147483647، وتقبل retry عددًا صحيحًا غير سالب. تطبق المهلة لكل محاولة؛ استخدم signal لتحديد مهلة للعملية كاملة. الإلغاء يوقف الطلب الجاري وانتظار إعادة المحاولة، والإشارة الملغاة مسبقًا تمنع fetch.
 
-إذا كانت بوابتك تستخدم بادئة مسار، ضمّن البادئة كاملة في `baseUrl`. يضيف SDK مسارات الموارد بعدها. النشر العام الذي راجعناه لا يحتاج بادئة.
-
-لا تعرض دوال الموارد خيارات مهلة أو ترويسات أو AbortSignal لكل استدعاء في الإصدار 1.0.2. توجد هذه الخيارات في عميل HTTP الداخلي لكنها ليست جزءًا من دوال الموارد المصدّرة. استخدم عملاء منفصلين لسياسات المهل المختلفة، أو fetch عند الحاجة إلى إلغاء طلب بعينه.
-
-لا يوفر SDK كاش للاستجابات أو تدفق مصادقة أو تحققًا وقت التشغيل من كل حقل معاد. تصف أنواع TypeScript البيانات المتوقعة؛ تحقق من الحقول التي يعتمد عليها تطبيقك.
+تُدمج أسماء الترويسات دون حساسية لحالة الأحرف. يمكن أن يحتوي baseUrl بادئة بوابة؛ تُحذف الشرطات المائلة النهائية وتُلحق مسارات الموارد. سلوك User-Agent في المتصفح يعتمد على المنصة. لا يخزن SDK الاستجابات ولا يتحقق من كل حقل وقت التشغيل؛ يرفض غلاف النجاح أو البحث غير الصالح.

@@ -1,11 +1,11 @@
 ---
 title: "استضافة API ذاتيًا"
-description: "شغّل نسخة Bonyan API واضبطها وتحقق منها."
+description: "التشغيل على Node.js أو Docker أو Cloudflare Workers."
 ---
 
-استخدم Node.js 22 أو أحدث لإعداد محلي جديد. يستخدم مستودع API حاليًا pnpm 10.33.4. تحتاج طلبات المحتوى اتصال HTTPS صادرًا إلى مصادر البيانات المضبوطة. لا يضبط هذا الخادم قاعدة بيانات أو مفتاح API للمصادر.
+متطلب خادم API هو Node.js 24 (`>=24 <25`)، ومدير الحزم pnpm 10.33.4. يستخدم SDK والوثائق إعداداتهما الخاصة. لا يحتاج الخادم قاعدة بيانات أو مفتاح API للمصادر، ويحتاج اتصال HTTPS صادرًا للمحتوى الخارجي.
 
-## التطوير المحلي
+## التشغيل المحلي
 
 ```bash
 git clone https://github.com/BonyanOSS/Bonyan-API.git
@@ -16,36 +16,7 @@ pnpm install --frozen-lockfile
 pnpm dev
 ```
 
-لتغيير الافتراضيات، انسخ `.env.example` إلى `.env` قبل التشغيل: باستخدام `cp .env.example .env` على Unix أو `Copy-Item .env.example .env` في PowerShell.
-
-الرابط المحلي `http://localhost:3000`. لا يسجّل التطبيق بادئة `/bonyan-api/v1`؛ أضف البادئة واحذفها في بوابتك فقط إذا كان النشر يحتاجها.
-
-## الإعدادات
-
-```dotenv
-PORT=3000
-HOST=0.0.0.0
-RATE_LIMIT_MAX=120
-RATE_LIMIT_WINDOW=1 minute
-CORS_ORIGIN=*
-TRUST_PROXY=false
-LOG_LEVEL=info
-CACHE_MAX_ENTRIES=1000
-```
-
-
-| المتغير | التأثير |
-| --- | --- |
-| PORT / HOST | منفذ الاستماع وعنوان الربط. استخدم 127.0.0.1 للاستماع محليًا فقط. |
-| RATE_LIMIT_MAX / RATE_LIMIT_WINDOW | ميزانية الطلبات العامة لكل IP ونافذتها. |
-| CORS_ORIGIN | يسمح `*` أو`true` بعكس النطاقات؛ وإلا فقائمة نطاقات مفصولة بفواصل. هذا الإعداد ليس مصادقة. |
-| TRUST_PROXY | تفعّل القيمة المطابقة `true` الثقة بالبروكسي. فعّلها فقط خلف بروكسي موثوق مضبوط بشكل صحيح. |
-| LOG_LEVEL | مستوى سجلات Fastify، افتراضيًا info. |
-| CACHE_MAX_ENTRIES | أقصى عدد لعناصر الكاش داخل العملية، افتراضيًا 1000. |
-
-قد تضبط بيئة التشغيل `NODE_ENV`، لكن منطق إعداد الخادم نفسه لا يتفرع بحسبه. استخدم قيمًا رقمية موجبة للإعدادات الرقمية.
-
-## البناء والتشغيل
+انسخ .env.example إلى .env قبل التشغيل: cp على Unix أو Copy-Item في PowerShell. الرابط المحلي http://localhost:3000 دون بادئة إصدار. المتغيرات PORT وHOST للاستماع، وRATE_LIMIT_MAX وRATE_LIMIT_WINDOW لميزانية الطلبات، وCORS_ORIGIN لقائمة النطاقات، وTRUST_PROXY لثقة البروكسي، وLOG_LEVEL للسجلات، وCACHE_MAX_ENTRIES لسعة الكاش. يفعّل TRUST_PROXY النص true فقط؛ استخدمه خلف بروكسي موثوق.
 
 ```bash
 pnpm lint:check
@@ -54,15 +25,25 @@ pnpm build
 pnpm start
 ```
 
-يتضمن المستودع Dockerfile. ابنِ الصورة باستخدام `docker build -t bonyan-api .`، ثم شغّل `docker run --rm -p 3000:3000 --env-file .env bonyan-api`. يستخدم Dockerfile المرفق Node 20 حاليًا؛ هذا اختيار صورة المستودع وليس متطلب تشغيل SDK.
+## Docker
 
-## تحقق من النشر
+يستخدم Dockerfile صورة Node 24 Alpine ويشغّل dist/server.js. لاختباره:
 
 ```bash
-curl --fail-with-body http://localhost:3000/health
-curl --fail-with-body http://localhost:3000/ready
-curl --fail-with-body http://localhost:3000/tafsir
-curl --fail-with-body 'http://localhost:3000/surah/1'
+docker build -t bonyan-api .
+docker run --rm -p 3000:3000 --env-file .env bonyan-api
 ```
 
-لا تثبت الطلبات الثلاثة الأولى الاتصال بالمصادر. يختبر طلب السورة مصدر محتوى أو الكاش الموجود. اقرأ `/metrics` كنص؛ وتخضع الصحة والجاهزية والمقاييس لحدود الطلبات أيضًا. راجع [التشغيل والمراقبة](/locales/ar/guides/operations).
+## Cloudflare Workers
+
+يستخدم النشر src/worker.ts بمحول Fetch أصلي وعلم nodejs_compat، دون Fastify داخل Worker ودون حاوية. يضبط wrangler.toml تاريخ التوافق 2026-10-04 والنطاق المخصص api.bonyanoss.org، مع preview_urls=true وworkers_dev=false. إعدادات البيئة في Worker تمر عبر bindings؛ لا تستمع PORT وHOST إلى منفذ داخله.
+
+```bash
+pnpm cloudflare:check
+pnpm cloudflare:startup
+pnpm deploy:cloudflare
+```
+
+يختبر الأمر الأول حزمة النشر دون نشر، ويختبر الثاني بدء Worker عبر /health و/ready و/tafsir. أمر deploy يتطلب حساب Cloudflare ونطاقًا مهيأ. تحذف هجرة v2 فئة الحاوية القديمة؛ أبقِ سجل الهجرات للنشر القائم.
+
+فحوص /health و/ready لا تتصل بالمصادر. أضف طلب محتوى عند اختبار توفرها، واقرأ /metrics كنص. الكاش والحدود خاصان بكل عملية أو عزل Worker. راجع [التشغيل](/locales/ar/guides/operations).

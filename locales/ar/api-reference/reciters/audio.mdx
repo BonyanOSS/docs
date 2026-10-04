@@ -1,11 +1,11 @@
 ---
 title: "رابط صوت السورة"
-description: "ينشئ الرابط من خادم أول مصحف ورقم السورة بثلاث خانات. يعيد JSON وليس بثًا صوتيًا."
+description: "يختار مصحفًا يغطي السورة، مع تفضيل حفص المرتل عند حذف moshaf. يفحص الصوت بطلب HEAD قبل إعادة رابط JSON وبيانات المصحف."
 openapi: "locales/ar/openapi.yaml GET /reciters/{id}/surah/{surah}"
 ---
 
 <Warning>
-لا يتحقق API من وجود ملف MP3. قد يفتقد قارئ من quran.com بيانات المصحف فتُعاد 404. اختر قارئًا له moshaf قبل طلب الصوت.
+moshaf هو معرّف مصحف من فهرس القارئ. عدم تغطية السورة يعيد 404؛ فشل مصادر الصوت المتاحة يعيد 503. يقتصر بديل Quran.com على مصاحف حفص المرتلة ذات المطابقة الموثقة.
 </Warning>
 
 ## مثال الطلب
@@ -13,11 +13,13 @@ openapi: "locales/ar/openapi.yaml GET /reciters/{id}/surah/{surah}"
 <CodeGroup>
 
 ```bash cURL
-curl --fail-with-body 'https://api.bonyanoss.org/reciters/1/surah/1'
+curl --fail-with-body --get 'https://api.bonyanoss.org/reciters/123/surah/1' \
+  --data-urlencode 'moshaf=7'
 ```
 
 ```js JavaScript
-const url = new URL("https://api.bonyanoss.org/reciters/1/surah/1");
+const url = new URL("https://api.bonyanoss.org/reciters/123/surah/1");
+url.searchParams.set("moshaf", "7");
 const response = await fetch(url, { signal: AbortSignal.timeout(45000) });
 if (!response.ok) throw new Error(`HTTP ${response.status}: ${await response.text()}`);
 const body = await response.json();
@@ -28,10 +30,10 @@ console.log(body);
 import { BonyanClient } from '@bonyanoss/bonyan-api';
 
 const client = new BonyanClient({ timeoutMs: 45000, retry: 1 });
-const result = await client.reciters.getSurah(1, 1);
+const result = await client.reciters.getSurah(123, 1, { moshaf: 7 });
 console.log(result);
 ```
 
 </CodeGroup>
 
-[الاستجابات والأخطاء](/locales/ar/concepts/errors) · [دليل SDK](/locales/ar/sdk/overview) · [كود المسار](https://github.com/BonyanOSS/Bonyan-API/blob/e76bc4e114f2f174bc93d0c7f90b163f0721a9f4/src/modules/reciters/reciters.controller.ts)
+[الاستجابات والأخطاء](/locales/ar/concepts/errors) · [دليل SDK](/locales/ar/sdk/overview) · [كود المسار](https://github.com/BonyanOSS/Bonyan-API/blob/c851b1a610c5169d3bffd822ed68886338ea3067/src/modules/reciters/reciters.controller.ts)

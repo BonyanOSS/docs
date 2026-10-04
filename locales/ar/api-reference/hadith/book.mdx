@@ -1,11 +1,11 @@
 ---
 title: "نطاق أحاديث"
-description: "يعيد book وavailable وhadiths داخل data. طرفا النطاق مشمولان؛ from الافتراضي 1 وto الافتراضي from + 29."
+description: "يعيد book وavailable وhadiths داخل data. النطاق شامل طرفيه؛ from الافتراضي 1 وto الافتراضي from+29. يقبل 300 رقم حديث كحد أقصى."
 openapi: "locales/ar/openapi.yaml GET /hadith/{book}"
 ---
 
 <Warning>
-يرفض API حاليًا to - from > 300، فيقبل 301 عنصرًا عند شمول الطرفين. يرفض SDK 1.0.2 أكثر من 300 عند إرسال الطرفين. استخدم 300 أو أقل للتوافق. قد يعيد النطاق الفارغ 200 مع hadiths: [].
+قد تحتوي الأرقام على فجوات. قد يعيد النطاق أحاديث أقل أو مصفوفة فارغة. available هو عدد الأحاديث المخزنة، فلا تستخدمه حدًا أعلى لأرقام البحث. الكتب المجهولة تعيد 404.
 </Warning>
 
 ## مثال الطلب
@@ -38,4 +38,4 @@ console.log(result);
 
 </CodeGroup>
 
-[الاستجابات والأخطاء](/locales/ar/concepts/errors) · [دليل SDK](/locales/ar/sdk/overview) · [كود المسار](https://github.com/BonyanOSS/Bonyan-API/blob/e76bc4e114f2f174bc93d0c7f90b163f0721a9f4/src/modules/hadith/hadith.controller.ts)
+[الاستجابات والأخطاء](/locales/ar/concepts/errors) · [دليل SDK](/locales/ar/sdk/overview) · [كود المسار](https://github.com/BonyanOSS/Bonyan-API/blob/c851b1a610c5169d3bffd822ed68886338ea3067/src/modules/hadith/hadith.controller.ts)

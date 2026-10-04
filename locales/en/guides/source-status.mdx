@@ -1,27 +1,19 @@
 ---
 title: "Sources and compatibility"
-description: "Reviewed revisions, hosted behavior and known implementation differences."
+description: "Reviewed API commit and published SDK release."
 ---
 
-This documentation was reviewed on 7 September 2026 against:
+Reviewed on 4 October 2026.
 
-| Source | Version | Immutable revision |
-| --- | --- | --- |
-| Bonyan API | 2.0.0 | [e76bc4e](https://github.com/BonyanOSS/Bonyan-API/tree/e76bc4e114f2f174bc93d0c7f90b163f0721a9f4) |
-| JavaScript SDK | 1.0.2 | [068e23c](https://github.com/BonyanOSS/bonyan-sdk-js/tree/068e23cdbaeed8095a99c753b75412897905dd8a) |
-
-The hosted `/health` and `/ready` routes responded at the root origin during the review. They do not expose a source revision, so these docs do not claim that the deployment matches the repository commit exactly. The package version 2.0.0 is not a `/v2` URL prefix.
-
-## Known differences
-
-| Area | Current behavior |
+| Source | Version | Review evidence |
 | --- | --- |
-| SDK search | The SDK expects a nested search envelope; the server returns a flat one. Use [the adapter](/locales/en/sdk/search). |
-| Tafsir IDs | Public IDs are `muyassar`, `jalalayn`, `saadi`, `waseet` and `qurtubi`. Response edition values are provider IDs. |
-| Tafsir types | SDK forSurah declares an object-or-array union; this API controller returns an array, even with the aya query. |
-| Hadith range | API accepts a difference of 300, meaning 301 inclusive items. SDK checks a 300-item maximum when both bounds are present. |
-| Search language | Latin-only queries can normalize to empty. English/fuzzy search claims are not supported by the controller. |
-| Prayer fallback | pray.zone is used only for today's coordinate requests and does not receive method. |
-| Readiness | Reports process and cache state, not upstream readiness. |
+| API package | 2.1.0 | [c851b1a](https://github.com/BonyanOSS/Bonyan-API/tree/c851b1a) |
+| API OpenAPI contract | 3.0.0 | Breaking contracts described in API CHANGELOG and OpenAPI. |
+| SDK | 2.0.0 | [667e5b0](https://github.com/BonyanOSS/bonyan-sdk-js/tree/667e5b0), npm release and distribution integrity. |
+| Docs | 1.1.0 | Bilingual generated contracts and integration checks. |
 
-These are documentation findings, not fixes to the API or SDK repositories. The OpenAPI files describe the reviewed controllers and types; they are maintained here because the API repository's current specification omits detailed response schemas.
+API package 2.1.0 and contract 3.0.0 are different labels in the current repository. These docs preserve both and describe the actual controllers at c851b1a. Neither label adds a URL prefix. The hosted probes do not expose a commit, so repository compatibility does not establish the live deployment revision.
+
+SDK 2.0.0 is published on npm from merged commit 667e5b0. The docs install this exact release. sources.lock.json records the reviewed source hash and registry distribution integrity; pnpm-lock.yaml pins the installed archive.
+
+The update fixes flat search decoding, aligns normalized response types, adds moshaf and timezone options, and makes transport cancellation available on every method. Only muyassar and saadi are supported. Hadith ranges accept 300 inclusive numbers; gaps are allowed. See [migration](/locales/en/sdk/overview) and [maintenance](/locales/en/guides/maintenance).

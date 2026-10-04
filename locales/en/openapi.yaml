@@ -2,12 +2,12 @@
 openapi: 3.1.0
 info:
   title: Bonyan API
-  version: 2.0.0
+  version: 3.0.0
   description: HTTP API for Quran, tafsir, reciters, azkar, hadith, prayer times, calendars and Qibla. Documentation language does not change content language.
   license:
     name: MIT
     identifier: MIT
-  x-source-revision: e76bc4e114f2f174bc93d0c7f90b163f0721a9f4
+  x-source-revision: c851b1a610c5169d3bffd822ed68886338ea3067
 servers:
   - url: https://api.bonyanoss.org
     description: Hosted API
@@ -149,7 +149,7 @@ paths:
       tags:
         - surah
       summary: List surahs
-      description: Returns the chapter catalogue in data.surah. This endpoint returns names and metadata, not verse text.
+      description: Returns the complete canonical 114-surah catalogue, with stable Arabic names and required makkia.
       parameters: []
       responses:
         "200":
@@ -419,7 +419,7 @@ paths:
             type: integer
             minimum: 1
           example: 1
-          description: Verse number within the surah. An empty lookup returns 404; tafsir provider rejection can instead produce 503 when every configured source fails.
+          description: Positive verse number within the surah. A nonexistent verse returns 404.
       responses:
         "200":
           description: Success
@@ -468,10 +468,7 @@ paths:
       tags:
         - ayat
       summary: Search Quran text
-      description: |-
-        Returns {success, total, data: [...]}. total counts returned matches after the limit, not all matches in the Quran.
-
-        SDK 1.0.2 has an envelope mismatch in client.ayat.search(). Use the fetch example here or the compatibility helper in the SDK guide.
+      description: "Returns {success, total, data: [...]}. total counts returned matches after limit. Each hit includes apiName."
       parameters:
         - name: text
           in: query
@@ -490,7 +487,7 @@ paths:
             minimum: 1
             maximum: 500
           example: 10
-          description: Result cap, not pagination. The server clamps to 1..500; zero or an unparsable value falls back to 50.
+          description: Maximum returned matches. Omitted uses 50; invalid values return 400.
       responses:
         "200":
           description: Success
@@ -539,7 +536,7 @@ paths:
       tags:
         - reciters
       summary: List reciters
-      description: Returns reciters in data.reciters. The fallback provider may omit moshaf and audio-server information.
+      description: Returns normalized reciters in data.reciters. Each reciter has moshaf recordings with surahList, rewayaId and type. The local snapshot preserves IDs and recordings on failover.
       parameters: []
       responses:
         "200":
@@ -577,15 +574,16 @@ paths:
       tags:
         - reciters
       summary: Get a reciter
-      description: Looks up an ID in the currently cached provider catalogue.
+      description: Looks up a stable mp3quran reciter ID in the current catalogue or local snapshot.
       parameters:
         - name: id
           in: path
           required: true
           schema:
             type: integer
+            minimum: 1
           example: 1
-          description: ID returned by the reciter catalogue. IDs depend on the provider.
+          description: Stable mp3quran reciter ID, preserved in the local snapshot.
       responses:
         "200":
           description: Success
@@ -693,17 +691,18 @@ paths:
         - reciters
       summary: Surah audio URL
       description: |-
-        Builds a URL from the first moshaf server and a three-digit surah number. Returns JSON, not an audio stream.
+        Selects a recording covering the surah, preferring Hafs murattal when moshaf is omitted. Verifies the audio with HEAD before returning a JSON URL and recording metadata.
 
-        The API does not verify that the MP3 exists. A reciter from quran.com may have no moshaf, causing 404. Discover a reciter with moshaf before requesting audio.
+        moshaf is a recording ID from the reciter catalogue. Missing recording coverage returns 404; failure of all eligible audio providers returns 503. Quran.com fallback is restricted to verified matching Hafs murattal recordings.
       parameters:
         - name: id
           in: path
           required: true
           schema:
             type: integer
-          example: 1
-          description: ID returned by the reciter catalogue. IDs depend on the provider.
+            minimum: 1
+          example: 123
+          description: Stable mp3quran reciter ID, preserved in the local snapshot.
         - name: surah
           in: path
           required: true
@@ -713,6 +712,14 @@ paths:
             maximum: 114
           example: 1
           description: Surah number, 1 through 114.
+        - name: moshaf
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+          example: 7
+          description: Optional recording ID owned by this reciter.
       responses:
         "200":
           description: Success
@@ -761,7 +768,7 @@ paths:
       tags:
         - tafsir
       summary: Tafsir editions
-      description: Lists the five configured public edition IDs and Arabic labels. The catalogue is local; it does not test provider availability.
+      description: "Lists the two supported public edition IDs: muyassar and saadi. The local catalogue does not test provider availability."
       parameters: []
       responses:
         "200":
@@ -793,7 +800,7 @@ paths:
       tags:
         - tafsir
       summary: Tafsir for a surah
-      description: Returns an array, including when the optional aya filter selects one verse. Returned edition is a provider-specific ID.
+      description: Returns a TafsirItem array, even with the optional aya filter. edition is the public ID muyassar or saadi across all sources.
       parameters:
         - name: edition
           in: path
@@ -802,10 +809,7 @@ paths:
             type: string
             enum:
               - muyassar
-              - jalalayn
               - saadi
-              - waseet
-              - qurtubi
           example: muyassar
           description: Public edition ID from GET /tafsir. Use muyassar, not ar.muyassar.
         - name: surah
@@ -824,7 +828,7 @@ paths:
             type: integer
             minimum: 1
           example: 1
-          description: Optional verse within the surah. The response remains an array.
+          description: Positive verse number within the surah. A nonexistent verse returns 404.
       responses:
         "200":
           description: Success
@@ -873,7 +877,7 @@ paths:
       tags:
         - tafsir
       summary: Tafsir for an aya
-      description: Returns one tafsir object. muyassar can use two sources; the other configured editions each have one source.
+      description: Returns one tafsir item. Only muyassar and saadi are supported; unavailable editions return 400 before any provider request.
       parameters:
         - name: edition
           in: path
@@ -882,10 +886,7 @@ paths:
             type: string
             enum:
               - muyassar
-              - jalalayn
               - saadi
-              - waseet
-              - qurtubi
           example: muyassar
           description: Public edition ID from GET /tafsir. Use muyassar, not ar.muyassar.
         - name: surah
@@ -904,7 +905,7 @@ paths:
             type: integer
             minimum: 1
           example: 1
-          description: Verse number within the surah. An empty lookup returns 404; tafsir provider rejection can instead produce 503 when every configured source fails.
+          description: Positive verse number within the surah. A nonexistent verse returns 404.
       responses:
         "200":
           description: Success
@@ -1049,10 +1050,7 @@ paths:
       tags:
         - azkar
       summary: Search azkar text
-      description: |-
-        Returns {success, total, data: [...]}, with category and item for each hit. total is the number returned, capped by limit.
-
-        SDK 1.0.2 has an envelope mismatch in client.azkar.search(). Use fetch or the compatibility helper in the SDK guide.
+      description: "Returns {success, total, data: [...]}; each hit includes category, item and apiName. No matches returns 404."
       parameters:
         - name: text
           in: query
@@ -1071,7 +1069,7 @@ paths:
             minimum: 1
             maximum: 200
           example: 10
-          description: Result cap, not pagination. The server clamps to 1..200; zero or an unparsable value falls back to 50.
+          description: Maximum returned matches. Omitted uses 50; invalid values return 400.
       responses:
         "200":
           description: Success
@@ -1164,7 +1162,7 @@ paths:
       tags:
         - hadith
       summary: Hadith books
-      description: Returns book IDs, names and available counts from the active provider. Discover IDs here instead of assuming a fixed list.
+      description: Lists nine supported books from verified local metadata. available counts actual stored narrations, not the maximum hadith number.
       parameters: []
       responses:
         "200":
@@ -1203,9 +1201,9 @@ paths:
         - hadith
       summary: Hadith range
       description: |-
-        Returns book, available and hadiths inside data. Both range endpoints are inclusive; omitted from defaults to 1 and omitted to defaults to from + 29.
+        Returns book, available and hadiths inside data. Inclusive range defaults to from=1 and to=from+29; at most 300 requested numbers are accepted.
 
-        The API currently rejects to - from > 300, so it accepts 301 inclusive items. SDK 1.0.2 rejects more than 300 when both bounds are supplied. Use 300 or fewer for compatibility. An empty range can return 200 with hadiths: [].
+        Numbering may contain gaps. A range can return fewer narrations or an empty array. available is the count of stored narrations, so it is not a bound for lookup numbers. Unknown books return 404.
       parameters:
         - name: book
           in: path
@@ -1214,7 +1212,7 @@ paths:
             type: string
             minLength: 1
           example: bukhari
-          description: Book ID from GET /hadith. Unknown IDs can return 503 when both providers reject them.
+          description: Book ID from GET /hadith. Unknown IDs return 404.
         - name: from
           in: query
           required: false
@@ -1241,6 +1239,12 @@ paths:
                 $ref: "#/components/schemas/HadithListResponse"
         "400":
           description: Invalid or missing input.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Requested item or matching result was not found.
           content:
             application/json:
               schema:
@@ -1283,7 +1287,7 @@ paths:
             type: string
             minLength: 1
           example: bukhari
-          description: Book ID from GET /hadith. Unknown IDs can return 503 when both providers reject them.
+          description: Book ID from GET /hadith. Unknown IDs return 404.
         - name: number
           in: path
           required: true
@@ -1340,7 +1344,7 @@ paths:
       tags:
         - hadith
       summary: Random hadith
-      description: Picks a book, then a number from its available count. Optionally restrict the book. The result contains book and hadith.
+      description: Samples an actual stored narration from a selected book, so numbering gaps cannot produce an empty random result. Optionally restrict by book ID.
       parameters:
         - name: book
           in: query
@@ -1348,7 +1352,7 @@ paths:
           schema:
             type: string
           example: bukhari
-          description: Optional exact book ID. An unknown ID returns 404.
+          description: Book ID from GET /hadith. Unknown IDs return 404.
       responses:
         "200":
           description: Success
@@ -1392,9 +1396,9 @@ paths:
         - prayer
       summary: Prayer times
       description: |-
-        Provide latitude + longitude or city + country. With both pairs, Aladhan coordinates are tried before Aladhan city lookup.
+        Provide latitude+longitude or city+country. Coordinates take precedence when both are supplied. Uses method 4 and timezone UTC by default and returns seven HH:mm timings.
 
-        pray.zone fallback is available only for coordinate requests dated today on the API server. It does not receive method, and may omit method and coordinates. Inspect apiName before assuming identical calculation settings. This controller validates numeric coordinates but does not enforce geographic bounds; SDK validation does.
+        Supported methods: 1, 2, 3, 4, 5, 9, 10, 11. The local adhan fallback requires coordinates and preserves the date, method and timezone. City-only requests have no local geocoder; unavailable providers return 503. hijri may be absent in local results.
       parameters:
         - name: date
           in: query
@@ -1403,12 +1407,14 @@ paths:
             type: string
             pattern: ^\d{2}-\d{2}-\d{4}$
           example: 01-01-2026
-          description: Gregorian date in DD-MM-YYYY. Omitted or blank uses the API server’s current date. Validation checks the format, not calendar validity.
+          description: Date in DD-MM-YYYY. Must be a real Gregorian date with year at least 1000. Omitted or blank uses the API server date.
         - name: latitude
           in: query
           required: false
           schema:
             type: number
+            minimum: -90
+            maximum: 90
           example: 21.4225
           description: Latitude in decimal degrees; provide it together with longitude.
         - name: longitude
@@ -1416,6 +1422,8 @@ paths:
           required: false
           schema:
             type: number
+            minimum: -180
+            maximum: 180
           example: 39.8262
           description: Longitude in decimal degrees; provide it together with latitude.
         - name: city
@@ -1437,8 +1445,26 @@ paths:
           required: false
           schema:
             type: integer
+            enum:
+              - 1
+              - 2
+              - 3
+              - 4
+              - 5
+              - 9
+              - 10
+              - 11
+            default: 4
           example: 4
-          description: Aladhan calculation method ID. Omitted uses the provider default.
+          description: Supported calculation method. Default 4 is Umm al-Qura.
+        - name: timezone
+          in: query
+          required: false
+          schema:
+            type: string
+            default: UTC
+          example: Asia/Riyadh
+          description: IANA timezone for HH:mm output.
       responses:
         "200":
           description: Success
@@ -1481,7 +1507,7 @@ paths:
       tags:
         - hijri
       summary: Today in both calendars
-      description: Converts the API server’s current Gregorian date through Aladhan. It does not use the browser’s timezone.
+      description: Converts the API server date using the fixed islamic-umalqura calendar. It does not use the browser timezone.
       parameters: []
       responses:
         "200":
@@ -1519,7 +1545,7 @@ paths:
       tags:
         - hijri
       summary: Gregorian to Hijri
-      description: Returns both calendar representations. Aladhan is the only configured source.
+      description: Returns both calendars and calendar=islamic-umalqura. Aladhan UAQ is validated against the local Intl conversion; local conversion is the fallback.
       parameters:
         - name: date
           in: query
@@ -1528,7 +1554,7 @@ paths:
             type: string
             pattern: ^\d{2}-\d{2}-\d{4}$
           example: 01-01-2026
-          description: Gregorian date in DD-MM-YYYY. Omitted or blank uses the API server’s current date. Validation checks the format, not calendar validity.
+          description: Date in DD-MM-YYYY. Must be a real Gregorian date with year at least 1000. Omitted or blank uses the API server date.
       responses:
         "200":
           description: Success
@@ -1571,7 +1597,7 @@ paths:
       tags:
         - hijri
       summary: Hijri to Gregorian
-      description: Converts a required Hijri date. Returned month and weekday names come from the provider.
+      description: Converts a required Hijri date using islamic-umalqura. Validates day 1..30, month 1..12 and year 1..2400 before fetching.
       parameters:
         - name: date
           in: query
@@ -1580,7 +1606,7 @@ paths:
             type: string
             pattern: ^\d{2}-\d{2}-\d{4}$
           example: 01-09-1447
-          description: Hijri date in DD-MM-YYYY. Required. Validation checks the format, not calendar validity.
+          description: Date in DD-MM-YYYY. Hijri day 1..30, month 1..12, year 1..2400.
       responses:
         "200":
           description: Success
@@ -1806,6 +1832,7 @@ components:
       required:
         - id
         - name
+        - makkia
         - apiName
       properties:
         id:
@@ -1818,7 +1845,7 @@ components:
           description: Surah name from the provider.
         makkia:
           type: boolean
-          description: Whether the surah is Meccan, when supplied.
+          description: Whether the surah is Meccan.
         apiName:
           type: string
           description: Provider that supplied this result. Optional fields may vary by provider.
@@ -1826,6 +1853,7 @@ components:
             - mp3quran.net
             - alquran.cloud
             - quran.com
+            - local
     Aya:
       type: object
       required:
@@ -1866,12 +1894,14 @@ components:
           enum:
             - alquran.cloud
             - cdn.jsdelivr.net/fawazahmed0/quran-api
+            - quran.com
     AyaLookup:
       type: object
       required:
         - surahNumber
         - surahName
         - aya
+        - apiName
       properties:
         surahNumber:
           type: integer
@@ -1881,12 +1911,22 @@ components:
           description: Surah name.
         aya:
           $ref: "#/components/schemas/Aya"
+        apiName:
+          type: string
+          description: Provider that supplied this result. Optional fields may vary by provider.
+          enum:
+            - alquran.cloud
+            - cdn.jsdelivr.net/fawazahmed0/quran-api
+            - quran.com
     Moshaf:
       type: object
       required:
         - id
         - name
         - server
+        - surahList
+        - rewayaId
+        - type
       properties:
         id:
           type: integer
@@ -1898,11 +1938,24 @@ components:
           type: string
           description: Base audio-server URL.
           format: uri
+        surahList:
+          type: array
+          items:
+            type: integer
+            minimum: 1
+            maximum: 114
+        rewayaId:
+          type: integer
+          description: Narration ID.
+        type:
+          type: integer
+          description: Recording type ID; 11 denotes murattal.
     Reciter:
       type: object
       required:
         - id
         - name
+        - moshaf
         - apiName
       properties:
         id:
@@ -1918,23 +1971,21 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/Moshaf"
-        style:
-          type:
-            - string
-            - "null"
-          description: Recitation style, when provided.
         apiName:
           type: string
           description: Provider that supplied this result. Optional fields may vary by provider.
           enum:
             - mp3quran.net
-            - quran.com
+            - local
     ReciterAudio:
       type: object
       required:
         - reciter
         - surah
         - audio
+        - moshafId
+        - rewayaId
+        - apiName
       properties:
         reciter:
           type: string
@@ -1944,8 +1995,20 @@ components:
           description: Surah number.
         audio:
           type: string
-          description: Constructed MP3 URL; file availability is not checked.
+          description: Audio URL verified with HEAD before caching; later playback can still fail.
           format: uri
+        moshafId:
+          type: integer
+          description: Selected recording ID.
+        rewayaId:
+          type: integer
+          description: Selected narration ID.
+        apiName:
+          type: string
+          description: Provider that supplied this result. Optional fields may vary by provider.
+          enum:
+            - mp3quran.net
+            - quran.com
     TafsirEdition:
       type: object
       required:
@@ -1957,10 +2020,7 @@ components:
           description: Public edition key accepted in paths.
           enum:
             - muyassar
-            - jalalayn
             - saadi
-            - waseet
-            - qurtubi
         label:
           type: string
           description: Arabic edition name.
@@ -1984,13 +2044,18 @@ components:
           description: Source text as returned by the API. Documentation language does not translate content.
         edition:
           type: string
-          description: Provider edition ID, for example ar.muyassar or arabic_moyassar. This differs from the public path ID.
+          description: Public edition ID, stable across providers.
+          enum:
+            - muyassar
+            - saadi
         apiName:
           type: string
           description: Provider that supplied this result. Optional fields may vary by provider.
           enum:
             - alquran.cloud
             - quranenc.com
+            - quran.com
+            - cdn.jsdelivr.net/spa5k/tafsir_api
     AzkarCategorySummary:
       type: object
       required:
@@ -2008,8 +2073,8 @@ components:
           type: string
           description: Provider that supplied this result. Optional fields may vary by provider.
           enum:
-            - github.com/nawafalqari
-            - hisnmuslim.com
+            - cdn.jsdelivr.net/rn0x/hisn_almuslim_json
+            - raw.githubusercontent.com/rn0x/hisn_almuslim_json
     AzkarItem:
       type: object
       required:
@@ -2052,19 +2117,26 @@ components:
           type: string
           description: Provider that supplied this result. Optional fields may vary by provider.
           enum:
-            - github.com/nawafalqari
-            - hisnmuslim.com
+            - cdn.jsdelivr.net/rn0x/hisn_almuslim_json
+            - raw.githubusercontent.com/rn0x/hisn_almuslim_json
     AzkarPick:
       type: object
       required:
         - category
         - item
+        - apiName
       properties:
         category:
           type: string
           description: Category name.
         item:
           $ref: "#/components/schemas/AzkarItem"
+        apiName:
+          type: string
+          description: Provider that supplied this result. Optional fields may vary by provider.
+          enum:
+            - cdn.jsdelivr.net/rn0x/hisn_almuslim_json
+            - raw.githubusercontent.com/rn0x/hisn_almuslim_json
     HadithBook:
       type: object
       required:
@@ -2081,13 +2153,14 @@ components:
           description: Book name.
         available:
           type: integer
-          description: Provider-reported number of narrations.
+          description: Count of actual narrations; not the largest number when numbering has gaps.
         apiName:
           type: string
           description: Provider that supplied this result. Optional fields may vary by provider.
           enum:
-            - hadith.gading.dev
-            - cdn.jsdelivr.net/sutanlab/hadith-api
+            - cdn.jsdelivr.net/gadingnst/hadith-api
+            - raw.githubusercontent.com/gadingnst/hadith-api
+            - local
     Hadith:
       type: object
       required:
@@ -2109,8 +2182,9 @@ components:
           type: string
           description: Provider that supplied this result. Optional fields may vary by provider.
           enum:
-            - hadith.gading.dev
-            - cdn.jsdelivr.net/sutanlab/hadith-api
+            - cdn.jsdelivr.net/gadingnst/hadith-api
+            - raw.githubusercontent.com/gadingnst/hadith-api
+            - local
     HadithRange:
       type: object
       required:
@@ -2132,38 +2206,41 @@ components:
       type: object
       required:
         - Fajr
+        - Sunrise
         - Dhuhr
         - Asr
+        - Sunset
         - Maghrib
         - Isha
       properties:
         Fajr:
           type: string
-          description: Provider-formatted local time. It may include a timezone suffix; do not assume an ISO timestamp.
+          description: HH:mm in the requested IANA timezone.
+          pattern: ^([01][0-9]|2[0-3]):[0-5][0-9]$
         Sunrise:
           type: string
-          description: Provider-formatted local time. It may include a timezone suffix; do not assume an ISO timestamp.
+          description: HH:mm in the requested IANA timezone.
+          pattern: ^([01][0-9]|2[0-3]):[0-5][0-9]$
         Dhuhr:
           type: string
-          description: Provider-formatted local time. It may include a timezone suffix; do not assume an ISO timestamp.
+          description: HH:mm in the requested IANA timezone.
+          pattern: ^([01][0-9]|2[0-3]):[0-5][0-9]$
         Asr:
           type: string
-          description: Provider-formatted local time. It may include a timezone suffix; do not assume an ISO timestamp.
+          description: HH:mm in the requested IANA timezone.
+          pattern: ^([01][0-9]|2[0-3]):[0-5][0-9]$
         Sunset:
           type: string
-          description: Provider-formatted local time. It may include a timezone suffix; do not assume an ISO timestamp.
+          description: HH:mm in the requested IANA timezone.
+          pattern: ^([01][0-9]|2[0-3]):[0-5][0-9]$
         Maghrib:
           type: string
-          description: Provider-formatted local time. It may include a timezone suffix; do not assume an ISO timestamp.
+          description: HH:mm in the requested IANA timezone.
+          pattern: ^([01][0-9]|2[0-3]):[0-5][0-9]$
         Isha:
           type: string
-          description: Provider-formatted local time. It may include a timezone suffix; do not assume an ISO timestamp.
-        Imsak:
-          type: string
-          description: Provider-formatted local time. It may include a timezone suffix; do not assume an ISO timestamp.
-        Midnight:
-          type: string
-          description: Provider-formatted local time. It may include a timezone suffix; do not assume an ISO timestamp.
+          description: HH:mm in the requested IANA timezone.
+          pattern: ^([01][0-9]|2[0-3]):[0-5][0-9]$
     Coordinates:
       type: object
       required:
@@ -2181,6 +2258,9 @@ components:
       required:
         - date
         - timings
+        - timezone
+        - method
+        - coordinates
         - apiName
       properties:
         date:
@@ -2196,17 +2276,21 @@ components:
           description: Calculation method name, if supplied.
         coordinates:
           $ref: "#/components/schemas/Coordinates"
+        timezone:
+          type: string
+          description: IANA timezone; default UTC.
         apiName:
           type: string
           description: Provider that supplied this result. Optional fields may vary by provider.
           enum:
             - aladhan.com
-            - pray.zone
+            - local
     HijriDate:
       type: object
       required:
         - hijri
         - gregorian
+        - calendar
         - apiName
       properties:
         hijri:
@@ -2261,11 +2345,16 @@ components:
             year:
               type: string
               description: Year as a string.
+        calendar:
+          type: string
+          description: Fixed Umm al-Qura calendar.
+          const: islamic-umalqura
         apiName:
           type: string
           description: Provider that supplied this result. Optional fields may vary by provider.
           enum:
             - aladhan.com
+            - local
     Qibla:
       type: object
       required:

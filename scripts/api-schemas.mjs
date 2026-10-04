@@ -32,13 +32,15 @@ const text = () =>
     "Source text as returned by the API. Documentation language does not translate content.",
     "نص المصدر كما يعيده API. لغة التوثيق لا تترجم المحتوى.",
   );
-const quranSources = [
-  "alquran.cloud",
-  "cdn.jsdelivr.net/fawazahmed0/quran-api",
-];
+const quranSources = ["alquran.cloud", "cdn.jsdelivr.net/fawazahmed0/quran-api", "quran.com"];
 const hadithSources = [
-  "hadith.gading.dev",
-  "cdn.jsdelivr.net/sutanlab/hadith-api",
+  "cdn.jsdelivr.net/gadingnst/hadith-api",
+  "raw.githubusercontent.com/gadingnst/hadith-api",
+  "local",
+];
+const azkarSources = [
+  "cdn.jsdelivr.net/rn0x/hisn_almuslim_json",
+  "raw.githubusercontent.com/rn0x/hisn_almuslim_json",
 ];
 export const schemas = {
   Catalogue: obj({
@@ -61,21 +63,16 @@ export const schemas = {
   Health: obj({
     status: { type: "string", const: "ok" },
     code: { type: "integer", const: 200 },
-    timestamp: str(
-      "Current server time in ISO 8601.",
-      "وقت الخادم الحالي بصيغة ISO 8601.",
-      { format: "date-time" },
-    ),
+    timestamp: str("Current server time in ISO 8601.", "وقت الخادم الحالي بصيغة ISO 8601.", {
+      format: "date-time",
+    }),
   }),
   Cache: obj({
     entries: int(
       "Stored cache entries, including entries not yet evicted.",
       "عناصر الكاش المخزّنة، بما فيها العناصر التي لم تُزل بعد.",
     ),
-    inflight: int(
-      "Cache loads currently in flight.",
-      "عمليات تحميل الكاش الجارية.",
-    ),
+    inflight: int("Cache loads currently in flight.", "عمليات تحميل الكاش الجارية."),
   }),
   Ready: obj({
     status: { type: "string", const: "ready" },
@@ -107,32 +104,22 @@ export const schemas = {
         },
       ),
       message: str("Error message.", "رسالة الخطأ."),
-      requestId: str(
-        "Request identifier for troubleshooting.",
-        "معرّف الطلب لتتبع المشكلة.",
-      ),
+      requestId: str("Request identifier for troubleshooting.", "معرّف الطلب لتتبع المشكلة."),
     }),
   }),
   Surah: obj(
     {
       id: int("Surah number.", "رقم السورة.", { minimum: 1, maximum: 114 }),
       name: str("Surah name from the provider.", "اسم السورة من المصدر."),
-      makkia: field(
-        "boolean",
-        "Whether the surah is Meccan, when supplied.",
-        "هل السورة مكية، إذا وفر المصدر القيمة.",
-      ),
-      apiName: source(["mp3quran.net", "alquran.cloud", "quran.com"]),
+      makkia: field("boolean", "Whether the surah is Meccan.", "هل السورة مكية."),
+      apiName: source(["mp3quran.net", "alquran.cloud", "quran.com", "local"]),
     },
-    ["id", "name", "apiName"],
+    ["id", "name", "makkia", "apiName"],
   ),
   Aya: obj({
     number: int("Global verse number.", "رقم الآية العام."),
     text: text(),
-    numberInSurah: int(
-      "Verse number within its surah.",
-      "رقم الآية داخل سورتها.",
-    ),
+    numberInSurah: int("Verse number within its surah.", "رقم الآية داخل سورتها."),
   }),
   SurahWithAyat: obj({
     number: int("Surah number.", "رقم السورة."),
@@ -144,6 +131,7 @@ export const schemas = {
     surahNumber: int("Surah number.", "رقم السورة."),
     surahName: str("Surah name.", "اسم السورة."),
     aya: ref("Aya"),
+    apiName: source(quranSources),
   }),
   Moshaf: obj({
     id: int("Provider moshaf ID.", "معرّف المصحف لدى المصدر."),
@@ -151,6 +139,9 @@ export const schemas = {
     server: str("Base audio-server URL.", "الرابط الأساسي لخادم الصوت.", {
       format: "uri",
     }),
+    surahList: arr({ type: "integer", minimum: 1, maximum: 114 }),
+    rewayaId: int("Narration ID.", "معرّف الرواية."),
+    type: int("Recording type ID; 11 denotes murattal.", "نوع التسجيل؛ 11 للمرتل."),
   }),
   Reciter: obj(
     {
@@ -158,32 +149,26 @@ export const schemas = {
       name: str("Reciter name.", "اسم القارئ."),
       date: str("Provider date metadata.", "بيانات التاريخ من المصدر."),
       moshaf: arr("Moshaf"),
-      style: {
-        type: ["string", "null"],
-        description: pair(
-          "Recitation style, when provided.",
-          "أسلوب التلاوة إذا توفر.",
-        ),
-      },
-      apiName: source(["mp3quran.net", "quran.com"]),
+      apiName: source(["mp3quran.net", "local"]),
     },
-    ["id", "name", "apiName"],
+    ["id", "name", "moshaf", "apiName"],
   ),
   ReciterAudio: obj({
     reciter: str("Reciter name.", "اسم القارئ."),
     surah: int("Surah number.", "رقم السورة."),
     audio: str(
-      "Constructed MP3 URL; file availability is not checked.",
-      "رابط MP3 منشأ؛ لا يجري التحقق من وجود الملف.",
+      "Audio URL verified with HEAD before caching; later playback can still fail.",
+      "رابط صوت جرى فحصه بطلب HEAD قبل التخزين؛ قد يفشل التشغيل لاحقًا.",
       { format: "uri" },
     ),
+    moshafId: int("Selected recording ID.", "معرّف المصحف المختار."),
+    rewayaId: int("Selected narration ID.", "معرّف الرواية المختارة."),
+    apiName: source(["mp3quran.net", "quran.com"]),
   }),
   TafsirEdition: obj({
-    id: str(
-      "Public edition key accepted in paths.",
-      "معرّف النسخة العام المقبول في المسار.",
-      { enum: ["muyassar", "jalalayn", "saadi", "waseet", "qurtubi"] },
-    ),
+    id: str("Public edition key accepted in paths.", "معرّف النسخة العام المقبول في المسار.", {
+      enum: ["muyassar", "saadi"],
+    }),
     label: str("Arabic edition name.", "اسم النسخة بالعربية."),
   }),
   TafsirItem: obj({
@@ -191,15 +176,21 @@ export const schemas = {
     aya: int("Verse number within the surah.", "رقم الآية داخل السورة."),
     text: text(),
     edition: str(
-      "Provider edition ID, for example ar.muyassar or arabic_moyassar. This differs from the public path ID.",
-      "معرّف النسخة لدى المصدر مثل ar.muyassar أو arabic_moyassar. يختلف عن المعرّف العام في المسار.",
+      "Public edition ID, stable across providers.",
+      "معرّف النسخة العام، ثابت عبر المصادر.",
+      { enum: ["muyassar", "saadi"] },
     ),
-    apiName: source(["alquran.cloud", "quranenc.com"]),
+    apiName: source([
+      "alquran.cloud",
+      "quranenc.com",
+      "quran.com",
+      "cdn.jsdelivr.net/spa5k/tafsir_api",
+    ]),
   }),
   AzkarCategorySummary: obj({
     name: str("Category name.", "اسم التصنيف."),
     count: int("Number of items in this category.", "عدد الأذكار في التصنيف."),
-    apiName: source(["github.com/nawafalqari", "hisnmuslim.com"]),
+    apiName: source(azkarSources),
   }),
   AzkarItem: obj(
     {
@@ -208,18 +199,9 @@ export const schemas = {
         "معرّف الذكر داخل المصدر أو التصنيف، وليس معرّفًا عامًا.",
       ),
       text: text(),
-      count: int(
-        "Suggested repetitions, when supplied.",
-        "عدد التكرارات عند توفره.",
-      ),
-      reference: str(
-        "Source reference, when supplied.",
-        "مرجع الذكر عند توفره.",
-      ),
-      description: str(
-        "Additional source description.",
-        "وصف إضافي من المصدر.",
-      ),
+      count: int("Suggested repetitions, when supplied.", "عدد التكرارات عند توفره."),
+      reference: str("Source reference, when supplied.", "مرجع الذكر عند توفره."),
+      description: str("Additional source description.", "وصف إضافي من المصدر."),
       content: str("Additional source content.", "محتوى إضافي من المصدر."),
     },
     ["id", "text"],
@@ -227,28 +209,26 @@ export const schemas = {
   AzkarCategory: obj({
     category: str("Category name.", "اسم التصنيف."),
     items: arr("AzkarItem"),
-    apiName: source(["github.com/nawafalqari", "hisnmuslim.com"]),
+    apiName: source(azkarSources),
   }),
   AzkarPick: obj({
     category: str("Category name.", "اسم التصنيف."),
     item: ref("AzkarItem"),
+    apiName: source(azkarSources),
   }),
   HadithBook: obj({
     id: str("Book ID used in requests.", "معرّف الكتاب المستخدم في الطلبات."),
     name: str("Book name.", "اسم الكتاب."),
     available: int(
-      "Provider-reported number of narrations.",
-      "عدد الأحاديث الذي يذكره المصدر.",
+      "Count of actual narrations; not the largest number when numbering has gaps.",
+      "عدد الأحاديث الفعلية، ولا يمثل أكبر رقم عند وجود فجوات في الترقيم.",
     ),
     apiName: source(hadithSources),
   }),
   Hadith: obj({
     number: int("Hadith number within the book.", "رقم الحديث داخل الكتاب."),
     text: text(),
-    book: str(
-      "Book name returned by the provider.",
-      "اسم الكتاب الذي يعيده المصدر.",
-    ),
+    book: str("Book name returned by the provider.", "اسم الكتاب الذي يعيده المصدر."),
     apiName: source(hadithSources),
   }),
   HadithRange: obj({
@@ -261,25 +241,16 @@ export const schemas = {
   }),
   PrayerTimings: obj(
     Object.fromEntries(
-      [
-        "Fajr",
-        "Sunrise",
-        "Dhuhr",
-        "Asr",
-        "Sunset",
-        "Maghrib",
-        "Isha",
-        "Imsak",
-        "Midnight",
-      ].map((key) => [
+      ["Fajr", "Sunrise", "Dhuhr", "Asr", "Sunset", "Maghrib", "Isha"].map((key) => [
         key,
         str(
-          "Provider-formatted local time. It may include a timezone suffix; do not assume an ISO timestamp.",
-          "وقت محلي بصيغة المصدر. قد يحتوي لاحقة منطقة زمنية؛ ليس بالضرورة طابعًا زمنيًا بصيغة ISO.",
+          "HH:mm in the requested IANA timezone.",
+          "وقت بصيغة HH:mm في المنطقة الزمنية المطلوبة.",
+          { pattern: "^([01][0-9]|2[0-3]):[0-5][0-9]$" },
         ),
       ]),
     ),
-    ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"],
+    ["Fajr", "Sunrise", "Dhuhr", "Asr", "Sunset", "Maghrib", "Isha"],
   ),
   Coordinates: obj({
     latitude: field("number", "Latitude in degrees.", "خط العرض بالدرجات."),
@@ -287,23 +258,15 @@ export const schemas = {
   }),
   PrayerTimes: obj(
     {
-      date: str(
-        "Gregorian date in the provider’s format.",
-        "التاريخ الميلادي بصيغة المصدر.",
-      ),
-      hijri: str(
-        "Hijri date in the provider’s format.",
-        "التاريخ الهجري بصيغة المصدر.",
-      ),
+      date: str("Gregorian date in the provider’s format.", "التاريخ الميلادي بصيغة المصدر."),
+      hijri: str("Hijri date in the provider’s format.", "التاريخ الهجري بصيغة المصدر."),
       timings: ref("PrayerTimings"),
-      method: str(
-        "Calculation method name, if supplied.",
-        "اسم طريقة الحساب إذا توفر.",
-      ),
+      method: str("Calculation method name, if supplied.", "اسم طريقة الحساب إذا توفر."),
       coordinates: ref("Coordinates"),
-      apiName: source(["aladhan.com", "pray.zone"]),
+      timezone: str("IANA timezone; default UTC.", "منطقة IANA الزمنية؛ الافتراضي UTC."),
+      apiName: source(["aladhan.com", "local"]),
     },
-    ["date", "timings", "apiName"],
+    ["date", "timings", "timezone", "method", "coordinates", "apiName"],
   ),
   HijriDate: obj({
     hijri: obj({
@@ -321,7 +284,10 @@ export const schemas = {
       month: str("Month name.", "اسم الشهر."),
       year: str("Year as a string.", "السنة كنص."),
     }),
-    apiName: source(["aladhan.com"]),
+    calendar: str("Fixed Umm al-Qura calendar.", "تقويم أم القرى الثابت.", {
+      const: "islamic-umalqura",
+    }),
+    apiName: source(["aladhan.com", "local"]),
   }),
   Qibla: obj({
     latitude: field("number", "Latitude in degrees.", "خط العرض بالدرجات."),
@@ -347,9 +313,7 @@ Object.assign(schemas, {
   TafsirEditionListResponse: wrap(arr("TafsirEdition")),
   TafsirListResponse: wrap(arr("TafsirItem")),
   TafsirItemResponse: wrap("TafsirItem"),
-  AzkarCategorySummaryResponse: wrap(
-    obj({ categories: arr("AzkarCategorySummary") }),
-  ),
+  AzkarCategorySummaryResponse: wrap(obj({ categories: arr("AzkarCategorySummary") })),
   AzkarCategoryResponse: wrap("AzkarCategory"),
   AzkarPickResponse: wrap("AzkarPick"),
   HadithBookListResponse: wrap(arr("HadithBook")),
@@ -368,20 +332,14 @@ for (const [key, item] of [
 ])
   schemas[key] = obj({
     success: { type: "boolean", const: true },
-    total: int(
-      "Returned count after the limit.",
-      "عدد النتائج المعادة بعد الحد.",
-    ),
+    total: int("Returned count after the limit.", "عدد النتائج المعادة بعد الحد."),
     data: arr(item),
   });
 export function localize(value, lang) {
   if (Array.isArray(value)) return value.map((v) => localize(v, lang));
   if (value && typeof value === "object") {
-    if (typeof value.en === "string" && typeof value.ar === "string")
-      return value[lang];
-    return Object.fromEntries(
-      Object.entries(value).map(([k, v]) => [k, localize(v, lang)]),
-    );
+    if (typeof value.en === "string" && typeof value.ar === "string") return value[lang];
+    return Object.fromEntries(Object.entries(value).map(([k, v]) => [k, localize(v, lang)]));
   }
   return value;
 }

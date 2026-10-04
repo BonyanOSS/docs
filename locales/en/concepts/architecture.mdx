@@ -3,13 +3,13 @@ title: "How the API works"
 description: "Request flow, source mapping and the limits of provider fallback."
 ---
 
-Bonyan API is a Fastify server. Its nine content modules validate requests, fetch external data, cache results and return module-specific JSON shapes. The four operational routes report on the process itself.
+Bonyan API runs through Fastify on Node.js and a native Fetch adapter on Cloudflare Workers. Both register the same controllers through src/http/routes.ts. Its nine content modules validate requests, fetch external data, cache results and return module-specific JSON shapes. The four operational routes report on the process itself.
 
 ## A content request
 
 ```mermaid
 flowchart TD
-    A["Your app: HTTP or SDK"] --> B["Fastify: rate limit and route"]
+    A["Your app: HTTP or SDK"] --> B["HTTP adapter: rate limit and route"]
     B --> C{"Valid input?"}
     C -->|No| X["400"]
     C -->|Yes| D{"Fresh cache?"}
@@ -32,8 +32,8 @@ The diagram shows the common path. Not every module validates inputs, checks emp
 | Cache | Share in-flight loads and retain successful results in memory. |
 | Client SDK | Validate selected arguments, send GET requests and unwrap responses. |
 
-The service runs without a database. Cache contents and metrics belong to one process and reset when it restarts. Multiple replicas do not share that state.
+The service runs without a database. Cache contents and metrics belong to one process or Worker isolate and reset when it is replaced. Replicas and isolates do not share that state. Worker in-flight cache deduplication is scoped to each request context.
 
 ## What fallback preserves
 
-The API maps provider payloads to a common set of fields. A source change can still affect optional fields, IDs, names, text presentation and prayer calculation details. Read [fallback behavior](/locales/en/concepts/fallback) before depending on an optional field.
+The API maps provider payloads to a common set of fields. Adapters preserve canonical identities and calculation settings while checking provider data. Optional metadata and source text presentation can still differ. Read [fallback behavior](/locales/en/concepts/fallback) before depending on an optional field.

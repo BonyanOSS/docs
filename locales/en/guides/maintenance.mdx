@@ -27,7 +27,7 @@ pnpm build
 pnpm broken-links
 ```
 
-The check command validates both OpenAPI documents, compiles MDX, checks internal links and language parity, type-checks SDK code blocks and exercises the search helper with representative responses. It does not prove that external content providers are always available.
+The check command validates both OpenAPI documents, compiles MDX, checks internal links and language parity, type-checks SDK code blocks and exercises the search helper with representative responses. Run `pnpm check:api /path/to/built/Bonyan-API` to test all SDK operations against the real Fastify and Worker controllers with synthetic upstreams. It does not prove live provider availability.
 
 For source changes, run `node scripts/check-source.mjs /path/to/Bonyan-API /path/to/bonyan-sdk-js` against the checked-out revisions. Review changed controllers, services and types before updating the lock. Keep English and Arabic route structures identical, translate explanatory text, and preserve JSON keys and method names.
 
